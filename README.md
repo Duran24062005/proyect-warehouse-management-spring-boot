@@ -19,72 +19,72 @@ La dirección general busca implementar un sistema backend centralizado en Sprin
 
 1. **Gestión de Bodegas**
 
-- Registrar, consultar, actualizar y eliminar bodegas.
-- Campos: id, nombre, ubicacion, capacidad, encargado.
+    - Registrar, consultar, actualizar y eliminar bodegas.
+    - Campos: id, nombre, ubicacion, capacidad, encargado.
 
 2. **Gestión de Productos**
 
-- CRUD completo de productos.
-- Campos: id, nombre, categoria, stock, precio.
+    - CRUD completo de productos.
+    - Campos: id, nombre, categoria, stock, precio.
 
 3. **Movimientos de Inventario**
 
-- Registrar entradas, salidas y transferencias entre bodegas.
-- Cada movimiento debe almacenar:
-- Fecha, tipo de movimiento (enum: ENTRADA, SALIDA, TRANSFERENCIA),
-- Usuario responsable (empleado logueado),
-- Bodega origen/destino,
-- Productos y cantidades.
+    - Registrar entradas, salidas y transferencias entre bodegas.
+    - Cada movimiento debe almacenar:
+    - Fecha, tipo de movimiento (enum: ENTRADA, SALIDA, TRANSFERENCIA),
+    - Usuario responsable (empleado logueado),
+    - Bodega origen/destino,
+    - Productos y cantidades.
 
 
 4. **Auditoría de Cambios**
 
-- Crear una entidad Auditoria para registrar:
-- Tipo de operación (INSERT, UPDATE, DELETE),
-- Fecha y hora,
-- Usuario que realizó la acción,
-- Entidad afectada y valores anteriores/nuevos.
-- Implementar auditoría automática mediante:
-- Listeners de JPA (EntityListeners) o
-- Aspecto con anotaciones personalizadas (opcional).
+    - Crear una entidad Auditoria para registrar:
+    - Tipo de operación (INSERT, UPDATE, DELETE),
+    - Fecha y hora,
+    - Usuario que realizó la acción,
+    - Entidad afectada y valores anteriores/nuevos.
+    - Implementar auditoría automática mediante:
+    - Listeners de JPA (EntityListeners) o
+    - Aspecto con anotaciones personalizadas (opcional).
 
 
 5. **Autenticación y Seguridad**
 
-- Implementar seguridad con Spring Security + JWT:
-- Endpoints /auth/login y /auth/register.
-- Rutas seguras para /bodegas, /productos, /movimientos.
-- Rol de usuario (ADMIN / EMPLEADO).
+    - Implementar seguridad con Spring Security + JWT:
+    - Endpoints /auth/login y /auth/register.
+    - Rutas seguras para /bodegas, /productos, /movimientos.
+    - Rol de usuario (ADMIN / EMPLEADO).
 
 
 6. **Consultas Avanzadas y Reportes**
 
-- Endpoints con filtros:
-- Productos con stock bajo (< 10 unidades).
-- Movimientos por rango de fechas (BETWEEN).
-- Auditorías por usuario o por tipo de operación.
-- Reporte REST de resumen general (JSON): stock total por bodega y productos más movidos.
+    - Endpoints con filtros:
+    - Productos con stock bajo (< 10 unidades).
+    - Movimientos por rango de fechas (BETWEEN).
+    - Auditorías por usuario o por tipo de operación.
+    - Reporte REST de resumen general (JSON): stock total por bodega y productos más movidos.
 
 
 7. **Documentación**
 
-- Documentar toda la API con Swagger/OpenAPI 3.
-- Probar los endpoints protegidos (token JWT incluido).
+    - Documentar toda la API con Swagger/OpenAPI 3.
+    - Probar los endpoints protegidos (token JWT incluido).
 
 
 8. **Excepciones y Validaciones**
 
-- Manejo global de errores con @ControllerAdvice.
-- Validaciones con anotaciones @NotNull, @Size, @Min, etc.
-- Respuestas JSON personalizadas para errores (400, 401, 404, 500).
+    - Manejo global de errores con @ControllerAdvice.
+    - Validaciones con anotaciones @NotNull, @Size, @Min, etc.
+    - Respuestas JSON personalizadas para errores (400, 401, 404, 500).
 
 
 9. **Despliegue:**
 
-- Configurar base de datos MySQL en application.properties.
-- Incluir scripts SQL (schema.sql, data.sql).
-- Ejecutar con Tomcat embebido o externo.
-- Frontend básico en HTML/CSS/JS para probar el login y las consultas - principales.
+    - Configurar base de datos MySQL en application.properties.
+    - Incluir scripts SQL (schema.sql, data.sql).
+    - Ejecutar con Tomcat embebido o externo.
+    - Frontend básico en HTML/CSS/JS para probar el login y las consultas principales.
 
 ## Estructura sugerida del Proyecto
 
