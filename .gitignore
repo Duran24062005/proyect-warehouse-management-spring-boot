@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-/database/README.md
+# /database/README.md
 
 ### STS ###
 .apt_generated
