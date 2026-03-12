@@ -6,19 +6,21 @@ Swagger UI: `http://localhost:8000/swagger-ui.html`
 
 OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 
+Authentication: `Bearer JWT`
+
 ## Endpoints
 
 ### `GET /api/products`
-Lista todos los productos.
+Lista todos los productos. Requiere autenticacion.
 
 ### `GET /api/products/{id}`
-Obtiene un producto por su id.
+Obtiene un producto por su id. Requiere autenticacion.
 
 ### `GET /api/products/low-stock`
-Lista productos con stock bajo. El stock se calcula a partir de `movement` y el umbral actual es `<= 5`.
+Lista productos con stock bajo. El stock se calcula a partir de `movement` y el umbral actual es `<= 5`. Requiere autenticacion.
 
 ### `POST /api/products`
-Crea un producto.
+Crea un producto. Requiere autenticacion.
 
 Request body:
 
@@ -32,10 +34,10 @@ Request body:
 ```
 
 ### `PUT /api/products/{id}`
-Actualiza un producto usando el mismo body del `POST`.
+Actualiza un producto usando el mismo body del `POST`. Requiere autenticacion.
 
 ### `DELETE /api/products/{id}`
-Elimina un producto por id.
+Elimina un producto por id. Requiere autenticacion.
 
 ## Response example
 
@@ -56,3 +58,4 @@ Elimina un producto por id.
 - Si el `warehouseId` no existe, la API responde `404`.
 - El endpoint de listado funciona en `GET /api/products` sin slash final obligatorio.
 - La documentación interactiva queda integrada con Swagger UI usando `springdoc-openapi`.
+- Si falta token o el token es invalido, la API responde `401`.

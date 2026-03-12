@@ -6,19 +6,98 @@
 - Swagger UI: `http://localhost:8000/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 
+## Authentication
+
+La API usa `Bearer JWT`.
+
+Flujo recomendado en Swagger:
+
+1. Ejecuta `POST /api/auth/login`.
+2. Copia `accessToken`.
+3. Presiona `Authorize` en Swagger UI.
+4. Pega: `Bearer <token>`.
+
+Credenciales seed:
+
+- Admin:
+  `admin@logitrack.com` / `Admin123!`
+- Users:
+  `mlopez@logitrack.com` / `User123!`
+  `jgarcia@logitrack.com` / `User123!`
+  `cperez@logitrack.com` / `User123!`
+
+## Auth
+
+### `POST /api/auth/register`
+Registra un nuevo usuario con rol `USER`.
+
+### `POST /api/auth/login`
+Inicia sesion y retorna JWT.
+
+Request body:
+
+```json
+{
+  "email": "admin@logitrack.com",
+  "password": "Admin123!"
+}
+```
+
+Response example:
+
+```json
+{
+  "message": "Login successful",
+  "tokenType": "Bearer",
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "admin@logitrack.com",
+    "firstName": "Alexi",
+    "lastName": "Duran",
+    "phoneNumber": "3000000001",
+    "role": "ADMIN",
+    "enabled": true
+  }
+}
+```
+
+### `GET /api/auth/me`
+Retorna el usuario autenticado.
+
+### `PATCH /api/auth/change-password`
+Cambia la contrasena del usuario autenticado.
+
+Request body:
+
+```json
+{
+  "currentPassword": "Admin123!",
+  "newPassword": "Admin456!"
+}
+```
+
+## Users
+
+### `GET /api/users`
+Lista todos los usuarios. Requiere rol `ADMIN`.
+
+### `GET /api/users/role?role=ADMIN|USER`
+Filtra usuarios por rol. Requiere rol `ADMIN`.
+
 ## Products
 
 ### `GET /api/products`
-Lista todos los productos.
+Lista todos los productos. Requiere autenticacion.
 
 ### `GET /api/products/{id}`
-Obtiene un producto por id.
+Obtiene un producto por id. Requiere autenticacion.
 
 ### `GET /api/products/low-stock`
-Lista productos con stock calculado menor o igual a `5`.
+Lista productos con stock calculado menor o igual a `5`. Requiere autenticacion.
 
 ### `POST /api/products`
-Crea un producto.
+Crea un producto. Requiere autenticacion.
 
 Request body:
 
@@ -32,10 +111,10 @@ Request body:
 ```
 
 ### `PUT /api/products/{id}`
-Actualiza un producto.
+Actualiza un producto. Requiere autenticacion.
 
 ### `DELETE /api/products/{id}`
-Elimina un producto.
+Elimina un producto. Requiere autenticacion.
 
 Response example:
 
@@ -53,13 +132,13 @@ Response example:
 ## Warehouses
 
 ### `GET /api/warehouses`
-Lista todos los almacenes.
+Lista todos los almacenes. Requiere autenticacion.
 
 ### `GET /api/warehouses/{id}`
-Obtiene un almacen por id.
+Obtiene un almacen por id. Requiere autenticacion.
 
 ### `POST /api/warehouses`
-Crea un almacen.
+Crea un almacen. Requiere autenticacion.
 
 Request body:
 
@@ -73,10 +152,10 @@ Request body:
 ```
 
 ### `PUT /api/warehouses/{id}`
-Actualiza un almacen.
+Actualiza un almacen. Requiere autenticacion.
 
 ### `DELETE /api/warehouses/{id}`
-Elimina un almacen.
+Elimina un almacen. Requiere autenticacion.
 
 Response example:
 
@@ -94,19 +173,19 @@ Response example:
 ## Movements
 
 ### `GET /api/movements`
-Lista todos los movimientos.
+Lista todos los movimientos. Requiere autenticacion.
 
 ### `GET /api/movements/{id}`
-Obtiene un movimiento por id.
+Obtiene un movimiento por id. Requiere autenticacion.
 
 ### `GET /api/movements?productId={id}`
-Filtra movimientos por producto.
+Filtra movimientos por producto. Requiere autenticacion.
 
 ### `GET /api/movements?warehouseId={id}`
-Filtra movimientos por almacen de origen o destino.
+Filtra movimientos por almacen de origen o destino. Requiere autenticacion.
 
 ### `POST /api/movements`
-Crea un movimiento.
+Crea un movimiento. Requiere autenticacion.
 
 Request body example for `TRANSFER`:
 
@@ -122,10 +201,10 @@ Request body example for `TRANSFER`:
 ```
 
 ### `PUT /api/movements/{id}`
-Actualiza un movimiento.
+Actualiza un movimiento. Requiere autenticacion.
 
 ### `DELETE /api/movements/{id}`
-Elimina un movimiento.
+Elimina un movimiento. Requiere autenticacion.
 
 Response example:
 
@@ -168,3 +247,5 @@ Errores controlados retornan este formato:
 - `TRANSFER` requiere ambos almacenes y deben ser diferentes.
 - Si un id relacionado no existe, la API responde `404`.
 - Si el payload es invalido o mal formado, la API responde `400`.
+- Si falta token o el token es invalido, la API responde `401`.
+- Si el usuario no tiene permisos suficientes, la API responde `403`.

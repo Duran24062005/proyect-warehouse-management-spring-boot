@@ -17,9 +17,11 @@ La aplicacion sigue una arquitectura por capas:
 - `model`
   Define entidades persistentes y enums del dominio.
 - `config`
-  Contiene configuracion transversal, como OpenAPI/Swagger.
+  Contiene configuracion transversal, como OpenAPI/Swagger y seguridad.
 - `exceptions`
   Centraliza manejo global de errores HTTP.
+- `security`
+  Implementa autenticacion JWT, filtro Bearer, encoder de contrasena y reglas de autorizacion.
 
 ## Current Modules
 
@@ -29,6 +31,10 @@ La aplicacion sigue una arquitectura por capas:
   CRUD de almacenes y asignacion de manager.
 - `Movement`
   CRUD de movimientos y validacion de reglas `ENTRY`, `EXIT` y `TRANSFER`.
+- `Auth`
+  Registro, login, consulta de usuario autenticado y cambio de contrasena.
+- `Users`
+  Consulta administrativa de usuarios por rol.
 
 ## Request Flow
 
@@ -36,8 +42,9 @@ La aplicacion sigue una arquitectura por capas:
 2. El `Controller` recibe parametros, body y validaciones basicas.
 3. El `Service` aplica reglas de negocio y resuelve relaciones.
 4. El `Repository` ejecuta operaciones JPA o queries derivadas/custom.
-5. El `Mapper` transforma entidades a DTOs de salida.
-6. `GlobalExceptionHandler` normaliza errores en JSON consistente.
+5. El filtro JWT valida el Bearer token y carga el usuario autenticado en el contexto de seguridad.
+6. El `Mapper` transforma entidades a DTOs de salida.
+7. `GlobalExceptionHandler` y los handlers de seguridad normalizan errores en JSON consistente.
 
 ## Persistence Model
 
@@ -62,6 +69,15 @@ Relaciones relevantes:
 - Documentacion interactiva: `http://localhost:8000/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 - DTOs de salida evitan exponer entidades completas relacionadas cuando no es necesario.
+
+## Security
+
+- La API usa autenticacion stateless con `Bearer JWT`.
+- `POST /api/auth/register` y `POST /api/auth/login` son publicos.
+- `GET /api/auth/me` y `PATCH /api/auth/change-password` requieren autenticacion.
+- `GET /api/users` y `GET /api/users/role` requieren rol `ADMIN`.
+- Los modulos `products`, `warehouses` y `movements` requieren usuario autenticado.
+- Las paginas estaticas y Swagger permanecen expuestos sin autenticacion.
 
 ## Error Handling
 
@@ -90,7 +106,7 @@ La capa de servicio usa transacciones para:
 
 ## Current Limitations
 
-- No hay autenticacion ni autorizacion.
 - No hay capa de auditoria automatica conectada a `audit_change`.
 - No hay pruebas funcionales o de integracion para los modulos nuevos.
 - El calculo de stock bajo se basa en movimientos agregados, no en una tabla de inventario dedicada.
+- El JWT actual se firma con HMAC SHA-256 y una clave configurada por propiedades.

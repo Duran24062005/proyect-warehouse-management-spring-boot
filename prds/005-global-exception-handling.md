@@ -13,6 +13,7 @@ Provide a uniform API error contract for validation errors, business errors, and
 - Validation errors must include field-level details.
 - `ResponseStatusException` must preserve the intended HTTP status.
 - Unexpected errors must return `500` without exposing stack traces in the response body.
+- Security failures must return `401` or `403` using the same response contract.
 
 ## Response Contract
 - `timestamp`
@@ -26,3 +27,5 @@ Provide a uniform API error contract for validation errors, business errors, and
 - Invalid payloads return `400` with validation details.
 - Not-found scenarios return `404` using the standard error payload.
 - Unexpected exceptions return `500` with the same contract.
+- Missing or invalid credentials return `401`.
+- Forbidden operations return `403`.

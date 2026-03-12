@@ -144,10 +144,10 @@ INSERT INTO app_user (
     enable,
     created_at
 ) VALUES
-    (1, 'admin@logitrack.com', '$2a$10$adminhashlogitrack', 'Alexi', 'Duran', '3000000001', 'ADMIN', TRUE, '2026-03-01 08:00:00'),
-    (2, 'mlopez@logitrack.com', '$2a$10$mlopezhashlogitrack', 'Maria', 'Lopez', '3000000002', 'USER', TRUE, '2026-03-01 08:05:00'),
-    (3, 'jgarcia@logitrack.com', '$2a$10$jgarciahashlogitrack', 'Juan', 'Garcia', '3000000003', 'USER', TRUE, '2026-03-01 08:10:00'),
-    (4, 'cperez@logitrack.com', '$2a$10$cperezhashlogitrack', 'Camila', 'Perez', '3000000004', 'USER', TRUE, '2026-03-01 08:15:00');
+    (1, 'admin@logitrack.com', '3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121', 'Alexi', 'Duran', '3000000001', 'ADMIN', TRUE, '2026-03-01 08:00:00'),
+    (2, 'mlopez@logitrack.com', 'bc5848f227cc161eb5f68dfe98cb13110a9c843ce69e953a88107d865583d397', 'Maria', 'Lopez', '3000000002', 'USER', TRUE, '2026-03-01 08:05:00'),
+    (3, 'jgarcia@logitrack.com', 'bc5848f227cc161eb5f68dfe98cb13110a9c843ce69e953a88107d865583d397', 'Juan', 'Garcia', '3000000003', 'USER', TRUE, '2026-03-01 08:10:00'),
+    (4, 'cperez@logitrack.com', 'bc5848f227cc161eb5f68dfe98cb13110a9c843ce69e953a88107d865583d397', 'Camila', 'Perez', '3000000004', 'USER', TRUE, '2026-03-01 08:15:00');
 
 INSERT INTO warehouse (
     id,
