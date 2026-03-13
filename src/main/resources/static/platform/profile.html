@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>logiTrack | Perfil</title>
+    <link rel="stylesheet" href="/styles/index.css">
+</head>
+<body data-page="profile">
+    <main class="app-shell">
+        <header class="app-topbar">
+            <div>
+                <span class="brand-eyebrow">Authenticated profile</span>
+                <h1 class="brand-title">Perfil y cambio de contraseña</h1>
+                <p class="brand-copy">Validación cliente de `/api/auth/me` y `/api/auth/change-password` con la sesión activa.</p>
+            </div>
+            <div class="topbar-actions">
+                <a class="button-link" href="/platform/system.html">Volver al dashboard</a>
+                <button class="button-danger" type="button" data-logout>Salir</button>
+            </div>
+        </header>
+
+        <div class="app-notice" data-page-notice></div>
+
+        <section class="app-grid">
+            <div class="app-column">
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Mi sesión</h2>
+                            <p class="panel-copy">Estos datos vienen de `GET /api/auth/me`.</p>
+                        </div>
+                    </div>
+                    <div data-current-user></div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Información del usuario</h2>
+                            <p class="panel-copy">Resumen útil para probar el flujo multiusuario desde cliente.</p>
+                        </div>
+                    </div>
+                    <div class="profile-grid" data-profile-grid></div>
+                </section>
+            </div>
+
+            <aside class="app-column">
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Cambiar contraseña</h2>
+                            <p class="panel-copy">Envía `currentPassword` y `newPassword` usando el token actual.</p>
+                        </div>
+                    </div>
+                    <form data-password-form>
+                        <div class="profile-card">
+                            <label for="currentPassword">Contraseña actual</label>
+                            <input id="currentPassword" name="currentPassword" type="password" required>
+                        </div>
+                        <div class="profile-card">
+                            <label for="newPassword">Nueva contraseña</label>
+                            <input id="newPassword" name="newPassword" type="password" required>
+                        </div>
+                        <div class="profile-form-actions">
+                            <button class="button" type="submit">Actualizar contraseña</button>
+                            <button class="button-link" type="reset">Limpiar</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Sesiones guardadas</h2>
+                            <p class="panel-copy">Cambia de cuenta sin volver al login si ya existe un token guardado.</p>
+                        </div>
+                    </div>
+                    <div class="session-stack" data-session-list></div>
+                </section>
+            </aside>
+        </section>
+    </main>
+    <script src="/js/auth-client.js"></script>
+    <script src="/js/system.js"></script>
+</body>
+</html>

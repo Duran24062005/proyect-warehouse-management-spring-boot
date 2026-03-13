@@ -1,13 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>logiTrack</title>
+    <title>logiTrack | Dashboard</title>
     <link rel="stylesheet" href="/styles/index.css">
 </head>
-<body>
-    <h1>Logi Track</h1>
+<body data-page="system">
+    <main class="app-shell">
+        <header class="app-topbar">
+            <div>
+                <span class="brand-eyebrow">Client dashboard</span>
+                <h1 class="brand-title">logiTrack en modo cliente</h1>
+                <p class="brand-copy">Consulta APIs protegidas, alterna sesiones guardadas y valida el flujo multiusuario desde el navegador.</p>
+            </div>
+            <div class="topbar-actions">
+                <a class="button-link" href="/platform/profile.html">Perfil y contraseña</a>
+                <button class="button" type="button" data-refresh-dashboard>Actualizar datos</button>
+                <button class="button-danger" type="button" data-logout>Salir</button>
+            </div>
+        </header>
+
+        <div class="app-notice" data-page-notice></div>
+
+        <section class="app-grid">
+            <div class="app-column">
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Sesión actual</h2>
+                            <p class="panel-copy">La cabecera `Authorization` se construye con el token guardado de la sesión activa.</p>
+                        </div>
+                    </div>
+                    <div data-current-user></div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Métricas rápidas</h2>
+                            <p class="panel-copy">Datos cargados en tiempo real desde las APIs protegidas.</p>
+                        </div>
+                    </div>
+                    <div class="metrics-grid" data-metrics></div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Productos</h2>
+                            <p class="panel-copy">Listado autenticado de `GET /api/products`.</p>
+                        </div>
+                    </div>
+                    <div class="list-table-wrap" data-products-table></div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Movimientos recientes</h2>
+                            <p class="panel-copy">Consulta de `GET /api/movements` para validar inventario en flujo real.</p>
+                        </div>
+                    </div>
+                    <div class="list-table-wrap" data-movements-table></div>
+                </section>
+            </div>
+
+            <aside class="app-column">
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Cambio rápido de usuario</h2>
+                            <p class="panel-copy">Cada login queda guardado localmente para probar varios usuarios sin volver a autenticarse.</p>
+                        </div>
+                    </div>
+                    <div class="session-stack" data-session-list></div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Stock bajo</h2>
+                            <p class="panel-copy">Resultado de `GET /api/products/low-stock`.</p>
+                        </div>
+                    </div>
+                    <div class="alerts-list" data-low-stock></div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Almacenes</h2>
+                            <p class="panel-copy">Resumen de `GET /api/warehouses`.</p>
+                        </div>
+                    </div>
+                    <div class="quick-list" data-warehouses-list></div>
+                </section>
+
+                <section class="panel" data-admin-panel hidden>
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Consola administrativa</h2>
+                            <p class="panel-copy">Visible cuando la sesión activa tiene rol `ADMIN`.</p>
+                        </div>
+                    </div>
+                    <div class="admin-grid">
+                        <form class="admin-form-card" data-admin-user-form>
+                            <h3>Crear usuario</h3>
+                            <p>Crea usuarios `ADMIN` o `USER` directamente desde el cliente.</p>
+                            <div class="admin-form-grid">
+                                <label>
+                                    <span>Correo</span>
+                                    <input name="email" type="email" required>
+                                </label>
+                                <label>
+                                    <span>Contraseña</span>
+                                    <input name="password" type="password" required>
+                                </label>
+                                <label>
+                                    <span>Nombre</span>
+                                    <input name="firstName" type="text" required>
+                                </label>
+                                <label>
+                                    <span>Apellido</span>
+                                    <input name="lastName" type="text" required>
+                                </label>
+                                <label>
+                                    <span>Teléfono</span>
+                                    <input name="phoneNumber" type="text" required>
+                                </label>
+                                <label>
+                                    <span>Rol</span>
+                                    <select name="role" required></select>
+                                </label>
+                            </div>
+                            <label class="checkbox-line">
+                                <input name="enabled" type="checkbox" checked>
+                                <span>Usuario habilitado</span>
+                            </label>
+                            <div class="profile-form-actions">
+                                <button class="button" type="submit">Crear usuario</button>
+                                <button class="button-link" type="reset">Limpiar</button>
+                            </div>
+                        </form>
+
+                        <form class="admin-form-card" data-admin-product-form>
+                            <h3>Crear producto</h3>
+                            <p>Registra nuevos productos y asígnalos opcionalmente a una bodega.</p>
+                            <div class="admin-form-grid">
+                                <label>
+                                    <span>Nombre</span>
+                                    <input name="name" type="text" required>
+                                </label>
+                                <label>
+                                    <span>Categoría</span>
+                                    <input name="category" type="text" required>
+                                </label>
+                                <label>
+                                    <span>Precio</span>
+                                    <input name="price" type="number" min="0" step="0.01" required>
+                                </label>
+                                <label>
+                                    <span>Bodega</span>
+                                    <select name="warehouseId"></select>
+                                </label>
+                            </div>
+                            <div class="profile-form-actions">
+                                <button class="button" type="submit">Crear producto</button>
+                                <button class="button-link" type="reset">Limpiar</button>
+                            </div>
+                        </form>
+
+                        <form class="admin-form-card" data-admin-warehouse-form>
+                            <h3>Asignar manager a bodega</h3>
+                            <p>Actualiza una bodega existente conservando sus demás datos.</p>
+                            <div class="admin-form-grid">
+                                <label>
+                                    <span>Bodega</span>
+                                    <select name="warehouseId" required></select>
+                                </label>
+                                <label>
+                                    <span>Manager</span>
+                                    <select name="managerUserId" required></select>
+                                </label>
+                            </div>
+                            <div class="profile-form-actions">
+                                <button class="button" type="submit">Asignar manager</button>
+                                <button class="button-link" type="reset">Limpiar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="list-table-wrap" data-users-table></div>
+                </section>
+            </aside>
+        </section>
+    </main>
+    <script src="/js/auth-client.js"></script>
+    <script src="/js/system.js"></script>
 </body>
-<script src="/js/system.js"></script>
 </html>
