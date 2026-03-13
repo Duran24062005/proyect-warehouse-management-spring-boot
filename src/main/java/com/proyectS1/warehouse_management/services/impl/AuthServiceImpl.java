@@ -23,6 +23,7 @@ import com.proyectS1.warehouse_management.dtos.response.UserResponseDTO;
 import com.proyectS1.warehouse_management.mapper.UserMapper;
 import com.proyectS1.warehouse_management.model.AppUser;
 import com.proyectS1.warehouse_management.repositories.AppUserRepository;
+import com.proyectS1.warehouse_management.security.JwtService;
 import com.proyectS1.warehouse_management.services.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AppUserRepository appUserRepository;
     private final UserMapper userMapper;
+    private final JwtService jwtService;
 
     @Override
     public UserResponseDTO register(AuthRegisterRequestDTO dto) {
@@ -60,18 +62,19 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(UNAUTHORIZED, "Invalid credentials");
         }
 
-        return new AuthLoginResponseDTO("Login successful. Security token not implemented yet.", userMapper.entityToDTO(user));
+        String token = jwtService.generateToken(user.getEmail());
+        return new AuthLoginResponseDTO("Login successful", token, "Bearer", userMapper.entityToDTO(user));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponseDTO me(Long userId) {
-        return userMapper.entityToDTO(findUserById(userId));
+    public UserResponseDTO me(String email) {
+        return userMapper.entityToDTO(findUserByEmail(email));
     }
 
     @Override
-    public MessageResponseDTO changePassword(ChangePasswordRequestDTO dto) {
-        AppUser user = findUserById(dto.userId());
+    public MessageResponseDTO changePassword(String email, ChangePasswordRequestDTO dto) {
+        AppUser user = findUserByEmail(email);
 
         if (!user.getHashPassword().equals(hashPassword(dto.currentPassword()))) {
             throw new ResponseStatusException(UNAUTHORIZED, "Current password is invalid");
@@ -89,6 +92,11 @@ public class AuthServiceImpl implements AuthService {
     private AppUser findUserById(Long userId) {
         return appUserRepository.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found with id " + userId));
+    }
+
+    private AppUser findUserByEmail(String email) {
+        return appUserRepository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found with email " + email));
     }
 
     private String hashPassword(String rawPassword) {

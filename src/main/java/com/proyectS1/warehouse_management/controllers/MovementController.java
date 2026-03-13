@@ -19,6 +19,7 @@ import com.proyectS1.warehouse_management.dtos.response.MovementResponseDTO;
 import com.proyectS1.warehouse_management.services.MovementService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/movements")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Movement", description = "Endpoints para gestionar movimientos de inventario")
 public class MovementController {
 

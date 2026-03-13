@@ -18,6 +18,7 @@ import com.proyectS1.warehouse_management.dtos.response.WarehouseResponseDTO;
 import com.proyectS1.warehouse_management.services.WarehouseService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/warehouses")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "Warehouse", description = "Endpoints para gestionar almacenes")
 public class WarehouseController {
 

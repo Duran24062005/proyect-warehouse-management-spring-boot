@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -17,11 +18,15 @@ import io.jsonwebtoken.security.SignatureException;
 @Service
 public class JwtService {
 
-    private final String SECRET_KEY = "";
+    private final String secretKey;
     private final long EXPIRATION_TIME = 1000 * 60 * 30; // 30 Minutes
 
+    public JwtService(@Value("${app.security.jwt.secret}") String secretKey) {
+        this.secretKey = secretKey;
+    }
+
     private SecretKey getKey() {
-        return Keys.hmacShaKeyFor(this.SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(this.secretKey.getBytes());
     }
 
     public String generateToken(String username){

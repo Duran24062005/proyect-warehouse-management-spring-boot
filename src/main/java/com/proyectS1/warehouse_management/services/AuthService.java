@@ -10,6 +10,6 @@ import com.proyectS1.warehouse_management.dtos.response.UserResponseDTO;
 public interface AuthService {
     UserResponseDTO register(AuthRegisterRequestDTO dto);
     AuthLoginResponseDTO login(AuthLoginRequestDTO dto);
-    UserResponseDTO me(Long userId);
-    MessageResponseDTO changePassword(ChangePasswordRequestDTO dto);
+    UserResponseDTO me(String email);
+    MessageResponseDTO changePassword(String email, ChangePasswordRequestDTO dto);
 }

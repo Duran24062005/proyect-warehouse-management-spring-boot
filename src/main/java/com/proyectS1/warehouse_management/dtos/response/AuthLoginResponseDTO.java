@@ -5,6 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record AuthLoginResponseDTO(
     @Schema(description = "Result message")
     String message,
+    @Schema(description = "Bearer token")
+    String token,
+    @Schema(description = "Authentication scheme", example = "Bearer")
+    String tokenType,
     @Schema(description = "Authenticated user")
     UserResponseDTO user
 ) {
