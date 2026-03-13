@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="./logo_repo.png" alt="Repo Logo">
+    <img src="./logo_repo.png" alt="Repo Logo" width="400">
 </div>
 
 # proyect-warehouse-management-spring-boot
