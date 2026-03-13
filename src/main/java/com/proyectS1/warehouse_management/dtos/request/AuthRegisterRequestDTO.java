@@ -1,8 +1,11 @@
 package com.proyectS1.warehouse_management.dtos.request;
 
+import com.proyectS1.warehouse_management.model.enums.UserRole;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record AuthRegisterRequestDTO(
@@ -26,6 +29,9 @@ public record AuthRegisterRequestDTO(
     @NotBlank
     @Size(max = 100)
     @Schema(description = "Phone number", example = "3000000002")
-    String phoneNumber
+    String phoneNumber,
+    @NotNull
+    @Schema(description = "Role", example = "USER")
+    UserRole role
 ) {
 }

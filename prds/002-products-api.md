@@ -8,7 +8,6 @@ Provide a complete REST API to manage products and inspect low-stock products.
 - Product lookup by id.
 - Low-stock query based on inventory movements.
 - Swagger documentation for endpoints and payloads.
-- Authentication requirement using Bearer JWT.
 
 ## Functional Requirements
 - `GET /api/products` must list all products.
@@ -27,4 +26,3 @@ Provide a complete REST API to manage products and inspect low-stock products.
 - Invalid `warehouseId` returns `404`.
 - Missing products return `404`.
 - Low-stock results are computed from the `movement` table.
-- Requests without valid JWT return `401`.

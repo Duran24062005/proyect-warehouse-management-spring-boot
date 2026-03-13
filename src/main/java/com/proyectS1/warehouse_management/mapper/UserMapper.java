@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import com.proyectS1.warehouse_management.dtos.request.AuthRegisterRequestDTO;
 import com.proyectS1.warehouse_management.dtos.response.UserResponseDTO;
 import com.proyectS1.warehouse_management.model.AppUser;
-import com.proyectS1.warehouse_management.model.enums.UserRole;
 
 @Component
 public class UserMapper {
@@ -36,7 +35,7 @@ public class UserMapper {
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
         user.setPhoneNumber(dto.phoneNumber());
-        user.setRole(UserRole.USER);
+        user.setRole(dto.role());
         user.setEnabled(Boolean.TRUE);
         return user;
     }

@@ -29,3 +29,11 @@ Protect the API with stateless authentication and role-based authorization while
 - Protected endpoints reject anonymous requests.
 - Admin-only endpoints reject authenticated non-admin users.
 - Swagger UI can authorize using the returned token.
+
+
+## Usuario de prueba
+
+admin@logitrack.com / Admin123!
+mlopez@logitrack.com / User123!
+jgarcia@logitrack.com / User123!
+cperez@logitrack.com / User123!

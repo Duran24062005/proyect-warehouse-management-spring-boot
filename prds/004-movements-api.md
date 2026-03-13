@@ -8,7 +8,6 @@ Provide a REST API to register and query inventory movements.
 - Lookup by id.
 - Filters by product and warehouse.
 - Validation of movement rules according to the schema constraints.
-- Authentication requirement using Bearer JWT.
 
 ## Functional Requirements
 - `GET /api/movements` must list all movements.
@@ -28,4 +27,3 @@ Provide a REST API to register and query inventory movements.
 - CRUD operations persist against the `movement` table.
 - Invalid related ids return `404`.
 - Invalid warehouse combinations return `400`.
-- Requests without valid JWT return `401`.

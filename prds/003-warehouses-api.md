@@ -7,7 +7,6 @@ Provide a REST API to manage warehouse records and assign managers.
 - CRUD operations for warehouses.
 - Warehouse lookup by id.
 - Swagger documentation for request and response models.
-- Authentication requirement using Bearer JWT.
 
 ## Functional Requirements
 - `GET /api/warehouses` must list all warehouses.
@@ -24,4 +23,3 @@ Provide a REST API to manage warehouse records and assign managers.
 - CRUD operations persist against the `warehouse` table.
 - Invalid `managerUserId` returns `404`.
 - Missing warehouses return `404`.
-- Requests without valid JWT return `401`.
