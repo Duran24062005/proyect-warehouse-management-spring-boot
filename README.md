@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="./logo_repo.png" alt="Repo Logo">
+</div>
+
 # proyect-warehouse-management-spring-boot
 
 La empresa LogiTrack S.A. administra varias bodegas distribuidas en distintas ciudades, encargadas de almacenar productos y gestionar movimientos de inventario (entradas, salidas, y transferencias).
