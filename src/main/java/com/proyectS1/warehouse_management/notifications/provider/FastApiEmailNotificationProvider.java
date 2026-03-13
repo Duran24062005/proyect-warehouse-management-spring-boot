@@ -2,8 +2,6 @@ package com.proyectS1.warehouse_management.notifications.provider;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import com.proyectS1.warehouse_management.notifications.config.EmailNotificationProperties;
@@ -25,20 +23,31 @@ public class FastApiEmailNotificationProvider implements EmailNotificationProvid
 
     @Override
     public void send(EmailNotificationCommand command) {
-        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
-        formData.add("user_id", String.valueOf(command.userId()));
-        formData.add("recipient", command.recipient());
-        formData.add("subject", command.subject());
-        formData.add("body", command.body());
-
         restClientBuilder
             .baseUrl(properties.getFastapi().getBaseUrl())
             .build()
             .post()
             .uri(properties.getFastapi().getSendPath())
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .body(formData)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(
+                new FastApiEmailRequest(
+                    command.userId(),
+                    command.recipient(),
+                    command.subject(),
+                    command.templateName(),
+                    command.templateData()
+                )
+            )
             .retrieve()
             .toBodilessEntity();
+    }
+
+    private record FastApiEmailRequest(
+        int user_id,
+        String recipient,
+        String subject,
+        String template_name,
+        Object template_data
+    ) {
     }
 }

@@ -2,6 +2,7 @@ package com.proyectS1.warehouse_management.notifications.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,20 +31,14 @@ public class AuthEmailNotificationService {
         send(
             buildCommand(
                 user,
-                "Registro exitoso en logiTrack",
-                """
-                Hola %s,
-
-                tu cuenta en logiTrack fue registrada correctamente el %s.
-
-                Ya puedes ingresar al sistema con el correo %s.
-
-                Saludos,
-                Equipo logiTrack
-                """.formatted(
-                    user.getFirstName(),
-                    DATE_TIME_FORMATTER.format(LocalDateTime.now()),
-                    user.getEmail()
+                "Bienvenido a logiTrack",
+                "auth-register.html",
+                Map.of(
+                    "nombre", user.getFirstName(),
+                    "empresa", "logiTrack",
+                    "correo", user.getEmail(),
+                    "fecha", DATE_TIME_FORMATTER.format(LocalDateTime.now()),
+                    "evento", "registro"
                 )
             ),
             "registration"
@@ -55,30 +50,31 @@ public class AuthEmailNotificationService {
             buildCommand(
                 user,
                 "Nuevo acceso a logiTrack",
-                """
-                Hola %s,
-
-                detectamos un inicio de sesion en tu cuenta de logiTrack el %s.
-
-                Si fuiste tu, no necesitas realizar ninguna accion.
-
-                Saludos,
-                Equipo logiTrack
-                """.formatted(
-                    user.getFirstName(),
-                    DATE_TIME_FORMATTER.format(LocalDateTime.now())
+                "auth-login.html",
+                Map.of(
+                    "nombre", user.getFirstName(),
+                    "empresa", "logiTrack",
+                    "correo", user.getEmail(),
+                    "fecha", DATE_TIME_FORMATTER.format(LocalDateTime.now()),
+                    "evento", "login"
                 )
             ),
             "login"
         );
     }
 
-    private EmailNotificationCommand buildCommand(AppUser user, String subject, String body) {
+    private EmailNotificationCommand buildCommand(
+        AppUser user,
+        String subject,
+        String templateName,
+        Map<String, Object> templateData
+    ) {
         return new EmailNotificationCommand(
             3,
             user.getEmail(),
             subject,
-            body
+            templateName,
+            templateData
         );
     }
 
