@@ -6,6 +6,8 @@ target/
 
 # /database/README.md
 
+/src/main/resuorces
+
 ### STS ###
 .apt_generated
 .classpath

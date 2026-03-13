@@ -1,17 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector("#login-form");
     const registerForm = document.querySelector("#register-form");
+    const server = "http://localhost:8000/api";
 
     if (loginForm) {
-        wireLoginForm(loginForm);
+        wireLoginForm(loginForm, server);
     }
 
     if (registerForm) {
-        wireRegisterForm(registerForm);
+        wireRegisterForm(registerForm, server);
     }
 });
 
-function wireLoginForm(form) {
+function wireLoginForm(form, server) {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -26,7 +27,7 @@ function wireLoginForm(form) {
         setSubmitting(submitButton, true, "Ingresando...");
 
         try {
-            const response = await fetch("/api/auth/login", {
+            const response = await fetch(`${server}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -44,7 +45,7 @@ function wireLoginForm(form) {
             window.localStorage.setItem("authUser", JSON.stringify(data.user));
 
             setTimeout(() => {
-                window.location.href = "/system.html";
+                window.location.href = "/platform/system.html";
             }, 800);
         } catch (error) {
             showFeedback(feedback, error.message || "No fue posible iniciar sesión.", "error");
@@ -54,7 +55,7 @@ function wireLoginForm(form) {
     });
 }
 
-function wireRegisterForm(form) {
+function wireRegisterForm(form, server) {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -72,7 +73,7 @@ function wireRegisterForm(form) {
         setSubmitting(submitButton, true, "Registrando...");
 
         try {
-            const response = await fetch("/api/auth/register", {
+            const response = await fetch(`${server}api/auth/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
