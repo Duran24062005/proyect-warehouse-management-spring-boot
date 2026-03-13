@@ -22,6 +22,7 @@ import com.proyectS1.warehouse_management.dtos.response.MessageResponseDTO;
 import com.proyectS1.warehouse_management.dtos.response.UserResponseDTO;
 import com.proyectS1.warehouse_management.mapper.UserMapper;
 import com.proyectS1.warehouse_management.model.AppUser;
+import com.proyectS1.warehouse_management.notifications.service.AuthEmailNotificationService;
 import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.security.JwtService;
 import com.proyectS1.warehouse_management.services.AuthService;
@@ -36,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final AppUserRepository appUserRepository;
     private final UserMapper userMapper;
     private final JwtService jwtService;
+    private final AuthEmailNotificationService authEmailNotificationService;
 
     @Override
     public UserResponseDTO register(AuthRegisterRequestDTO dto) {
@@ -45,7 +47,9 @@ public class AuthServiceImpl implements AuthService {
 
         AppUser user = userMapper.registerDtoToEntity(dto);
         user.setHashPassword(hashPassword(dto.password()));
-        return userMapper.entityToDTO(appUserRepository.save(user));
+        AppUser savedUser = appUserRepository.save(user);
+        authEmailNotificationService.sendRegistrationEmail(savedUser);
+        return userMapper.entityToDTO(savedUser);
     }
 
     @Override
@@ -63,6 +67,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String token = jwtService.generateToken(user.getEmail());
+        authEmailNotificationService.sendLoginEmail(user);
         return new AuthLoginResponseDTO("Login successful", token, "Bearer", userMapper.entityToDTO(user));
     }
 
