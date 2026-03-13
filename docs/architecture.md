@@ -2,95 +2,109 @@
 
 ## Overview
 
-`warehouse-management` es un backend monolitico en Spring Boot para gestionar productos, almacenes y movimientos de inventario sobre MySQL.
+`warehouse-management` es una aplicacion monolitica en Spring Boot con frontend estatico integrado. Gestiona autenticacion, usuarios, productos, bodegas, movimientos y notificaciones por email.
 
-La aplicacion sigue una arquitectura por capas:
+## Capas
 
 - `controllers`
   Expone endpoints REST y define el contrato HTTP.
 - `services`
-  Contiene reglas de negocio, validaciones y orquestacion.
+  Centraliza reglas de negocio y coordina casos de uso.
 - `repositories`
-  Accede a base de datos usando Spring Data JPA.
+  Acceso a datos con Spring Data JPA.
 - `mapper`
-  Convierte entidades JPA a DTOs de request/response.
+  Conversión entre entidades y DTOs.
 - `model`
-  Define entidades persistentes y enums del dominio.
+  Entidades persistentes y enums del dominio.
+- `security`
+  JWT, filtro de autenticacion y configuracion de acceso.
+- `notifications`
+  Modelos, servicio de notificacion, factory y proveedores.
 - `config`
-  Contiene configuracion transversal, como OpenAPI/Swagger.
+  Configuracion transversal como OpenAPI y `RestClient`.
 - `exceptions`
-  Centraliza manejo global de errores HTTP.
+  Manejo global de errores HTTP.
 
-## Current Modules
+## Modulos Funcionales
 
-- `Product`
-  CRUD de productos y consulta de stock bajo.
-- `Warehouse`
-  CRUD de almacenes y asignacion de manager.
-- `Movement`
-  CRUD de movimientos y validacion de reglas `ENTRY`, `EXIT` y `TRANSFER`.
+- `Auth`
+  Registro, login, `me` y cambio de contrasena.
+- `Users`
+  Consulta y creacion administrativa de usuarios.
+- `Products`
+  CRUD y consulta de stock bajo.
+- `Warehouses`
+  CRUD y asignacion de manager.
+- `Movements`
+  CRUD y filtros por producto o bodega.
+- `Notifications`
+  Emails transaccionales en eventos de autenticacion.
 
-## Request Flow
+## Flujo de Request
 
-1. El cliente llama un endpoint REST.
-2. El `Controller` recibe parametros, body y validaciones basicas.
-3. El `Service` aplica reglas de negocio y resuelve relaciones.
-4. El `Repository` ejecuta operaciones JPA o queries derivadas/custom.
-5. El `Mapper` transforma entidades a DTOs de salida.
-6. `GlobalExceptionHandler` normaliza errores en JSON consistente.
+1. El cliente web o cualquier consumidor HTTP invoca la API.
+2. `SecurityConfig` determina si la ruta es publica o protegida.
+3. `JwtFilter` valida el token Bearer y llena el `SecurityContext`.
+4. El `Controller` recibe el request y delega al `Service`.
+5. El `Service` valida reglas de negocio, resuelve relaciones y usa repositorios.
+6. Los `Mapper` y DTOs modelan la respuesta.
+7. `GlobalExceptionHandler` normaliza errores cuando aplica.
 
-## Persistence Model
+## Seguridad
+
+- Endpoints publicos:
+  - `POST /api/auth/register`
+  - `POST /api/auth/login`
+  - `swagger-ui`, `v3/api-docs` y assets estaticos
+- Endpoints autenticados:
+  - `/api/auth/me`
+  - `/api/auth/change-password`
+  - `/api/products/**`
+  - `/api/warehouses/**`
+  - `/api/movements/**`
+- Endpoints con rol `ADMIN`:
+  - `/api/users/**`
+
+## Notificaciones
+
+La aplicacion no invoca la API externa de email de forma directa desde `AuthServiceImpl`. En su lugar:
+
+1. `AuthServiceImpl` dispara un caso de uso de notificacion.
+2. `AuthEmailNotificationService` construye el comando de negocio.
+3. `EmailNotificationProviderFactory` resuelve el proveedor activo segun `application.properties`.
+4. `FastApiEmailNotificationProvider` transforma el comando a `multipart/form-data` y llama la API externa.
+
+Esto permite cambiar de proveedor sin tocar el flujo de autenticacion.
+
+## Frontend Integrado
+
+La UI estatica esta en `src/main/resources/static`:
+
+- `index.html` y `register.html` para acceso.
+- `platform/*.html` para dashboard, productos, perfil y administracion.
+- `js/core` para autenticacion, sesion y utilidades.
+- `js/pages` para logica por pagina.
+- `styles` para identidad visual y layout.
+
+## Persistencia
 
 Tablas principales:
 
-- `product`
-- `warehouse`
-- `movement`
 - `app_user`
+- `warehouse`
+- `product`
+- `movement`
 - `audit_change`
 - `entity`
 
 Relaciones relevantes:
 
-- Un `Product` pertenece opcionalmente a un `Warehouse`.
 - Un `Warehouse` puede tener un manager (`AppUser`).
-- Un `Movement` referencia un `Product`, un empleado (`AppUser`) y una o dos bodegas segun el tipo.
+- Un `Product` puede estar asociado a una bodega.
+- Un `Movement` referencia producto, empleado y una o dos bodegas segun el tipo.
 
-## API Design
+## Limitaciones Actuales
 
-- Base URL local: `http://localhost:8000`
-- Documentacion interactiva: `http://localhost:8000/swagger-ui.html`
-- OpenAPI JSON: `http://localhost:8000/v3/api-docs`
-- DTOs de salida evitan exponer entidades completas relacionadas cuando no es necesario.
-
-## Error Handling
-
-La API usa `@RestControllerAdvice` para devolver un payload uniforme con:
-
-- `timestamp`
-- `status`
-- `error`
-- `message`
-- `path`
-- `details`
-
-Esto cubre:
-
-- errores de validacion
-- ids inexistentes
-- requests malformados
-- errores internos no controlados
-
-## Transactions
-
-La capa de servicio usa transacciones para:
-
-- mantener consistencia en operaciones de escritura
-- evitar problemas de carga `LAZY` al mapear relaciones a DTOs
-
-## Current Limitations
-
-- No hay autenticacion ni autorizacion.
-- No hay capa de auditoria automatica conectada a `audit_change`.
-- No hay pruebas funcionales o de integracion para los modulos nuevos.
-- El calculo de stock bajo se basa en movimientos agregados, no en una tabla de inventario dedicada.
+- La tabla `audit_change` no esta integrada aun a un flujo funcional de auditoria automatica.
+- El frontend no tiene suite automatizada de pruebas visuales o end-to-end.
+- Las notificaciones por email dependen de la disponibilidad de la API externa configurada.

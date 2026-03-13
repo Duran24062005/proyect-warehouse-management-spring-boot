@@ -6,21 +6,135 @@
 - Swagger UI: `http://localhost:8000/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 
+## Authentication
+
+La API usa Bearer token JWT en el header:
+
+```http
+Authorization: Bearer <token>
+```
+
+Rutas publicas:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+Rutas protegidas:
+
+- `/api/auth/me`
+- `/api/auth/change-password`
+- `/api/products/**`
+- `/api/warehouses/**`
+- `/api/movements/**`
+
+Rutas solo `ADMIN`:
+
+- `/api/users/**`
+
+## Auth
+
+### `POST /api/auth/register`
+
+Registra un usuario nuevo con rol `USER`.
+
+```json
+{
+  "email": "user@logitrack.com",
+  "password": "123456",
+  "firstName": "Maria",
+  "lastName": "Lopez",
+  "phoneNumber": "3000000002"
+}
+```
+
+### `POST /api/auth/login`
+
+Autentica email y password, y retorna token JWT.
+
+```json
+{
+  "email": "admin@logitrack.com",
+  "password": "123456"
+}
+```
+
+Respuesta esperada:
+
+```json
+{
+  "message": "Login successful",
+  "token": "<jwt>",
+  "tokenType": "Bearer",
+  "user": {
+    "id": 1,
+    "email": "admin@logitrack.com",
+    "firstName": "Admin",
+    "lastName": "Principal",
+    "phoneNumber": "3000000001",
+    "role": "ADMIN",
+    "enabled": true
+  }
+}
+```
+
+### `GET /api/auth/me`
+
+Retorna el usuario autenticado a partir del token.
+
+### `PATCH /api/auth/change-password`
+
+Cambia la contrasena del usuario autenticado.
+
+```json
+{
+  "currentPassword": "123456",
+  "newPassword": "654321"
+}
+```
+
+## Users
+
+### `GET /api/users`
+
+Lista todos los usuarios. Requiere rol `ADMIN`.
+
+### `GET /api/users/role?role=ADMIN`
+
+Filtra usuarios por rol. Requiere rol `ADMIN`.
+
+### `POST /api/users`
+
+Crea usuarios desde administracion. Requiere rol `ADMIN`.
+
+```json
+{
+  "email": "nuevo.admin@logitrack.com",
+  "password": "Admin123!",
+  "firstName": "Laura",
+  "lastName": "Suarez",
+  "phoneNumber": "3000000010",
+  "role": "ADMIN",
+  "enabled": true
+}
+```
+
 ## Products
 
 ### `GET /api/products`
+
 Lista todos los productos.
 
 ### `GET /api/products/{id}`
+
 Obtiene un producto por id.
 
 ### `GET /api/products/low-stock`
+
 Lista productos con stock calculado menor o igual a `5`.
 
 ### `POST /api/products`
-Crea un producto.
 
-Request body:
+Crea un producto.
 
 ```json
 {
@@ -32,36 +146,26 @@ Request body:
 ```
 
 ### `PUT /api/products/{id}`
+
 Actualiza un producto.
 
 ### `DELETE /api/products/{id}`
+
 Elimina un producto.
-
-Response example:
-
-```json
-{
-  "id": 1,
-  "name": "Laptop Dell Latitude 5440",
-  "category": "Computo",
-  "price": 4200.00,
-  "warehouseId": 2,
-  "warehouseName": "Bodega Norte Medellin"
-}
-```
 
 ## Warehouses
 
 ### `GET /api/warehouses`
-Lista todos los almacenes.
+
+Lista todas las bodegas.
 
 ### `GET /api/warehouses/{id}`
-Obtiene un almacen por id.
+
+Obtiene una bodega por id.
 
 ### `POST /api/warehouses`
-Crea un almacen.
 
-Request body:
+Crea una bodega.
 
 ```json
 {
@@ -73,42 +177,36 @@ Request body:
 ```
 
 ### `PUT /api/warehouses/{id}`
-Actualiza un almacen.
+
+Actualiza una bodega. El campo `managerUserId` permite asignar o reemplazar el manager.
 
 ### `DELETE /api/warehouses/{id}`
-Elimina un almacen.
 
-Response example:
-
-```json
-{
-  "id": 1,
-  "name": "Bodega Central Bogota",
-  "ubication": "Bogota, DC",
-  "capacity": 5000.000,
-  "managerUserId": 2,
-  "managerName": "Maria Lopez"
-}
-```
+Elimina una bodega.
 
 ## Movements
 
 ### `GET /api/movements`
+
 Lista todos los movimientos.
 
-### `GET /api/movements/{id}`
-Obtiene un movimiento por id.
-
 ### `GET /api/movements?productId={id}`
+
 Filtra movimientos por producto.
 
 ### `GET /api/movements?warehouseId={id}`
-Filtra movimientos por almacen de origen o destino.
+
+Filtra movimientos por bodega de origen o destino.
+
+### `GET /api/movements/{id}`
+
+Obtiene un movimiento por id.
 
 ### `POST /api/movements`
+
 Crea un movimiento.
 
-Request body example for `TRANSFER`:
+Ejemplo `TRANSFER`:
 
 ```json
 {
@@ -122,33 +220,16 @@ Request body example for `TRANSFER`:
 ```
 
 ### `PUT /api/movements/{id}`
+
 Actualiza un movimiento.
 
 ### `DELETE /api/movements/{id}`
+
 Elimina un movimiento.
-
-Response example:
-
-```json
-{
-  "id": 4,
-  "movementType": "TRANSFER",
-  "employeeUserId": 2,
-  "employeeName": "Maria Lopez",
-  "originWarehouseId": 1,
-  "originWarehouseName": "Bodega Central Bogota",
-  "destinationWarehouseId": 2,
-  "destinationWarehouseName": "Bodega Norte Medellin",
-  "productId": 1,
-  "productName": "Laptop Dell Latitude 5440",
-  "quantity": 25,
-  "createdAt": "2026-03-04T14:00:00"
-}
-```
 
 ## Error Contract
 
-Errores controlados retornan este formato:
+Errores controlados retornan un payload uniforme:
 
 ```json
 {
@@ -161,10 +242,7 @@ Errores controlados retornan este formato:
 }
 ```
 
-## Business Rules
+## Integraciones Externas
 
-- `ENTRY` requiere `destinationWarehouseId` y no permite `originWarehouseId`.
-- `EXIT` requiere `originWarehouseId` y no permite `destinationWarehouseId`.
-- `TRANSFER` requiere ambos almacenes y deben ser diferentes.
-- Si un id relacionado no existe, la API responde `404`.
-- Si el payload es invalido o mal formado, la API responde `400`.
+- Registro y login pueden disparar notificaciones por email.
+- La URL base de la API de notificaciones se configura en `application.properties`.
