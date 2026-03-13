@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>logiTrack | Productos</title>
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/app.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="app-sidebar panel">
+            <section class="app-brand">
+                <span class="tag">logiTrack</span>
+                <h1>Product Space</h1>
+                <p>Catálogo centralizado, alertas de stock bajo y alta de productos para administradores.</p>
+            </section>
+
+            <nav class="app-nav">
+                <a class="nav-link" data-nav="dashboard" href="/platform/system.html">
+                    <strong>Dashboard</strong>
+                    <span class="nav-copy">Vista ejecutiva</span>
+                </a>
+                <a class="nav-link" data-nav="products" href="/platform/products.html">
+                    <strong>Productos</strong>
+                    <span class="nav-copy">Catálogo y stock</span>
+                </a>
+                <a class="nav-link" data-nav="profile" href="/platform/profile.html">
+                    <strong>Perfil</strong>
+                    <span class="nav-copy">Cuenta y seguridad</span>
+                </a>
+                <a class="nav-link" data-nav="admin" data-admin-only href="/platform/admin.html">
+                    <strong>Administración</strong>
+                    <span class="nav-copy">Usuarios y managers</span>
+                </a>
+            </nav>
+
+            <section class="session-card" data-session-card></section>
+
+            <section class="session-switcher">
+                <h3>Sesiones guardadas</h3>
+                <p class="nav-copy">Mantén varias identidades a mano para pruebas.</p>
+                <div class="session-switcher-list" data-session-switcher></div>
+            </section>
+
+            <div class="sidebar-actions">
+                <a class="button-secondary" href="/platform/system.html">Volver al dashboard</a>
+                <button class="button-danger" type="button" data-logout>Salir</button>
+            </div>
+        </aside>
+
+        <main class="app-main">
+            <header class="page-header panel">
+                <div class="page-header-top">
+                    <div>
+                        <span class="tag">Productos</span>
+                        <h2 class="page-title" data-page-heading></h2>
+                        <p class="page-lead" data-page-lead></p>
+                    </div>
+                </div>
+                <div class="stats-grid" data-stats-grid></div>
+            </header>
+
+            <div class="page-notice" data-page-notice></div>
+
+            <section class="content-grid">
+                <div class="content-column">
+                    <section class="table-card">
+                        <h3 class="content-title">Catálogo completo</h3>
+                        <p class="content-copy">Listado autenticado de productos con categoría, precio y bodega relacionada.</p>
+                        <div data-products-table></div>
+                    </section>
+                </div>
+
+                <aside class="content-column">
+                    <section class="list-card">
+                        <h3 class="content-title">Alertas de stock bajo</h3>
+                        <p class="content-copy">Productos que merecen una revisión rápida.</p>
+                        <div class="stack-list" data-low-stock-list></div>
+                    </section>
+
+                    <section class="action-card" data-admin-only>
+                        <h3 class="content-title">Crear producto</h3>
+                        <p class="content-copy">Solo visible para administradores. El alta queda separada de otras tareas administrativas para mantener foco en inventario.</p>
+
+                        <form class="form-layout" data-create-product-form>
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="name">Nombre</label>
+                                    <input id="name" name="name" type="text" required>
+                                </div>
+                                <div class="field">
+                                    <label for="category">Categoría</label>
+                                    <input id="category" name="category" type="text" required>
+                                </div>
+                                <div class="field">
+                                    <label for="price">Precio</label>
+                                    <input id="price" name="price" type="number" min="0" step="0.01" required>
+                                </div>
+                                <div class="field">
+                                    <label for="warehouseId">Bodega</label>
+                                    <select id="warehouseId" name="warehouseId"></select>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="button" type="submit">Crear producto</button>
+                                <button class="button-ghost" type="reset">Limpiar</button>
+                            </div>
+                        </form>
+                    </section>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <script type="module" src="/js/pages/products-page.js"></script>
+</body>
+</html>

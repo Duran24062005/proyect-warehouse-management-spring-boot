@@ -4,84 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>logiTrack | Perfil</title>
-    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/app.css">
 </head>
-<body data-page="profile">
-    <main class="app-shell">
-        <header class="app-topbar">
-            <div>
-                <span class="brand-eyebrow">Authenticated profile</span>
-                <h1 class="brand-title">Perfil y cambio de contraseña</h1>
-                <p class="brand-copy">Validación cliente de `/api/auth/me` y `/api/auth/change-password` con la sesión activa.</p>
-            </div>
-            <div class="topbar-actions">
-                <a class="button-link" href="/platform/system.html">Volver al dashboard</a>
+<body>
+    <div class="app-shell">
+        <aside class="app-sidebar panel">
+            <section class="app-brand">
+                <span class="tag">logiTrack</span>
+                <h1>Account Space</h1>
+                <p>Tu sesión, tus credenciales y el acceso a las demás áreas del sistema en una navegación consistente.</p>
+            </section>
+
+            <nav class="app-nav">
+                <a class="nav-link" data-nav="dashboard" href="/platform/system.html">
+                    <strong>Dashboard</strong>
+                    <span class="nav-copy">Estado general de la operación</span>
+                </a>
+                <a class="nav-link" data-nav="products" href="/platform/products.html">
+                    <strong>Productos</strong>
+                    <span class="nav-copy">Catálogo y stock</span>
+                </a>
+                <a class="nav-link" data-nav="profile" href="/platform/profile.html">
+                    <strong>Perfil</strong>
+                    <span class="nav-copy">Cuenta y seguridad</span>
+                </a>
+                <a class="nav-link" data-nav="admin" data-admin-only href="/platform/admin.html">
+                    <strong>Administración</strong>
+                    <span class="nav-copy">Usuarios y managers</span>
+                </a>
+            </nav>
+
+            <section class="session-card" data-session-card></section>
+
+            <section class="session-switcher">
+                <h3>Sesiones guardadas</h3>
+                <p class="nav-copy">Cambia rápidamente entre cuentas activas.</p>
+                <div class="session-switcher-list" data-session-switcher></div>
+            </section>
+
+            <div class="sidebar-actions">
+                <a class="button-secondary" href="/platform/system.html">Volver al dashboard</a>
                 <button class="button-danger" type="button" data-logout>Salir</button>
             </div>
-        </header>
+        </aside>
 
-        <div class="app-notice" data-page-notice></div>
-
-        <section class="app-grid">
-            <div class="app-column">
-                <section class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h2 class="panel-title">Mi sesión</h2>
-                            <p class="panel-copy">Estos datos vienen de `GET /api/auth/me`.</p>
-                        </div>
+        <main class="app-main">
+            <header class="page-header panel">
+                <div class="page-header-top">
+                    <div>
+                        <span class="tag">Perfil</span>
+                        <h2 class="page-title" data-page-heading></h2>
+                        <p class="page-lead" data-page-lead></p>
                     </div>
-                    <div data-current-user></div>
-                </section>
+                </div>
+            </header>
 
-                <section class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h2 class="panel-title">Información del usuario</h2>
-                            <p class="panel-copy">Resumen útil para probar el flujo multiusuario desde cliente.</p>
-                        </div>
-                    </div>
-                    <div class="profile-grid" data-profile-grid></div>
-                </section>
-            </div>
+            <div class="page-notice" data-page-notice></div>
 
-            <aside class="app-column">
-                <section class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h2 class="panel-title">Cambiar contraseña</h2>
-                            <p class="panel-copy">Envía `currentPassword` y `newPassword` usando el token actual.</p>
-                        </div>
-                    </div>
-                    <form data-password-form>
-                        <div class="profile-card">
-                            <label for="currentPassword">Contraseña actual</label>
-                            <input id="currentPassword" name="currentPassword" type="password" required>
-                        </div>
-                        <div class="profile-card">
-                            <label for="newPassword">Nueva contraseña</label>
-                            <input id="newPassword" name="newPassword" type="password" required>
-                        </div>
-                        <div class="profile-form-actions">
-                            <button class="button" type="submit">Actualizar contraseña</button>
-                            <button class="button-link" type="reset">Limpiar</button>
-                        </div>
-                    </form>
-                </section>
+            <section class="content-grid">
+                <div class="content-column">
+                    <section class="surface-card">
+                        <h3 class="content-title">Información actual</h3>
+                        <p class="content-copy">Estos datos salen directamente de `GET /api/auth/me`.</p>
+                        <div class="profile-grid" data-profile-grid></div>
+                    </section>
+                </div>
 
-                <section class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h2 class="panel-title">Sesiones guardadas</h2>
-                            <p class="panel-copy">Cambia de cuenta sin volver al login si ya existe un token guardado.</p>
-                        </div>
-                    </div>
-                    <div class="session-stack" data-session-list></div>
-                </section>
-            </aside>
-        </section>
-    </main>
-    <script src="/js/auth-client.js"></script>
-    <script src="/js/system.js"></script>
+                <aside class="content-column">
+                    <section class="action-card">
+                        <h3 class="content-title">Cambiar contraseña</h3>
+                        <p class="content-copy">Mantén la seguridad al día usando el token actual de tu sesión.</p>
+
+                        <form class="form-layout" data-password-form>
+                            <div class="field">
+                                <label for="currentPassword">Contraseña actual</label>
+                                <input id="currentPassword" name="currentPassword" type="password" required>
+                            </div>
+                            <div class="field">
+                                <label for="newPassword">Nueva contraseña</label>
+                                <input id="newPassword" name="newPassword" type="password" required>
+                            </div>
+                            <div class="form-actions">
+                                <button class="button" type="submit">Actualizar contraseña</button>
+                                <button class="button-ghost" type="reset">Limpiar</button>
+                            </div>
+                        </form>
+                    </section>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <script type="module" src="/js/pages/profile-page.js"></script>
 </body>
 </html>

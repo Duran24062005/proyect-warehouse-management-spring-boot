@@ -4,96 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>logiTrack | Login</title>
+    <link rel="stylesheet" href="/styles/base.css">
     <link rel="stylesheet" href="/styles/auth.css">
 </head>
-<body>
+<body data-page="login">
     <main class="auth-shell">
-        <section class="auth-card">
+        <section class="auth-card panel">
             <div class="auth-main">
-                <span class="auth-badge">Warehouse Access</span>
-                <h1 class="auth-title">Opera el almacén con <span>contexto real</span>.</h1>
+                <span class="tag">Warehouse Access</span>
+                <h1 class="auth-title">Controla tu operación con una entrada <span>clara y segura</span>.</h1>
                 <p class="auth-copy">
-                    Inicia sesión para consultar productos, almacenes, movimientos y perfil desde el cliente.
-                    El flujo guarda varias sesiones para alternar entre usuarios sin perder contexto.
+                    Inicia sesión para entrar a un frontend más ordenado: dashboard operativo, gestión de productos, perfil y consola administrativa separada por responsabilidades.
                 </p>
 
                 <div class="active-session-banner" data-active-session-banner></div>
 
-                <form id="login-form" novalidate>
-                    <div class="auth-grid">
-                        <div class="field field--full">
+                <form id="login-form" class="auth-form" novalidate>
+                    <div class="field-stack">
+                        <div class="field">
                             <label for="email">Correo</label>
                             <input type="email" id="email" name="email" placeholder="admin@logitrack.com" required>
                         </div>
-
-                        <div class="field field--full">
+                        <div class="field">
                             <label for="password">Contraseña</label>
                             <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
                         </div>
                     </div>
 
-                    <div id="form-feedback" class="form-feedback"></div>
+                    <div class="form-feedback" data-form-feedback></div>
 
                     <div class="auth-actions">
-                        <button id="submit-button" type="submit" class="button-primary">Entrar al sistema</button>
+                        <button class="button" type="submit" data-submit-button>Entrar al sistema</button>
                         <a class="button-ghost" href="/register.html">Crear cuenta nueva</a>
                     </div>
                 </form>
 
-                <p class="auth-footer">
-                    ¿Primera vez aquí? <a href="/register.html">Registra un usuario operativo</a>.
-                </p>
+                <p class="auth-footer">¿Primera vez aquí? <a href="/register.html">Registra un usuario operativo</a>.</p>
             </div>
 
             <aside class="auth-side">
-                <span class="auth-badge">Multi usuario</span>
-                <h2 class="side-title">Accesos rápidos para pruebas</h2>
-                <p class="side-copy">
-                    Usa los usuarios de prueba para entrar con distintos roles y validar cómo cambia el cliente entre sesiones.
-                </p>
+                <span class="tag">Multiusuario</span>
+                <h2 class="side-title">Pruebas rápidas, sesiones limpias</h2>
+                <p class="side-copy">Carga credenciales demo, guarda sesiones por usuario y cambia de contexto sin volver a escribir el login.</p>
 
-                <section class="panel-block">
-                    <div class="demo-grid">
-                        <article class="demo-card">
-                            <div>
-                                <strong>Admin demo</strong>
-                                <span>admin@logitrack.com · ADMIN</span>
-                            </div>
-                            <button type="button" data-demo-login="admin@logitrack.com">Cargar</button>
-                        </article>
-                        <article class="demo-card">
-                            <div>
-                                <strong>Operaciones</strong>
-                                <span>mlopez@logitrack.com · USER</span>
-                            </div>
-                            <button type="button" data-demo-login="mlopez@logitrack.com">Cargar</button>
-                        </article>
-                        <article class="demo-card">
-                            <div>
-                                <strong>Inventario</strong>
-                                <span>jgarcia@logitrack.com · USER</span>
-                            </div>
-                            <button type="button" data-demo-login="jgarcia@logitrack.com">Cargar</button>
-                        </article>
-                        <article class="demo-card">
-                            <div>
-                                <strong>Bodega</strong>
-                                <span>cperez@logitrack.com · USER</span>
-                            </div>
-                            <button type="button" data-demo-login="cperez@logitrack.com">Cargar</button>
-                        </article>
-                    </div>
+                <section class="feature-grid">
+                    <article class="feature-card">
+                        <div>
+                            <strong>Admin demo</strong>
+                            <span>admin@logitrack.com · ADMIN</span>
+                        </div>
+                        <button class="button-secondary" type="button" data-demo-login="admin@logitrack.com">Cargar</button>
+                    </article>
+                    <article class="feature-card">
+                        <div>
+                            <strong>Operaciones</strong>
+                            <span>mlopez@logitrack.com · USER</span>
+                        </div>
+                        <button class="button-secondary" type="button" data-demo-login="mlopez@logitrack.com">Cargar</button>
+                    </article>
+                    <article class="feature-card">
+                        <div>
+                            <strong>Inventario</strong>
+                            <span>jgarcia@logitrack.com · USER</span>
+                        </div>
+                        <button class="button-secondary" type="button" data-demo-login="jgarcia@logitrack.com">Cargar</button>
+                    </article>
+                    <article class="feature-card">
+                        <div>
+                            <strong>Bodega</strong>
+                            <span>cperez@logitrack.com · USER</span>
+                        </div>
+                        <button class="button-secondary" type="button" data-demo-login="cperez@logitrack.com">Cargar</button>
+                    </article>
                 </section>
 
-                <section class="panel-block">
+                <section>
                     <h3 class="side-title">Sesiones guardadas</h3>
-                    <p class="side-copy">Cada login se conserva en el navegador para alternar de usuario rápidamente.</p>
+                    <p class="side-copy">Cada sesión se conserva localmente para moverte rápido entre cuentas.</p>
                     <div class="saved-sessions" data-saved-sessions></div>
                 </section>
             </aside>
         </section>
     </main>
-    <script src="/js/auth-client.js"></script>
-    <script src="/js/auth.js"></script>
+    <script type="module" src="/js/pages/auth-page.js"></script>
 </body>
 </html>

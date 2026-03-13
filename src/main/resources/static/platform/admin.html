@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>logiTrack | Administración</title>
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/app.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="app-sidebar panel">
+            <section class="app-brand">
+                <span class="tag">logiTrack</span>
+                <h1>Admin Console</h1>
+                <p>Un espacio separado para operaciones sensibles: usuarios y managers de bodegas.</p>
+            </section>
+
+            <nav class="app-nav">
+                <a class="nav-link" data-nav="dashboard" href="/platform/system.html">
+                    <strong>Dashboard</strong>
+                    <span class="nav-copy">Vista ejecutiva</span>
+                </a>
+                <a class="nav-link" data-nav="products" href="/platform/products.html">
+                    <strong>Productos</strong>
+                    <span class="nav-copy">Catálogo y stock</span>
+                </a>
+                <a class="nav-link" data-nav="profile" href="/platform/profile.html">
+                    <strong>Perfil</strong>
+                    <span class="nav-copy">Cuenta y seguridad</span>
+                </a>
+                <a class="nav-link" data-nav="admin" href="/platform/admin.html">
+                    <strong>Administración</strong>
+                    <span class="nav-copy">Usuarios y managers</span>
+                </a>
+            </nav>
+
+            <section class="session-card" data-session-card></section>
+
+            <section class="session-switcher">
+                <h3>Sesiones guardadas</h3>
+                <p class="nav-copy">El cambio rápido también aplica a la consola administrativa.</p>
+                <div class="session-switcher-list" data-session-switcher></div>
+            </section>
+
+            <div class="sidebar-actions">
+                <a class="button-secondary" href="/platform/system.html">Volver al dashboard</a>
+                <button class="button-danger" type="button" data-logout>Salir</button>
+            </div>
+        </aside>
+
+        <main class="app-main">
+            <header class="page-header panel">
+                <div class="page-header-top">
+                    <div>
+                        <span class="tag">Administración</span>
+                        <h2 class="page-title" data-page-heading></h2>
+                        <p class="page-lead" data-page-lead></p>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-notice" data-page-notice></div>
+
+            <section class="content-grid">
+                <div class="content-column">
+                    <section class="action-card">
+                        <h3 class="content-title">Crear usuario</h3>
+                        <p class="content-copy">Alta directa de usuarios `USER` y `ADMIN` para entornos de prueba o setup operativo.</p>
+
+                        <form class="form-layout" data-create-user-form>
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="userEmail">Correo</label>
+                                    <input id="userEmail" name="email" type="email" required>
+                                </div>
+                                <div class="field">
+                                    <label for="userPassword">Contraseña</label>
+                                    <input id="userPassword" name="password" type="password" required>
+                                </div>
+                                <div class="field">
+                                    <label for="userFirstName">Nombre</label>
+                                    <input id="userFirstName" name="firstName" type="text" required>
+                                </div>
+                                <div class="field">
+                                    <label for="userLastName">Apellido</label>
+                                    <input id="userLastName" name="lastName" type="text" required>
+                                </div>
+                                <div class="field">
+                                    <label for="userPhone">Teléfono</label>
+                                    <input id="userPhone" name="phoneNumber" type="text" required>
+                                </div>
+                                <div class="field">
+                                    <label for="userRole">Rol</label>
+                                    <select id="userRole" name="role" required></select>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label>
+                                    <input name="enabled" type="checkbox" checked>
+                                    <span>Usuario habilitado</span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="button" type="submit">Crear usuario</button>
+                                <button class="button-ghost" type="reset">Limpiar</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="table-card">
+                        <h3 class="content-title">Usuarios existentes</h3>
+                        <p class="content-copy">Visión consolidada del sistema para validar roles y estado.</p>
+                        <div data-users-table></div>
+                    </section>
+                </div>
+
+                <aside class="content-column">
+                    <section class="action-card">
+                        <h3 class="content-title">Asignar manager a bodega</h3>
+                        <p class="content-copy">Actualiza la bodega seleccionada manteniendo intactos nombre, ubicación y capacidad.</p>
+
+                        <form class="form-layout" data-assign-manager-form>
+                            <div class="field">
+                                <label for="warehouseId">Bodega</label>
+                                <select id="warehouseId" name="warehouseId" required></select>
+                            </div>
+                            <div class="field">
+                                <label for="managerUserId">Manager</label>
+                                <select id="managerUserId" name="managerUserId" required></select>
+                            </div>
+                            <div class="form-actions">
+                                <button class="button" type="submit">Asignar manager</button>
+                                <button class="button-ghost" type="reset">Limpiar</button>
+                            </div>
+                        </form>
+                    </section>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <script type="module" src="/js/pages/admin-page.js"></script>
+</body>
+</html>
