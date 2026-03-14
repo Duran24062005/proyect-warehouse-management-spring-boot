@@ -16,6 +16,8 @@ import com.proyectS1.warehouse_management.model.Warehouse;
 import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
 import com.proyectS1.warehouse_management.services.WarehouseService;
+import com.proyectS1.warehouse_management.services.support.AuditService;
+import com.proyectS1.warehouse_management.services.support.WarehouseAccessService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,31 +29,51 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final AppUserRepository appUserRepository;
     private final WarehouseMapper warehouseMapper;
+    private final WarehouseAccessService warehouseAccessService;
+    private final AuditService auditService;
 
     @Override
     public WarehouseResponseDTO saveWarehouse(WarehouseRequestDTO dto) {
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        warehouseAccessService.requireAdmin(currentUser);
         Warehouse warehouse = warehouseMapper.dtoToEntity(dto);
         warehouse.setManager(resolveUser(dto.managerUserId()));
-        return warehouseMapper.entityToDTO(warehouseRepository.save(warehouse));
+        WarehouseResponseDTO response = warehouseMapper.entityToDTO(warehouseRepository.save(warehouse));
+        auditService.logInsert("warehouse", "Catalog for warehouses", currentUser, response);
+        return response;
     }
 
     @Override
     public WarehouseResponseDTO updateWarehouse(WarehouseRequestDTO dto, Long id) {
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        warehouseAccessService.requireAdmin(currentUser);
         Warehouse warehouse = findWarehouseById(id);
+        WarehouseResponseDTO oldValues = warehouseMapper.entityToDTO(warehouse);
         warehouseMapper.updateEntityFromDTO(warehouse, dto);
         warehouse.setManager(resolveUser(dto.managerUserId()));
-        return warehouseMapper.entityToDTO(warehouseRepository.save(warehouse));
+        WarehouseResponseDTO newValues = warehouseMapper.entityToDTO(warehouseRepository.save(warehouse));
+        auditService.logUpdate("warehouse", "Catalog for warehouses", currentUser, oldValues, newValues);
+        return newValues;
     }
 
     @Override
     public void deleteWarehouse(Long id) {
-        warehouseRepository.delete(findWarehouseById(id));
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        warehouseAccessService.requireAdmin(currentUser);
+        Warehouse warehouse = findWarehouseById(id);
+        WarehouseResponseDTO oldValues = warehouseMapper.entityToDTO(warehouse);
+        warehouseRepository.delete(warehouse);
+        auditService.logDelete("warehouse", "Catalog for warehouses", currentUser, oldValues);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<WarehouseResponseDTO> findAll() {
-        return warehouseRepository.findAll().stream()
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        List<Warehouse> warehouses = warehouseAccessService.isAdmin(currentUser)
+            ? warehouseRepository.findAll()
+            : warehouseRepository.findByManagerId(currentUser.getId());
+        return warehouses.stream()
             .map(warehouseMapper::entityToDTO)
             .toList();
     }
@@ -59,7 +81,10 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional(readOnly = true)
     public WarehouseResponseDTO findOne(Long id) {
-        return warehouseMapper.entityToDTO(findWarehouseById(id));
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        Warehouse warehouse = findWarehouseById(id);
+        warehouseAccessService.requireWarehouseAccess(currentUser, warehouse.getId());
+        return warehouseMapper.entityToDTO(warehouse);
     }
 
     private Warehouse findWarehouseById(Long id) {

@@ -8,10 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import com.proyectS1.warehouse_management.model.AppUser;
 import com.proyectS1.warehouse_management.model.enums.UserRole;
+import com.proyectS1.warehouse_management.model.enums.UserStatus;
 
 @Repository
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByEmail(String email);
     boolean existsByEmail(String email);
     List<AppUser> findByRole(UserRole role);
+    List<AppUser> findByUserStatus(UserStatus userStatus);
 }

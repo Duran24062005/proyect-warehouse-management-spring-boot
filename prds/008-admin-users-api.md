@@ -1,27 +1,27 @@
-# Admin Users API PRD
+# PRD de API Administrativa de Usuarios
 
-## Objective
+## Objetivo
 
-Provide an admin-only API to inspect users and create new accounts from the internal administration console.
+Proveer una API solo para administradores que permita inspeccionar usuarios y crear nuevas cuentas desde la consola administrativa interna.
 
-## Scope
+## Alcance
 
-- List all users.
-- Filter users by role.
-- Create new users with explicit role and enabled flag.
-- Bearer JWT protection with role `ADMIN`.
+- Listar todos los usuarios.
+- Filtrar usuarios por rol.
+- Crear nuevos usuarios con rol explicito y bandera `enabled`.
+- Proteccion Bearer JWT con rol `ADMIN`.
 
-## Functional Requirements
+## Requisitos Funcionales
 
-- `GET /api/users` must list all users for authenticated admins.
-- `GET /api/users/role?role=ADMIN` must filter users by role for authenticated admins.
-- `POST /api/users` must create a new user for authenticated admins.
-- Admin-created users must allow role selection between `USER` and `ADMIN`.
-- Passwords must never be returned in the response payload.
+- `GET /api/users` debe listar todos los usuarios para administradores autenticados.
+- `GET /api/users/role?role=ADMIN` debe filtrar usuarios por rol para administradores autenticados.
+- `POST /api/users` debe crear un nuevo usuario para administradores autenticados.
+- Los usuarios creados por administracion deben permitir seleccionar rol entre `USER` y `ADMIN`.
+- Las contrasenas nunca deben retornarse en la respuesta.
 
-## Data Requirements
+## Requisitos de Datos
 
-- Request payload must accept:
+- El payload de request debe aceptar:
   - `email`
   - `password`
   - `firstName`
@@ -29,11 +29,11 @@ Provide an admin-only API to inspect users and create new accounts from the inte
   - `phoneNumber`
   - `role`
   - `enabled`
-- Response payload must expose only safe user profile fields.
+- El payload de response debe exponer solo campos seguros del perfil.
 
-## Acceptance Criteria
+## Criterios de Aceptacion
 
-- Anonymous requests return `401`.
-- Authenticated non-admin requests return `403`.
-- Duplicate emails return a client-visible validation or business error.
-- The admin frontend can consume these endpoints to create and list users.
+- Las solicitudes anonimas retornan `401`.
+- Las solicitudes autenticadas sin rol admin retornan `403`.
+- Los emails duplicados retornan un error visible de validacion o negocio.
+- El frontend administrativo puede consumir estos endpoints para crear y listar usuarios.

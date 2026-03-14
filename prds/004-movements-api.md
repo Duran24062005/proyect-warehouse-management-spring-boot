@@ -1,38 +1,38 @@
-# Movements API PRD
+# PRD de API de Movimientos
 
-## Objective
+## Objetivo
 
-Provide a protected REST API to register and query inventory movements.
+Proveer una API REST protegida para registrar y consultar movimientos de inventario.
 
-## Scope
+## Alcance
 
-- CRUD operations for movements.
-- Lookup by id.
-- Filters by product and warehouse.
-- Validation of movement rules according to the schema constraints.
-- Bearer JWT protection for all movement endpoints.
+- Operaciones CRUD para movimientos.
+- Consulta por id.
+- Filtros por producto y bodega.
+- Validacion de reglas de movimiento segun las restricciones del esquema.
+- Proteccion Bearer JWT para todos los endpoints de movimientos.
 
-## Functional Requirements
+## Requisitos Funcionales
 
-- `GET /api/movements` must list all movements for authenticated users.
-- `GET /api/movements/{id}` must return one movement for authenticated users.
-- `GET /api/movements?productId={id}` must filter by product.
-- `GET /api/movements?warehouseId={id}` must filter by warehouse.
-- `POST /api/movements` must create a movement for authenticated users.
-- `PUT /api/movements/{id}` must update a movement for authenticated users.
-- `DELETE /api/movements/{id}` must delete a movement for authenticated users.
+- `GET /api/movements` debe listar todos los movimientos para usuarios autenticados.
+- `GET /api/movements/{id}` debe retornar un movimiento para usuarios autenticados.
+- `GET /api/movements?productId={id}` debe filtrar por producto.
+- `GET /api/movements?warehouseId={id}` debe filtrar por bodega.
+- `POST /api/movements` debe crear un movimiento para usuarios autenticados.
+- `PUT /api/movements/{id}` debe actualizar un movimiento para usuarios autenticados.
+- `DELETE /api/movements/{id}` debe eliminar un movimiento para usuarios autenticados.
 
-## Business Rules
+## Reglas de Negocio
 
-- `ENTRY` requires `destinationWarehouseId` and no `originWarehouseId`.
-- `EXIT` requires `originWarehouseId` and no `destinationWarehouseId`.
-- `TRANSFER` requires both warehouses and they must be different.
-- Related ids such as `employeeUserId`, `productId`, `originWarehouseId` and `destinationWarehouseId` must exist.
+- `ENTRY` requiere `destinationWarehouseId` y no `originWarehouseId`.
+- `EXIT` requiere `originWarehouseId` y no `destinationWarehouseId`.
+- `TRANSFER` requiere ambas bodegas y estas deben ser diferentes.
+- Los ids relacionados como `employeeUserId`, `productId`, `originWarehouseId` y `destinationWarehouseId` deben existir.
 
-## Acceptance Criteria
+## Criterios de Aceptacion
 
-- CRUD operations persist against the `movement` table.
-- Invalid related ids return `404`.
-- Invalid warehouse combinations return `400`.
-- Anonymous requests to `/api/movements/**` return `401`.
-- Product low-stock calculations can rely on persisted movements.
+- Las operaciones CRUD persisten sobre la tabla `movement`.
+- Los ids relacionados invalidos retornan `404`.
+- Las combinaciones invalidas de bodegas retornan `400`.
+- Las solicitudes anonimas a `/api/movements/**` retornan `401`.
+- Los calculos de stock bajo pueden apoyarse en movimientos persistidos.

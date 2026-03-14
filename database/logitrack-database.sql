@@ -22,6 +22,10 @@ CREATE TABLE IF NOT EXISTS app_user (
     enable BOOLEAN NOT NULL DEFAULT TRUE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT chk_app_user_status_enabled CHECK (
+        (user_status = 'ACTIVE' AND enable = TRUE)
+        OR (user_status IN ('PENDING', 'BLOCKED') AND enable = FALSE)
+    ),
     UNIQUE KEY uq_app_user_email (email)
 ) ENGINE=InnoDB;
 
@@ -147,7 +151,7 @@ INSERT INTO app_user (
 ) VALUES
     (1, 'admin@logitrack.com', '$2a$10$adminhashlogitrack', 'Alexi', 'Duran', '3000000001', 'ADMIN', 'ACTIVE', TRUE),
     (2, 'mlopez@logitrack.com', '$2a$10$mlopezhashlogitrack', 'Maria', 'Lopez', '3000000002', 'USER', 'ACTIVE', TRUE),
-    (3, 'jgarcia@logitrack.com', '$2a$10$jgarciahashlogitrack', 'Juan', 'Garcia', '3000000003', 'USER', 'PENDING', TRUE),
+    (3, 'jgarcia@logitrack.com', '$2a$10$jgarciahashlogitrack', 'Juan', 'Garcia', '3000000003', 'USER', 'PENDING', FALSE),
     (4, 'cperez@logitrack.com', '$2a$10$cperezhashlogitrack', 'Camila', 'Perez', '3000000004', 'USER', 'BLOCKED', FALSE);
 
 INSERT INTO warehouse (

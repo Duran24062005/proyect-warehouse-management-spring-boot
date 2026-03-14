@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyectS1.warehouse_management.dtos.request.AdminUserRequestDTO;
+import com.proyectS1.warehouse_management.dtos.request.UserStatusUpdateRequestDTO;
 import com.proyectS1.warehouse_management.dtos.response.UserResponseDTO;
 import com.proyectS1.warehouse_management.model.enums.UserRole;
+import com.proyectS1.warehouse_management.model.enums.UserStatus;
 import com.proyectS1.warehouse_management.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,9 +47,42 @@ public class UserController {
         return ResponseEntity.ok(userService.findByRole(role));
     }
 
+    @GetMapping("/status")
+    @Operation(summary = "Lista usuarios por estado")
+    public ResponseEntity<List<UserResponseDTO>> getUsersByStatus(@RequestParam UserStatus status) {
+        return ResponseEntity.ok(userService.findByStatus(status));
+    }
+
     @PostMapping
     @Operation(summary = "Crea un usuario desde administracion")
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody AdminUserRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(dto));
+    }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Actualiza el estado de un usuario")
+    public ResponseEntity<UserResponseDTO> updateUserStatus(
+        @PathVariable Long id,
+        @Valid @RequestBody UserStatusUpdateRequestDTO dto
+    ) {
+        return ResponseEntity.ok(userService.updateUserStatus(id, dto));
+    }
+
+    @PatchMapping("/{id}/approve")
+    @Operation(summary = "Aprueba un usuario pendiente o reactiva un usuario no activo")
+    public ResponseEntity<UserResponseDTO> approveUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.approveUser(id));
+    }
+
+    @PatchMapping("/{id}/block")
+    @Operation(summary = "Bloquea un usuario")
+    public ResponseEntity<UserResponseDTO> blockUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.blockUser(id));
+    }
+
+    @PatchMapping("/{id}/unblock")
+    @Operation(summary = "Desbloquea un usuario bloqueado")
+    public ResponseEntity<UserResponseDTO> unblockUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.unblockUser(id));
     }
 }

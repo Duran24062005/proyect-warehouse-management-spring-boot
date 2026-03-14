@@ -2,6 +2,7 @@ package com.proyectS1.warehouse_management.services.impl;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -9,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +24,12 @@ import com.proyectS1.warehouse_management.dtos.response.MessageResponseDTO;
 import com.proyectS1.warehouse_management.dtos.response.UserResponseDTO;
 import com.proyectS1.warehouse_management.mapper.UserMapper;
 import com.proyectS1.warehouse_management.model.AppUser;
+import com.proyectS1.warehouse_management.model.enums.UserStatus;
 import com.proyectS1.warehouse_management.notifications.service.AuthEmailNotificationService;
 import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.security.JwtService;
 import com.proyectS1.warehouse_management.services.AuthService;
+import com.proyectS1.warehouse_management.services.support.AuditService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final AuthEmailNotificationService authEmailNotificationService;
+    private final AuditService auditService;
 
     @Override
     public UserResponseDTO register(AuthRegisterRequestDTO dto) {
@@ -48,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
         AppUser user = userMapper.registerDtoToEntity(dto);
         user.setHashPassword(hashPassword(dto.password()));
         AppUser savedUser = appUserRepository.save(user);
+        auditService.logInsert("app_user", "Catalog for application users", savedUser, userMapper.entityToDTO(savedUser));
         authEmailNotificationService.sendRegistrationEmail(savedUser);
         return userMapper.entityToDTO(savedUser);
     }
@@ -58,8 +64,16 @@ public class AuthServiceImpl implements AuthService {
         AppUser user = appUserRepository.findByEmail(dto.email())
             .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "Invalid credentials"));
 
-        if (!user.getEnabled()) {
-            throw new ResponseStatusException(BAD_REQUEST, "User is disabled");
+        if (user.getUserStatus() == UserStatus.PENDING) {
+            throw new ResponseStatusException(FORBIDDEN, "Account pending approval");
+        }
+
+        if (user.getUserStatus() == UserStatus.BLOCKED || !Boolean.TRUE.equals(user.getEnabled())) {
+            throw new ResponseStatusException(FORBIDDEN, "Account is blocked");
+        }
+
+        if (user.getUserStatus() != UserStatus.ACTIVE) {
+            throw new ResponseStatusException(FORBIDDEN, "Account is not active");
         }
 
         if (!user.getHashPassword().equals(hashPassword(dto.password()))) {
@@ -80,6 +94,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public MessageResponseDTO changePassword(String email, ChangePasswordRequestDTO dto) {
         AppUser user = findUserByEmail(email);
+        Map<String, Object> oldValues = passwordAuditSnapshot(user, false);
 
         if (!user.getHashPassword().equals(hashPassword(dto.currentPassword()))) {
             throw new ResponseStatusException(UNAUTHORIZED, "Current password is invalid");
@@ -91,6 +106,7 @@ public class AuthServiceImpl implements AuthService {
 
         user.setHashPassword(hashPassword(dto.newPassword()));
         appUserRepository.save(user);
+        auditService.logUpdate("app_user", "Catalog for application users", user, oldValues, passwordAuditSnapshot(user, true));
         return new MessageResponseDTO("Password changed successfully");
     }
 
@@ -112,5 +128,15 @@ public class AuthServiceImpl implements AuthService {
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException("SHA-256 algorithm not available", exception);
         }
+    }
+
+    private Map<String, Object> passwordAuditSnapshot(AppUser user, boolean passwordChanged) {
+        return Map.of(
+            "id", user.getId(),
+            "email", user.getEmail(),
+            "userStatus", user.getUserStatus(),
+            "enabled", user.getEnabled(),
+            "passwordChanged", passwordChanged
+        );
     }
 }

@@ -7,6 +7,7 @@ import com.proyectS1.warehouse_management.dtos.request.AuthRegisterRequestDTO;
 import com.proyectS1.warehouse_management.dtos.response.UserResponseDTO;
 import com.proyectS1.warehouse_management.model.AppUser;
 import com.proyectS1.warehouse_management.model.enums.UserRole;
+import com.proyectS1.warehouse_management.model.enums.UserStatus;
 
 @Component
 public class UserMapper {
@@ -39,7 +40,8 @@ public class UserMapper {
         user.setLastName(dto.lastName());
         user.setPhoneNumber(dto.phoneNumber());
         user.setRole(UserRole.USER);
-        user.setEnabled(Boolean.TRUE);
+        user.setEnabled(Boolean.FALSE);
+        user.setUserStatus(UserStatus.PENDING);
         return user;
     }
 
@@ -54,7 +56,9 @@ public class UserMapper {
         user.setLastName(dto.lastName());
         user.setPhoneNumber(dto.phoneNumber());
         user.setRole(dto.role());
-        user.setEnabled(dto.enabled() != null ? dto.enabled() : Boolean.TRUE);
+        boolean enabled = dto.enabled() != null ? dto.enabled() : Boolean.TRUE;
+        user.setEnabled(enabled);
+        user.setUserStatus(enabled ? UserStatus.ACTIVE : UserStatus.BLOCKED);
         return user;
     }
 }

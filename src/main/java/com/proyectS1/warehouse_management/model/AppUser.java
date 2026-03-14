@@ -64,3 +64,4 @@ public class AppUser extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus = UserStatus.PENDING;
 }
+

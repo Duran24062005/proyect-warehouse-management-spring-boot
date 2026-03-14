@@ -1,35 +1,35 @@
-# Warehouses API PRD
+# PRD de API de Bodegas
 
-## Objective
+## Objetivo
 
-Provide a protected REST API to manage warehouse records and assign managers.
+Proveer una API REST protegida para gestionar registros de bodegas y asignar managers.
 
-## Scope
+## Alcance
 
-- CRUD operations for warehouses.
-- Warehouse lookup by id.
-- Manager assignment through `managerUserId`.
-- Swagger documentation for request and response models.
-- Bearer JWT protection for all warehouse endpoints.
+- Operaciones CRUD para bodegas.
+- Consulta por id.
+- Asignacion de manager mediante `managerUserId`.
+- Documentacion Swagger de modelos de request y response.
+- Proteccion Bearer JWT para todos los endpoints de bodegas.
 
-## Functional Requirements
+## Requisitos Funcionales
 
-- `GET /api/warehouses` must list all warehouses for authenticated users.
-- `GET /api/warehouses/{id}` must return one warehouse for authenticated users.
-- `POST /api/warehouses` must create a warehouse for authenticated users.
-- `PUT /api/warehouses/{id}` must update a warehouse for authenticated users.
-- `DELETE /api/warehouses/{id}` must delete a warehouse for authenticated users.
-- Updating `managerUserId` must allow assigning or replacing the manager of a warehouse.
+- `GET /api/warehouses` debe listar todas las bodegas para usuarios autenticados.
+- `GET /api/warehouses/{id}` debe retornar una bodega para usuarios autenticados.
+- `POST /api/warehouses` debe crear una bodega para usuarios autenticados.
+- `PUT /api/warehouses/{id}` debe actualizar una bodega para usuarios autenticados.
+- `DELETE /api/warehouses/{id}` debe eliminar una bodega para usuarios autenticados.
+- Actualizar `managerUserId` debe permitir asignar o reemplazar el manager de una bodega.
 
-## Data Requirements
+## Requisitos de Datos
 
-- Warehouse requests must accept `name`, `ubication`, `capacity`, and optional `managerUserId`.
-- Warehouse responses must include manager summary data instead of the full related entity.
+- Las solicitudes de bodega deben aceptar `name`, `ubication`, `capacity` y `managerUserId` opcional.
+- Las respuestas de bodega deben incluir datos resumidos del manager en lugar de la entidad completa.
 
-## Acceptance Criteria
+## Criterios de Aceptacion
 
-- CRUD operations persist against the `warehouse` table.
-- Invalid `managerUserId` returns `404`.
-- Missing warehouses return `404`.
-- Anonymous requests to `/api/warehouses/**` return `401`.
-- The admin frontend can assign a manager by sending `managerUserId` in `PUT /api/warehouses/{id}`.
+- Las operaciones CRUD persisten sobre la tabla `warehouse`.
+- Un `managerUserId` invalido retorna `404`.
+- Una bodega inexistente retorna `404`.
+- Las solicitudes anonimas a `/api/warehouses/**` retornan `401`.
+- El frontend administrativo puede asignar un manager enviando `managerUserId` en `PUT /api/warehouses/{id}`.

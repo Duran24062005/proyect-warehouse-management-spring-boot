@@ -1,32 +1,32 @@
-# Swagger Documentation PRD
+# PRD de Documentacion Swagger
 
-## Objective
+## Objetivo
 
-Expose interactive API documentation for the current warehouse management backend, including JWT-protected routes and OpenAPI metadata.
+Exponer documentacion interactiva de la API para el backend actual de gestion de bodegas, incluyendo rutas protegidas con JWT y metadatos OpenAPI.
 
-## Scope
+## Alcance
 
-- Integrate `springdoc-openapi` in the Spring Boot application.
-- Publish Swagger UI and OpenAPI JSON under stable local URLs.
-- Define global API metadata and Bearer security scheme.
-- Reflect auth, users, products, warehouses and movements in Swagger.
+- Integrar `springdoc-openapi` en la aplicacion Spring Boot.
+- Publicar Swagger UI y el JSON OpenAPI en URLs locales estables.
+- Definir metadatos globales de la API y el esquema de seguridad Bearer.
+- Reflejar autenticacion, usuarios, productos, bodegas y movimientos en Swagger.
 
-## Functional Requirements
+## Requisitos Funcionales
 
-- The application must expose Swagger UI at `/swagger-ui.html`.
-- The application must expose OpenAPI JSON at `/v3/api-docs`.
-- Controllers annotated with OpenAPI metadata must appear automatically in Swagger.
-- Protected endpoints must declare Bearer authentication requirements.
-- Swagger UI must remain publicly reachable in local development.
+- La aplicacion debe exponer Swagger UI en `/swagger-ui.html`.
+- La aplicacion debe exponer el JSON OpenAPI en `/v3/api-docs`.
+- Los controladores anotados con metadatos OpenAPI deben aparecer automaticamente en Swagger.
+- Los endpoints protegidos deben declarar el requerimiento de autenticacion Bearer.
+- Swagger UI debe seguir siendo accesible publicamente en desarrollo local.
 
-## Non-Goals
+## No Objetivos
 
-- Custom Swagger themes.
-- Runtime role-based restriction for Swagger UI access.
+- Temas visuales personalizados para Swagger.
+- Restriccion dinamica por roles para el acceso a Swagger UI.
 
-## Acceptance Criteria
+## Criterios de Aceptacion
 
-- Opening `http://localhost:8000/swagger-ui.html` shows interactive docs.
-- Opening `http://localhost:8000/v3/api-docs` returns OpenAPI JSON.
-- Authenticated endpoints display the Bearer security requirement.
-- Auth, users, products, warehouses and movements are discoverable from Swagger UI.
+- Abrir `http://localhost:8000/swagger-ui.html` muestra documentacion interactiva.
+- Abrir `http://localhost:8000/v3/api-docs` devuelve el JSON OpenAPI.
+- Los endpoints autenticados muestran el requerimiento de seguridad Bearer.
+- Autenticacion, usuarios, productos, bodegas y movimientos son visibles desde Swagger UI.

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import com.proyectS1.warehouse_management.model.AppUser;
+import com.proyectS1.warehouse_management.model.enums.UserStatus;
 import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 
 import jakarta.servlet.FilterChain;
@@ -37,7 +38,11 @@ public class JwtFilter extends OncePerRequestFilter { // We switched to OncePerR
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 AppUser user = appUserRepository.findByEmail(username).orElse(null);
 
-                if (user != null && Boolean.TRUE.equals(user.getEnabled())) {
+                if (
+                    user != null
+                    && Boolean.TRUE.equals(user.getEnabled())
+                    && user.getUserStatus() == UserStatus.ACTIVE
+                ) {
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         username,
                         null,

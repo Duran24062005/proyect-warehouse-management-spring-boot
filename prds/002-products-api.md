@@ -1,30 +1,35 @@
-# Products API PRD
+# PRD de API de Productos
 
-## Objective
-Provide a complete REST API to manage products and inspect low-stock products.
+## Objetivo
 
-## Scope
-- CRUD operations for products.
-- Product lookup by id.
-- Low-stock query based on inventory movements.
-- Swagger documentation for endpoints and payloads.
-- Bearer JWT protection for all product endpoints.
+Proveer una API REST completa para gestionar productos y consultar productos con stock bajo.
 
-## Functional Requirements
-- `GET /api/products` must list all products for authenticated users.
-- `GET /api/products/{id}` must return one product for authenticated users.
-- `POST /api/products` must create a product for authenticated users.
-- `PUT /api/products/{id}` must update a product for authenticated users.
-- `DELETE /api/products/{id}` must delete a product for authenticated users.
-- `GET /api/products/low-stock` must return products with computed stock lower than or equal to the configured threshold for authenticated users.
+## Alcance
 
-## Data Requirements
-- Product requests must include `name`, `category`, `price`, and optional `warehouseId`.
-- Product responses must include warehouse summary fields instead of the full related entity.
+- Operaciones CRUD para productos.
+- Consulta de producto por id.
+- Consulta de stock bajo basada en movimientos de inventario.
+- Documentacion Swagger de endpoints y payloads.
+- Proteccion Bearer JWT para todos los endpoints de productos.
 
-## Acceptance Criteria
-- CRUD operations persist against the `product` table.
-- Invalid `warehouseId` returns `404`.
-- Missing products return `404`.
-- Low-stock results are computed from the `movement` table.
-- Anonymous requests to `/api/products/**` return `401`.
+## Requisitos Funcionales
+
+- `GET /api/products` debe listar todos los productos para usuarios autenticados.
+- `GET /api/products/{id}` debe retornar un producto para usuarios autenticados.
+- `POST /api/products` debe crear un producto para usuarios autenticados.
+- `PUT /api/products/{id}` debe actualizar un producto para usuarios autenticados.
+- `DELETE /api/products/{id}` debe eliminar un producto para usuarios autenticados.
+- `GET /api/products/low-stock` debe retornar productos con stock calculado menor o igual al umbral configurado para usuarios autenticados.
+
+## Requisitos de Datos
+
+- Las solicitudes de producto deben incluir `name`, `category`, `price` y `warehouseId` opcional.
+- Las respuestas de producto deben incluir un resumen de bodega en lugar de la entidad relacionada completa.
+
+## Criterios de Aceptacion
+
+- Las operaciones CRUD persisten sobre la tabla `product`.
+- Un `warehouseId` invalido retorna `404`.
+- Un producto inexistente retorna `404`.
+- Los resultados de stock bajo se calculan desde la tabla `movement`.
+- Las solicitudes anonimas a `/api/products/**` retornan `401`.

@@ -1,79 +1,87 @@
-# Auth Email Notifications PRD
+# PRD de Notificaciones por Email en Autenticacion
 
-## Objective
-Send email notifications through the external FastAPI mail service when a user registers or logs in.
+## Objetivo
 
-## Scope
-- Registration email notification.
-- Login email notification.
-- Configurable email provider base URL through `application.properties`.
-- Provider resolution through a factory pattern.
+Enviar notificaciones por correo a traves del servicio externo FastAPI cuando un usuario se registra o inicia sesion.
 
-## Functional Flow
-1. A user completes `POST /api/auth/register` or `POST /api/auth/login`.
-2. `AuthController` delegates the request to `AuthServiceImpl`.
-3. `AuthServiceImpl` completes the core auth logic first:
-   - register: validates uniqueness, hashes the password, and persists the user
-   - login: validates credentials and generates the JWT
-4. After the auth action succeeds, `AuthServiceImpl` calls `AuthEmailNotificationService`.
-5. `AuthEmailNotificationService` builds an `EmailNotificationCommand` with:
+## Alcance
+
+- Notificacion por correo en registro.
+- Notificacion por correo en login.
+- Configuracion de la URL base del proveedor de email desde `application.properties`.
+- Resolucion del proveedor mediante patron factory.
+
+## Flujo Funcional
+
+1. Un usuario completa `POST /api/auth/register` o `POST /api/auth/login`.
+2. `AuthController` delega la solicitud a `AuthServiceImpl`.
+3. `AuthServiceImpl` completa primero la logica principal de autenticacion:
+   - register: valida unicidad, hashea la contrasena y persiste el usuario
+   - login: valida credenciales y genera el JWT
+4. Despues de que la accion de autenticacion finaliza con exito, `AuthServiceImpl` llama a `AuthEmailNotificationService`.
+5. `AuthEmailNotificationService` construye un `EmailNotificationCommand` con:
    - `userId`
-   - recipient email
-   - subject
-   - body
-6. `EmailNotificationProviderFactory` resolves the active provider using `app.notifications.email.provider`.
-7. The selected provider, currently `FastApiEmailNotificationProvider`, sends a `multipart/form-data` request to the external FastAPI API.
-8. The FastAPI API processes `/emails/send` and handles delivery plus persistence on its own side.
-9. If the external call fails:
-   - when `app.notifications.email.fail-on-error=false`, the failure is logged and auth continues
-   - when `app.notifications.email.fail-on-error=true`, the auth flow fails with `502`
+   - correo del destinatario
+   - asunto
+   - cuerpo
+6. `EmailNotificationProviderFactory` resuelve el proveedor activo usando `app.notifications.email.provider`.
+7. El proveedor seleccionado, actualmente `FastApiEmailNotificationProvider`, envia una solicitud `multipart/form-data` a la API externa FastAPI.
+8. La API FastAPI procesa `/emails/send` y gestiona entrega y persistencia de su lado.
+9. Si la llamada externa falla:
+   - cuando `app.notifications.email.fail-on-error=false`, el fallo se registra y autenticacion continua
+   - cuando `app.notifications.email.fail-on-error=true`, el flujo de autenticacion falla con `502`
 
-## Integration Points
+## Puntos de Integracion
+
 - `AuthController`
-  Receives register and login requests and delegates to the auth service.
+  Recibe solicitudes de registro y login y las delega al servicio de autenticacion.
 - `AuthServiceImpl`
-  Main integration point where the email trigger is executed after successful auth events.
+  Punto principal de integracion donde se ejecuta el disparo del email tras eventos exitosos de autenticacion.
 - `AuthEmailNotificationService`
-  Encapsulates notification use cases for auth and prepares the email payload.
+  Encapsula los casos de uso de notificacion y prepara el payload de email.
 - `EmailNotificationProviderFactory`
-  Applies the factory pattern to decouple the auth module from the concrete email provider.
+  Aplica el patron factory para desacoplar el modulo de autenticacion del proveedor concreto de correo.
 - `FastApiEmailNotificationProvider`
-  Adapter responsible for calling the external FastAPI service.
+  Adaptador responsable de llamar al servicio externo FastAPI.
 - `EmailNotificationProperties`
-  Reads provider name, API base URL, endpoint path, and error behavior from `application.properties`.
+  Lee nombre del proveedor, URL base, path del endpoint y comportamiento ante errores desde `application.properties`.
 - `application.properties`
-  Central place to change the external API domain without touching Java code.
+  Punto central para cambiar el dominio de la API externa sin tocar el codigo Java.
 
-## Functional Requirements
-- `POST /api/auth/register` must trigger an email to the registered email address after the user is created.
-- `POST /api/auth/login` must trigger an email to the authenticated user's email address after credentials are validated.
-- The active provider must be resolved using a factory based on `app.notifications.email.provider`.
-- The FastAPI integration must call `POST /emails/send` using `multipart/form-data`.
-- The recipient email must match the authenticated or registered user email.
+## Requisitos Funcionales
 
-## Configuration Requirements
-- `app.notifications.email.fastapi.base-url` must define the remote email API domain.
-- `app.notifications.email.fastapi.send-path` must define the endpoint path.
-- `app.notifications.email.fail-on-error` must control whether auth flows fail when email delivery fails.
+- `POST /api/auth/register` debe disparar un email al correo registrado despues de crear el usuario.
+- `POST /api/auth/login` debe disparar un email al correo del usuario autenticado despues de validar credenciales.
+- El proveedor activo debe resolverse con una factory basada en `app.notifications.email.provider`.
+- La integracion con FastAPI debe llamar `POST /emails/send` usando `multipart/form-data`.
+- El correo destinatario debe coincidir con el email del usuario autenticado o registrado.
 
-## Request Mapping to FastAPI
-The current provider maps auth events to the FastAPI endpoint like this:
+## Requisitos de Configuracion
+
+- `app.notifications.email.fastapi.base-url` debe definir el dominio remoto de la API de correo.
+- `app.notifications.email.fastapi.send-path` debe definir el path del endpoint.
+- `app.notifications.email.fail-on-error` debe controlar si los flujos de autenticacion fallan cuando falla el envio del correo.
+
+## Mapeo de Request hacia FastAPI
+
+El proveedor actual mapea los eventos de autenticacion al endpoint FastAPI asi:
 
 - URL
   `POST {app.notifications.email.fastapi.base-url}{app.notifications.email.fastapi.send-path}`
-- Content type
+- Tipo de contenido
   `multipart/form-data`
-- Form fields
-  - `user_id`: internal user id from `AppUser`
-  - `recipient`: authenticated or registered user email
-  - `subject`: event-specific subject
-  - `body`: plain-text message generated by Spring Boot
+- Campos del formulario
+  - `user_id`: id interno desde `AppUser`
+  - `recipient`: email del usuario autenticado o registrado
+  - `subject`: asunto segun el evento
+  - `body`: mensaje en texto plano generado por Spring Boot
 
-No `html_body`, `template_name`, `template_data`, or `pdf_attachment` are sent in this first integration.
+En esta primera integracion no se envian `html_body`, `template_name`, `template_data` ni `pdf_attachment`.
 
-## Acceptance Criteria
-- Registering a user calls the external email API once with a registration subject/body.
-- Logging in a user calls the external email API once with a login subject/body.
-- Changing the FastAPI domain in `application.properties` updates the integration without code changes.
-- If `fail-on-error=false`, auth flows continue and the failure is logged.
-- If `fail-on-error=true`, auth flows fail with `502` when email delivery fails.
+## Criterios de Aceptacion
+
+- Registrar un usuario llama una vez a la API externa con asunto y cuerpo de registro.
+- Hacer login llama una vez a la API externa con asunto y cuerpo de login.
+- Cambiar el dominio FastAPI en `application.properties` actualiza la integracion sin cambios de codigo.
+- Si `fail-on-error=false`, autenticacion continua y el fallo se registra.
+- Si `fail-on-error=true`, autenticacion falla con `502` cuando el envio de correo falla.

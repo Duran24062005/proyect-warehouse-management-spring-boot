@@ -1,25 +1,25 @@
-# Global Exception Handling PRD
+# PRD de Manejo Global de Excepciones
 
-## Objective
+## Objetivo
 
-Provide a uniform API error contract for validation errors, business errors, authentication errors and unexpected failures.
+Proveer un contrato uniforme de errores de API para errores de validacion, errores de negocio, errores de autenticacion y fallos inesperados.
 
-## Scope
+## Alcance
 
-- Global exception interception with `@RestControllerAdvice`.
-- Standard JSON error payload.
-- Validation and malformed request handling.
-- Consistent handling for business and not-found scenarios.
+- Intercepcion global de excepciones con `@RestControllerAdvice`.
+- Payload JSON estandar para errores.
+- Manejo de validaciones y requests malformados.
+- Manejo consistente para escenarios de negocio y no encontrados.
 
-## Functional Requirements
+## Requisitos Funcionales
 
-- The API must return a consistent JSON structure for handled exceptions.
-- Validation errors must include field-level details when available.
-- `ResponseStatusException` must preserve the intended HTTP status.
-- Unexpected errors must return `500` without exposing stack traces in the response body.
-- Protected routes must still be able to surface security-related HTTP statuses such as `401` and `403`.
+- La API debe retornar una estructura JSON consistente para las excepciones manejadas.
+- Los errores de validacion deben incluir detalles por campo cuando existan.
+- `ResponseStatusException` debe preservar el codigo HTTP esperado.
+- Los errores inesperados deben retornar `500` sin exponer stack traces en el cuerpo de la respuesta.
+- Las rutas protegidas deben poder seguir exponiendo estados de seguridad como `401` y `403`.
 
-## Response Contract
+## Contrato de Respuesta
 
 - `timestamp`
 - `status`
@@ -28,10 +28,10 @@ Provide a uniform API error contract for validation errors, business errors, aut
 - `path`
 - `details`
 
-## Acceptance Criteria
+## Criterios de Aceptacion
 
-- Invalid payloads return `400` with validation details.
-- Not-found scenarios return `404` using the standard error payload.
-- Unauthorized requests to protected resources return `401`.
-- Forbidden requests to admin-only resources return `403`.
-- Unexpected exceptions return `500` with the same contract.
+- Payloads invalidos retornan `400` con detalles de validacion.
+- Los escenarios de no encontrado retornan `404` usando el payload estandar.
+- Las solicitudes no autorizadas a recursos protegidos retornan `401`.
+- Las solicitudes prohibidas a recursos solo admin retornan `403`.
+- Las excepciones inesperadas retornan `500` con el mismo contrato.

@@ -1,6 +1,10 @@
 package com.proyectS1.warehouse_management.model;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.proyectS1.warehouse_management.model.enums.OperationType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,8 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "audit_change")
@@ -46,3 +48,4 @@ public class AuditChange extends BaseTimeEntity {
     @Column(name = "new_values", columnDefinition = "json")
     private String newValues;
 }
+
