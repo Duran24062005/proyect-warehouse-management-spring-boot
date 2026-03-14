@@ -15,8 +15,8 @@ window.tailwind.config = {
         panel: "0 20px 45px rgba(16, 37, 66, 0.12)"
       },
       fontFamily: {
-        display: ["Georgia", "serif"],
-        body: ["Segoe UI", "sans-serif"]
+        display: ["Sora", "sans-serif"],
+        body: ["Manrope", "sans-serif"]
       }
     }
   }
