@@ -9,15 +9,17 @@
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/app.css">
 </head>
-<body class="page-bg min-h-screen text-ink">
-  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+<body class="page-bg min-h-screen text-ink bg-slate-700">
+  <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
     <div class="app-shell">
-      <aside class="section-card p-5">
-        <img
-          src="../img/appLogo_backgroundless.png"
-          alt="Logo de LogiTrack"
-          class="h-24 w-auto lg:h-[8.5rem]"
-        >
+      <aside class="app-sidebar section-card p-5 lg:p-6">
+        <div class="flex justify-center">
+          <img
+            src="../img/appLogo_backgroundless.png"
+            alt="Logo de LogiTrack"
+            class="h-24 w-auto lg:h-[12rem]"
+          >
+        </div>
         <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
         <h1 class="mt-3 font-display text-3xl">Inventario</h1>
         <nav class="mt-6 space-y-2 text-sm font-medium">
@@ -43,8 +45,8 @@
 
         <div id="products-notice" class="hidden"></div>
 
-        <section class="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
-          <article class="section-card p-6">
+        <section class="grid gap-6 2xl:grid-cols-[minmax(27rem,30rem)_minmax(0,1fr)]">
+          <article class="section-card p-6 xl:p-7">
             <div class="flex items-center justify-between gap-4">
               <div>
                 <h3 class="text-xl font-semibold">Formulario</h3>
@@ -76,7 +78,7 @@
           </article>
 
           <div class="space-y-6">
-            <article class="section-card p-6">
+            <article class="section-card p-6 xl:p-7">
               <div class="flex items-center justify-between gap-4">
                 <div>
                   <h3 class="text-xl font-semibold">Listado</h3>
@@ -99,7 +101,7 @@
               </div>
             </article>
 
-            <article class="section-card p-6">
+            <article class="section-card p-6 xl:p-7">
               <h3 class="text-xl font-semibold">Stock bajo</h3>
               <p class="mt-1 text-sm text-slate-600">Sirve para revisar rapido lo que necesita atencion.</p>
               <div class="table-shell mt-5">

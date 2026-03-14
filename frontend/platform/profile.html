@@ -9,15 +9,17 @@
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/app.css">
 </head>
-<body class="page-bg min-h-screen text-ink">
-  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+<body class="page-bg min-h-screen text-ink bg-slate-700">
+  <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
     <div class="app-shell">
-      <aside class="section-card p-5">
-        <img
-          src="../img/appLogo_backgroundless.png"
-          alt="Logo de LogiTrack"
-          class="h-24 w-auto lg:h-[8.5rem]"
-        >
+      <aside class="app-sidebar section-card p-5 lg:p-6">
+        <div class="flex justify-center">
+          <img
+            src="../img/appLogo_backgroundless.png"
+            alt="Logo de LogiTrack"
+            class="h-24 w-auto lg:h-[12rem]"
+          >
+        </div>
         <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
         <h1 class="mt-3 font-display text-3xl">Perfil</h1>
         <nav class="mt-6 space-y-2 text-sm font-medium">
@@ -44,7 +46,7 @@
         <div id="profile-notice" class="hidden"></div>
 
         <section class="grid gap-6 xl:grid-cols-2">
-          <article class="section-card p-6">
+          <article class="section-card p-6 xl:p-7">
             <h3 class="text-xl font-semibold">Datos actuales</h3>
             <dl class="mt-5 space-y-4 text-sm">
               <div>
@@ -70,7 +72,7 @@
             </dl>
           </article>
 
-          <article class="section-card p-6">
+          <article class="section-card p-6 xl:p-7">
             <h3 class="text-xl font-semibold">Cambiar contrasena</h3>
             <form id="profile-form" class="mt-5 space-y-4">
               <div>
