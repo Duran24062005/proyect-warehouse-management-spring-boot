@@ -23,7 +23,8 @@ public class UserMapper {
             user.getLastName(),
             user.getPhoneNumber(),
             user.getRole(),
-            user.getEnabled()
+            user.getEnabled(),
+            user.getUserStatus()
         );
     }
 

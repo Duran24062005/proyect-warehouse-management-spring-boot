@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS app_user (
     last_name VARCHAR(100) NOT NULL,
     phone_number VARCHAR(100) NOT NULL,
     role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',
+    user_status ENUM('PENDING', 'ACTIVE', 'BLOCKED') NOT NULL DEFAULT 'PENDING',
     enable BOOLEAN NOT NULL DEFAULT TRUE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -141,13 +142,13 @@ INSERT INTO app_user (
     last_name,
     phone_number,
     role,
-    enable,
-    created_at
+    user_status,
+    enable
 ) VALUES
-    (1, 'admin@logitrack.com', '$2a$10$adminhashlogitrack', 'Alexi', 'Duran', '3000000001', 'ADMIN', TRUE, '2026-03-01 08:00:00'),
-    (2, 'mlopez@logitrack.com', '$2a$10$mlopezhashlogitrack', 'Maria', 'Lopez', '3000000002', 'USER', TRUE, '2026-03-01 08:05:00'),
-    (3, 'jgarcia@logitrack.com', '$2a$10$jgarciahashlogitrack', 'Juan', 'Garcia', '3000000003', 'USER', TRUE, '2026-03-01 08:10:00'),
-    (4, 'cperez@logitrack.com', '$2a$10$cperezhashlogitrack', 'Camila', 'Perez', '3000000004', 'USER', TRUE, '2026-03-01 08:15:00');
+    (1, 'admin@logitrack.com', '$2a$10$adminhashlogitrack', 'Alexi', 'Duran', '3000000001', 'ADMIN', 'ACTIVE', TRUE),
+    (2, 'mlopez@logitrack.com', '$2a$10$mlopezhashlogitrack', 'Maria', 'Lopez', '3000000002', 'USER', 'ACTIVE', TRUE),
+    (3, 'jgarcia@logitrack.com', '$2a$10$jgarciahashlogitrack', 'Juan', 'Garcia', '3000000003', 'USER', 'PENDING', TRUE),
+    (4, 'cperez@logitrack.com', '$2a$10$cperezhashlogitrack', 'Camila', 'Perez', '3000000004', 'USER', 'BLOCKED', FALSE);
 
 INSERT INTO warehouse (
     id,

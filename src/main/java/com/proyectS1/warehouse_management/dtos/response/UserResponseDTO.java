@@ -1,6 +1,7 @@
 package com.proyectS1.warehouse_management.dtos.response;
 
 import com.proyectS1.warehouse_management.model.enums.UserRole;
+import com.proyectS1.warehouse_management.model.enums.UserStatus;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -18,6 +19,8 @@ public record UserResponseDTO(
     @Schema(description = "Role")
     UserRole role,
     @Schema(description = "Enabled status")
-    Boolean enabled
+    Boolean enabled,
+    @Schema(description="User status")
+    UserStatus userStatus
 ) {
 }

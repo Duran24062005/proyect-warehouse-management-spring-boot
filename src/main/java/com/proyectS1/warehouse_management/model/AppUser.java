@@ -1,6 +1,8 @@
 package com.proyectS1.warehouse_management.model;
 
 import com.proyectS1.warehouse_management.model.enums.UserRole;
+import com.proyectS1.warehouse_management.model.enums.UserStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -57,4 +59,8 @@ public class AppUser extends BaseTimeEntity {
     @NotNull
     @Column(name = "enable", nullable = false)
     private Boolean enabled = Boolean.TRUE;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus = UserStatus.PENDING;
 }
