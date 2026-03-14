@@ -19,6 +19,8 @@ import com.proyectS1.warehouse_management.dtos.response.MovementResponseDTO;
 import com.proyectS1.warehouse_management.services.MovementService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,6 +36,13 @@ public class MovementController {
     private final MovementService movementService;
 
     @GetMapping
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Movements successfully obtained"),
+            @ApiResponse(responseCode = "400", description = "Invalid data or malformed request"),
+            @ApiResponse(responseCode = "401", description = "Authentication required")
+        }
+    )
     @Operation(summary = "Lista movimientos", description = "Permite filtrar por productId o warehouseId")
     public ResponseEntity<List<MovementResponseDTO>> getAllMovements(
         @RequestParam(required = false) Long productId,
@@ -51,24 +60,54 @@ public class MovementController {
     }
 
     @GetMapping("/{id}")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Movement successfully obtained"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "404", description = "Movement not found")
+        }
+    )
     @Operation(summary = "Obtiene un movimiento por id")
     public ResponseEntity<MovementResponseDTO> getMovementById(@PathVariable Long id) {
         return ResponseEntity.ok(movementService.findOne(id));
     }
 
     @PostMapping
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "Movement successfully created"),
+            @ApiResponse(responseCode = "400", description = "Invalid data or malformed request"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "404", description = "Related user, warehouse or product not found")
+        }
+    )
     @Operation(summary = "Crea un movimiento")
     public ResponseEntity<MovementResponseDTO> createMovement(@Valid @RequestBody MovementRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(movementService.saveMovement(dto));
     }
 
     @PutMapping("/{id}")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Movement successfully updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid data or malformed request"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "404", description = "Movement or related data not found")
+        }
+    )
     @Operation(summary = "Actualiza un movimiento")
     public ResponseEntity<MovementResponseDTO> updateMovement(@PathVariable Long id, @Valid @RequestBody MovementRequestDTO dto) {
         return ResponseEntity.ok(movementService.updateMovement(dto, id));
     }
 
     @DeleteMapping("/{id}")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "204", description = "Movement successfully deleted"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "404", description = "Movement not found")
+        }
+    )
     @Operation(summary = "Elimina un movimiento")
     public ResponseEntity<Void> deleteMovement(@PathVariable Long id) {
         movementService.deleteMovement(id);
