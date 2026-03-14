@@ -2,19 +2,19 @@
 
 ## Descripción General
 
-Este proyecto implementa un sistema backend para la gestión de bodegas e inventarios utilizando **Spring Boot**.
+Este proyecto implementa un sistema backend para la gestión de bodegas e inventarios.
 
 La empresa **LogiTrack S.A.** administra múltiples bodegas distribuidas en distintas ciudades, encargadas de almacenar productos y registrar movimientos de inventario como entradas, salidas y transferencias.
 
 Anteriormente, el control de inventarios y auditorías se realizaba manualmente en hojas de cálculo, lo que generaba problemas de trazabilidad, control de accesos y consistencia de la información.
 
-El objetivo del sistema es centralizar la gestión de inventarios y permitir el registro controlado de movimientos entre bodegas, garantizando seguridad, trazabilidad y acceso controlado mediante autenticación basada en **JWT**.
+El objetivo del sistema es centralizar la gestión de inventarios y permitir el registro controlado de movimientos entre bodegas, garantizando seguridad, trazabilidad y acceso controlado mediante autenticación.
 
 ---
 
 # Modelo Organizacional del Sistema
 
-El sistema contempla **dos tipos de usuarios autenticados**, pero **tres tipos de personas dentro del modelo organizacional**.
+El sistema contempla **dos tipos de usuarios dentro de la autenticación**, pero **tres tipos de personas dentro del modelo organizacional del sistema**.
 
 ## Administrador General
 
@@ -43,14 +43,12 @@ Entre sus funciones se encuentran:
 * Registrar movimientos de inventario.
 * Supervisar las acciones realizadas por los empleados de su bodega.
 * Consultar los productos disponibles en su bodega.
-* Visualizar las bodegas disponibles en el sistema.
+* Visualizar las bodegas disponibles dentro del sistema.
 * Consultar los usuarios asignados a su bodega.
 
 El manager es responsable de **registrar formalmente los movimientos realizados dentro de la bodega**, incluso si la acción fue realizada por un empleado.
 
-Por ejemplo:
-
-Si un empleado mueve un producto de una bodega a otra, el manager debe registrar ese movimiento dentro del sistema.
+Por ejemplo, si un empleado mueve un producto de una bodega a otra, el manager debe registrar ese movimiento dentro del sistema.
 
 ---
 
@@ -66,11 +64,7 @@ Los empleados están asociados a una bodega específica y forman parte del equip
 
 # Registro y Aprobación de Usuarios
 
-El sistema permite que nuevos usuarios se registren utilizando el endpoint:
-
-```
-/auth/register
-```
+El sistema permite que nuevos usuarios se registren mediante el proceso de registro de cuenta.
 
 Sin embargo, el registro de un usuario **no implica acceso inmediato al sistema**.
 
@@ -80,14 +74,14 @@ Cuando un usuario se registra:
 2. Un **Administrador General** debe revisar la solicitud.
 3. El administrador puede:
 
-   * **Aceptar** al usuario y asignarle un rol dentro del sistema.
+   * **Aceptar** al usuario y activarlo dentro del sistema.
    * **Bloquear o rechazar** la solicitud.
 
-Mientras un usuario se encuentre en estado **pendiente o bloqueado**, no podrá acceder a los endpoints protegidos del sistema.
+Mientras un usuario se encuentre en estado **pendiente o bloqueado**, no podrá acceder a la información del sistema.
 
-Esto permite evitar que usuarios no autorizados tengan acceso a la información del sistema inmediatamente después de registrarse.
+Esto permite evitar que usuarios no autorizados tengan acceso inmediato a los datos del sistema.
 
-Además del registro automático, los **Administradores Generales también pueden crear usuarios manualmente desde el sistema y asignarles directamente un rol**.
+Además del registro automático, los **Administradores Generales también pueden crear usuarios directamente dentro del sistema y asignarles un rol desde el inicio**.
 
 ---
 
@@ -95,7 +89,7 @@ Además del registro automático, los **Administradores Generales también puede
 
 El sistema permite administrar bodegas con la siguiente información:
 
-* id
+* identificador
 * nombre
 * ubicación
 * capacidad
@@ -107,11 +101,11 @@ Las bodegas representan los centros físicos donde se almacenan los productos.
 
 # Gestión de Productos
 
-El sistema permite realizar operaciones CRUD sobre los productos.
+El sistema permite realizar operaciones completas de gestión sobre los productos registrados.
 
-Cada producto contiene:
+Cada producto contiene información como:
 
-* id
+* identificador
 * nombre
 * categoría
 * stock
@@ -125,13 +119,13 @@ Los productos representan los artículos que se almacenan y se mueven entre bode
 
 El sistema permite registrar tres tipos de movimientos de inventario:
 
-* ENTRADA
-* SALIDA
-* TRANSFERENCIA
+* **Entrada**
+* **Salida**
+* **Transferencia**
 
-Cada movimiento almacena:
+Cada movimiento almacena información como:
 
-* fecha
+* fecha del movimiento
 * tipo de movimiento
 * usuario responsable
 * bodega origen
@@ -139,83 +133,78 @@ Cada movimiento almacena:
 * productos involucrados
 * cantidades
 
-Estos movimientos permiten llevar un registro claro de los cambios en el inventario.
+Estos movimientos permiten llevar un registro claro de los cambios en el inventario y facilitan la trazabilidad de las operaciones realizadas.
 
 ---
 
 # Auditoría de Cambios
 
-El sistema implementa un mecanismo de auditoría automática que registra los cambios realizados sobre las entidades del sistema.
+El sistema incluye un mecanismo de auditoría que registra las acciones realizadas sobre las entidades principales.
 
-Cada registro de auditoría almacena:
+Cada registro de auditoría guarda información como:
 
-* tipo de operación (INSERT, UPDATE, DELETE)
-* fecha y hora
-* usuario que realizó la acción
+* tipo de operación realizada
+* fecha y hora de la acción
+* usuario responsable
 * entidad afectada
 * valores anteriores
 * valores nuevos
 
-Esto permite mantener trazabilidad completa de las operaciones realizadas dentro del sistema.
+Esto permite mantener un historial completo de las modificaciones realizadas dentro del sistema.
 
 ---
 
-# Seguridad
+# Sistema de Notificaciones
 
-El sistema utiliza **Spring Security con autenticación basada en JWT**.
+El sistema incluye un mecanismo de **notificaciones por correo electrónico** para informar a los usuarios sobre eventos importantes relacionados con su cuenta.
 
-Los endpoints disponibles incluyen:
+Actualmente se envían notificaciones en tres situaciones principales.
 
-* `/auth/login`
-* `/auth/register`
+## Registro de Usuario
 
-Las rutas relacionadas con:
+Cuando un usuario se registra en el sistema, recibe un correo electrónico informando que su registro fue realizado correctamente y que su cuenta se encuentra pendiente de aprobación por parte de un administrador.
 
-* bodegas
-* productos
-* movimientos
+## Registro por Administrador
 
-se encuentran protegidas y requieren un token válido para su acceso.
+Cuando un administrador crea un usuario directamente dentro del sistema, el usuario recibe un correo indicando que su cuenta ha sido creada y que ya se encuentra activa.
 
-El sistema utiliza **roles de usuario** para controlar el acceso a los recursos y garantizar que cada tipo de usuario solo pueda interactuar con la información que le corresponde.
+## Inicio de Sesión
+
+Cada vez que un usuario inicia sesión en el sistema, se envía una notificación a su correo electrónico indicando que se ha realizado un inicio de sesión en su cuenta.
+
+Estas notificaciones permiten mantener informados a los usuarios sobre el estado de su cuenta y sobre el uso de la misma.
 
 ---
 
 # Reportes y Consultas
 
-El sistema permite realizar consultas avanzadas como:
+El sistema permite realizar consultas y reportes sobre la información almacenada.
 
-* Productos con bajo stock.
-* Movimientos en un rango de fechas.
-* Auditorías filtradas por usuario.
-* Auditorías filtradas por tipo de operación.
+Entre ellos se incluyen:
+
+* consulta de productos con bajo stock
+* consulta de movimientos en un rango de fechas
+* auditorías filtradas por usuario
+* auditorías filtradas por tipo de operación
 
 También se genera un reporte general que muestra:
 
-* stock total por bodega
-* productos más movidos.
+* el stock total por bodega
+* los productos con mayor movimiento dentro del sistema
 
 ---
 
 # Documentación de la API
 
-La API REST se encuentra documentada utilizando **Swagger / OpenAPI 3**, lo que permite explorar y probar los endpoints de manera interactiva.
+El sistema cuenta con documentación interactiva de la API que permite explorar y probar los endpoints disponibles.
+
+Esto facilita la comprensión y el uso de los servicios expuestos por el backend.
 
 ---
 
 # Estructura del Proyecto
 
-El proyecto sigue una arquitectura basada en capas:
+El proyecto está organizado siguiendo una arquitectura por capas que separa responsabilidades entre diferentes módulos del sistema.
 
-```
-src/
- ├─ controller/
- ├─ service/
- ├─ repository/
- ├─ model/
- ├─ config/
- ├─ security/
- └─ exception/
-```
+Esta organización permite mantener el código estructurado, facilitar su mantenimiento y mejorar la escalabilidad del proyecto.
 
-Cada capa tiene responsabilidades claramente separadas para mantener la organización y mantenibilidad del sistema.
