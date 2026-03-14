@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiTrack | Panel</title>
+  <script src="../js/core/tailwind-theme.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/app.css">
+</head>
+<body class="page-bg min-h-screen text-ink">
+  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div class="app-shell">
+      <aside class="section-card p-5">
+        <img
+          src="../img/appLogo_backgroundless.png"
+          alt="Logo de LogiTrack"
+          class="h-12 w-auto"
+        >
+        <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
+        <h1 class="mt-3 font-display text-3xl">Tu flujo</h1>
+        <nav class="mt-6 space-y-2 text-sm font-medium">
+          <a class="nav-link" data-nav="system" href="./system.html">Resumen</a>
+          <a class="nav-link" data-nav="products" href="./products.html">Productos</a>
+          <a class="nav-link" data-nav="warehouses" href="./warehouses.html">Bodegas</a>
+          <a class="nav-link" data-nav="movements" href="./movements.html">Movimientos</a>
+          <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
+          <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
+        </nav>
+        <div class="mt-8 rounded-2xl bg-mist/70 p-4 text-sm">
+          <p class="font-semibold">Sesion</p>
+          <p class="mt-2 js-user-name"></p>
+          <p class="js-user-role text-slate-500"></p>
+          <button class="btn-secondary mt-4 w-full" data-action="logout" type="button">Cerrar sesion</button>
+        </div>
+      </aside>
+
+      <section class="space-y-6">
+        <header class="section-card p-6">
+          <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Vista general</p>
+          <h2 class="section-title mt-3">Panel principal</h2>
+          <p class="mt-3 max-w-2xl text-sm text-slate-600">
+            Aqui puedes ver rapidamente el estado del sistema antes de entrar a cada modulo.
+          </p>
+        </header>
+
+        <div id="dashboard-notice" class="hidden"></div>
+
+        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <article class="stat-card">
+            <p class="text-sm text-slate-500">Productos</p>
+            <p id="products-count" class="mt-2 text-3xl font-semibold">0</p>
+          </article>
+          <article class="stat-card">
+            <p class="text-sm text-slate-500">Bodegas</p>
+            <p id="warehouses-count" class="mt-2 text-3xl font-semibold">0</p>
+          </article>
+          <article class="stat-card">
+            <p class="text-sm text-slate-500">Movimientos</p>
+            <p id="movements-count" class="mt-2 text-3xl font-semibold">0</p>
+          </article>
+          <article class="stat-card">
+            <p class="text-sm text-slate-500">Usuarios</p>
+            <p id="users-count" class="mt-2 text-3xl font-semibold">-</p>
+          </article>
+        </section>
+
+        <section class="grid gap-6 xl:grid-cols-2">
+          <article class="section-card p-6">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold">Productos con stock bajo</h3>
+                <p class="text-sm text-slate-600">Consulta directa a `/api/products/low-stock`.</p>
+              </div>
+              <a class="btn-secondary" href="./products.html">Abrir modulo</a>
+            </div>
+            <div class="table-shell mt-5">
+              <table class="text-sm">
+                <thead class="bg-mist/70 text-left">
+                  <tr>
+                    <th class="px-4 py-3">Producto</th>
+                    <th class="px-4 py-3">Categoria</th>
+                    <th class="px-4 py-3">Bodega</th>
+                  </tr>
+                </thead>
+                <tbody id="low-stock-body"></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="section-card p-6">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold">Ultimos movimientos</h3>
+                <p class="text-sm text-slate-600">Una vista corta para no perder el hilo del inventario.</p>
+              </div>
+              <a class="btn-secondary" href="./movements.html">Ver todos</a>
+            </div>
+            <div class="table-shell mt-5">
+              <table class="text-sm">
+                <thead class="bg-mist/70 text-left">
+                  <tr>
+                    <th class="px-4 py-3">Tipo</th>
+                    <th class="px-4 py-3">Producto</th>
+                    <th class="px-4 py-3">Cantidad</th>
+                    <th class="px-4 py-3">Fecha</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-movements-body"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="../js/pages/dashboard-page.js"></script>
+</body>
+</html>

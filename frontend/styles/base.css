@@ -1,0 +1,48 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+}
+
+.page-bg {
+  background:
+    radial-gradient(circle at top left, rgba(244, 162, 89, 0.2), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(82, 121, 111, 0.16), transparent 24%),
+    #f8f4ec;
+}
+
+.glass-panel {
+  backdrop-filter: blur(10px);
+}
+
+.section-card {
+  border: 1px solid rgba(16, 37, 66, 0.08);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 20px 45px rgba(16, 37, 66, 0.08);
+}
+
+.section-title {
+  font-family: Georgia, serif;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: #102542;
+}
+
+.table-shell {
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(16, 37, 66, 0.08);
+}
+
+.table-shell table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-shell th,
+.table-shell td {
+  border-bottom: 1px solid rgba(16, 37, 66, 0.08);
+}

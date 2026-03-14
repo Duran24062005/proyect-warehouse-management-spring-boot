@@ -1,0 +1,78 @@
+.app-shell {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .app-shell {
+    grid-template-columns: 280px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  color: #40556f;
+  transition: 160ms ease;
+}
+
+.nav-link:hover {
+  background: rgba(16, 37, 66, 0.08);
+  color: #102542;
+}
+
+.nav-link-active {
+  background: #102542;
+  color: white;
+}
+
+.input-shell,
+.select-shell,
+.textarea-shell {
+  width: 100%;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(16, 37, 66, 0.14);
+  background: white;
+  padding: 0.85rem 1rem;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.8rem 1.2rem;
+  font-weight: 600;
+  transition: 160ms ease;
+}
+
+.btn-primary {
+  background: #102542;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0b1d34;
+}
+
+.btn-secondary {
+  background: rgba(16, 37, 66, 0.08);
+  color: #102542;
+}
+
+.btn-danger {
+  background: rgba(140, 28, 19, 0.12);
+  color: #8c1c13;
+}
+
+.stat-card {
+  border-radius: 1.4rem;
+  border: 1px solid rgba(16, 37, 66, 0.08);
+  background: white;
+  padding: 1.2rem;
+}

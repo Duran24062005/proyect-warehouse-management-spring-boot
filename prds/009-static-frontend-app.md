@@ -1,36 +1,36 @@
-# Static Frontend App PRD
+# PRD de Aplicacion Frontend Estatica
 
-## Objective
+## Objetivo
 
-Provide a professional static frontend served by Spring Boot to consume the secured warehouse management API.
+Proveer un frontend estatico profesional servido por Spring Boot para consumir la API protegida del sistema de bodegas.
 
-## Scope
+## Alcance
 
-- Public login and register pages.
-- Authenticated dashboard, products, profile and admin views.
-- Shared JavaScript modules for session and API access.
-- Shared CSS for branding and layout.
+- Pantallas publicas de login y registro.
+- Vistas autenticadas de dashboard, productos, perfil y administracion.
+- Modulos JavaScript compartidos para sesion y acceso a API.
+- CSS compartido para identidad visual y layout.
 
-## Functional Requirements
+## Requisitos Funcionales
 
-- `/` must expose the login screen.
-- `/register.html` must expose the registration screen.
-- `/platform/system.html` must expose the authenticated dashboard.
-- `/platform/products.html` must expose product management and low-stock views.
-- `/platform/profile.html` must expose current-user data and password change.
-- `/platform/admin.html` must expose admin-only operations such as user creation and manager assignment.
-- The frontend must store and reuse the JWT returned by login.
-- Protected API calls must send `Authorization: Bearer <token>`.
+- `/` debe exponer la pantalla de login.
+- `/register.html` debe exponer la pantalla de registro.
+- `/platform/system.html` debe exponer el dashboard autenticado.
+- `/platform/products.html` debe exponer gestion de productos y vistas de stock bajo.
+- `/platform/profile.html` debe exponer datos del usuario actual y cambio de contrasena.
+- `/platform/admin.html` debe exponer operaciones solo admin como creacion de usuarios y asignacion de managers.
+- El frontend debe almacenar y reutilizar el JWT retornado por login.
+- Las llamadas protegidas a la API deben enviar `Authorization: Bearer <token>`.
 
-## UX Requirements
+## Requisitos de UX
 
-- The application must use the project logo to reinforce brand identity.
-- Auth screens and platform screens must share a consistent visual language.
-- The structure must separate shared code from page-specific code for maintainability.
+- La aplicacion debe usar el logo del proyecto para reforzar identidad visual.
+- Las pantallas de autenticacion y de plataforma deben compartir un lenguaje visual consistente.
+- La estructura debe separar codigo compartido del codigo especifico por pagina para facilitar mantenimiento.
 
-## Acceptance Criteria
+## Criterios de Aceptacion
 
-- A user can register, log in and navigate to the internal platform.
-- An authenticated user can consume protected product, warehouse and movement endpoints.
-- An admin user can access admin flows backed by `/api/users` and warehouse manager assignment.
-- The codebase organizes frontend logic into `js/core`, `js/pages` and shared styles.
+- Un usuario puede registrarse, iniciar sesion y navegar a la plataforma interna.
+- Un usuario autenticado puede consumir endpoints protegidos de productos, bodegas y movimientos.
+- Un usuario admin puede acceder a flujos administrativos respaldados por `/api/users` y la asignacion de managers.
+- El codigo organiza la logica frontend en `js/core`, `js/pages` y estilos compartidos.

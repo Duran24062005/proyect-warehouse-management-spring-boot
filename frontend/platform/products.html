@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiTrack | Productos</title>
+  <script src="../js/core/tailwind-theme.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/app.css">
+</head>
+<body class="page-bg min-h-screen text-ink">
+  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div class="app-shell">
+      <aside class="section-card p-5">
+        <img
+          src="../img/appLogo_backgroundless.png"
+          alt="Logo de LogiTrack"
+          class="h-12 w-auto"
+        >
+        <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
+        <h1 class="mt-3 font-display text-3xl">Inventario</h1>
+        <nav class="mt-6 space-y-2 text-sm font-medium">
+          <a class="nav-link" data-nav="system" href="./system.html">Resumen</a>
+          <a class="nav-link" data-nav="products" href="./products.html">Productos</a>
+          <a class="nav-link" data-nav="warehouses" href="./warehouses.html">Bodegas</a>
+          <a class="nav-link" data-nav="movements" href="./movements.html">Movimientos</a>
+          <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
+          <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
+        </nav>
+        <div class="mt-8 rounded-2xl bg-mist/70 p-4 text-sm">
+          <p class="font-semibold">API actual</p>
+          <p class="js-api-base mt-2 break-all text-slate-600"></p>
+          <button class="btn-secondary mt-4 w-full" data-action="logout" type="button">Cerrar sesion</button>
+        </div>
+      </aside>
+
+      <section class="space-y-6">
+        <header class="section-card p-6">
+          <h2 class="section-title">Productos</h2>
+          <p class="mt-3 text-sm text-slate-600">Crea, edita y elimina productos. El formulario de la izquierda siempre controla la tabla de abajo.</p>
+        </header>
+
+        <div id="products-notice" class="hidden"></div>
+
+        <section class="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
+          <article class="section-card p-6">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold">Formulario</h3>
+                <p class="text-sm text-slate-600">Sirve tanto para crear como para editar.</p>
+              </div>
+              <button id="reset-product-form" class="btn-secondary" type="button">Limpiar</button>
+            </div>
+
+            <form id="product-form" class="mt-5 space-y-4">
+              <input type="hidden" name="productId">
+              <div>
+                <label class="mb-2 block text-sm font-medium">Nombre</label>
+                <input class="input-shell" type="text" name="name" required>
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium">Categoria</label>
+                <input class="input-shell" type="text" name="category" required>
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium">Precio</label>
+                <input class="input-shell" type="number" name="price" min="0" step="0.01" required>
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium">Bodega</label>
+                <select id="product-warehouse-id" class="select-shell" name="warehouseId"></select>
+              </div>
+              <button class="btn-primary w-full" type="submit">Guardar producto</button>
+            </form>
+          </article>
+
+          <div class="space-y-6">
+            <article class="section-card p-6">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-semibold">Listado</h3>
+                  <p class="text-sm text-slate-600">Haz clic en editar para traer un registro al formulario.</p>
+                </div>
+              </div>
+              <div class="table-shell mt-5">
+                <table class="text-sm">
+                  <thead class="bg-mist/70 text-left">
+                    <tr>
+                      <th class="px-4 py-3">Nombre</th>
+                      <th class="px-4 py-3">Categoria</th>
+                      <th class="px-4 py-3">Precio</th>
+                      <th class="px-4 py-3">Bodega</th>
+                      <th class="px-4 py-3">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-body"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="section-card p-6">
+              <h3 class="text-xl font-semibold">Stock bajo</h3>
+              <p class="mt-1 text-sm text-slate-600">Sirve para revisar rapido lo que necesita atencion.</p>
+              <div class="table-shell mt-5">
+                <table class="text-sm">
+                  <thead class="bg-mist/70 text-left">
+                    <tr>
+                      <th class="px-4 py-3">Producto</th>
+                      <th class="px-4 py-3">Categoria</th>
+                      <th class="px-4 py-3">Bodega</th>
+                    </tr>
+                  </thead>
+                  <tbody id="low-products-body"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="../js/pages/products-page.js"></script>
+</body>
+</html>

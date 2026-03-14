@@ -1,0 +1,18 @@
+.auth-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .auth-grid {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: stretch;
+  }
+}
+
+.auth-hero {
+  background:
+    linear-gradient(135deg, rgba(214, 106, 50, 0.92), rgba(16, 37, 66, 0.95)),
+    #102542;
+  color: white;
+}
