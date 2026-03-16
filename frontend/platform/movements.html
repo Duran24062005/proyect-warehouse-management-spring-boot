@@ -24,10 +24,10 @@
         <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
         <h1 class="mt-3 font-display text-3xl">Movimientos</h1>
         <nav class="mt-6 space-y-2 text-sm font-medium">
-          <a class="nav-link" data-nav="system" href="./system.html">Resumen</a>
-          <a class="nav-link" data-nav="products" href="./products.html">Productos</a>
-          <a class="nav-link" data-nav="warehouses" href="./warehouses.html">Bodegas</a>
-          <a class="nav-link" data-nav="movements" href="./movements.html">Movimientos</a>
+          <a class="nav-link" data-nav="system" data-employee-hidden href="./system.html">Resumen</a>
+          <a class="nav-link" data-nav="products" data-employee-hidden href="./products.html">Productos</a>
+          <a class="nav-link" data-nav="warehouses" data-employee-hidden href="./warehouses.html">Bodegas</a>
+          <a class="nav-link" data-nav="movements" data-employee-hidden href="./movements.html">Movimientos</a>
           <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
           <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
         </nav>
@@ -48,7 +48,7 @@
         <div id="movements-notice" class="hidden"></div>
 
         <section class="grid gap-6 2xl:grid-cols-[minmax(27rem,30rem)_minmax(0,1fr)]">
-          <article class="section-card p-6 xl:p-7 lg:h-[45rem]">
+          <article class="section-card p-6 xl:p-7 lg:h-[55rem]">
             <div class="flex items-center justify-between gap-4">
               <div>
                 <h3 class="text-xl font-semibold">Formulario</h3>
@@ -70,6 +70,10 @@
               <div class="rounded-2xl bg-mist/70 px-4 py-3 text-sm text-slate-600">
                 <p class="font-semibold text-ink">Registrado por</p>
                 <p id="movement-registered-by" class="mt-1"></p>
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium">Empleado que realizo el movimiento</label>
+                <select id="movement-performed-by-id" class="select-shell" name="performedByEmployeeId" required></select>
               </div>
               <div>
                 <label class="mb-2 block text-sm font-medium">Producto</label>
@@ -108,6 +112,7 @@
                   <thead class="bg-mist/70 text-left">
                     <tr>
                       <th class="px-4 py-3">Tipo</th>
+                      <th class="px-4 py-3">Empleado</th>
                       <th class="px-4 py-3">Producto</th>
                       <th class="px-4 py-3">Origen</th>
                       <th class="px-4 py-3">Destino</th>

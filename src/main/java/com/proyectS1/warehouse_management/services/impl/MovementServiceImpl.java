@@ -19,6 +19,8 @@ import com.proyectS1.warehouse_management.model.Movement;
 import com.proyectS1.warehouse_management.model.Product;
 import com.proyectS1.warehouse_management.model.Warehouse;
 import com.proyectS1.warehouse_management.model.enums.MovementType;
+import com.proyectS1.warehouse_management.model.enums.UserRole;
+import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.repositories.MovementRepository;
 import com.proyectS1.warehouse_management.repositories.ProductRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
@@ -33,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class MovementServiceImpl implements MovementService {
 
+    private final AppUserRepository appUserRepository;
     private final MovementRepository movementRepository;
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
@@ -44,7 +47,7 @@ public class MovementServiceImpl implements MovementService {
     public MovementResponseDTO saveMovement(MovementRequestDTO dto) {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         validateWarehouseRules(dto);
-        warehouseAccessService.requireWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
+        warehouseAccessService.requireAnyWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
 
         Movement movement = movementMapper.dtoToEntity(dto);
         hydrateRelations(movement, dto, currentUser);
@@ -61,7 +64,7 @@ public class MovementServiceImpl implements MovementService {
         Movement movement = findMovementById(id);
         requireMovementAccess(currentUser, movement);
         MovementResponseDTO oldValues = movementMapper.entityToDTO(movement);
-        warehouseAccessService.requireWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
+        warehouseAccessService.requireAnyWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
         movementMapper.updateEntityFromDTO(movement, dto);
         hydrateRelations(movement, dto, currentUser);
         MovementResponseDTO newValues = movementMapper.entityToDTO(movementRepository.save(movement));
@@ -120,14 +123,15 @@ public class MovementServiceImpl implements MovementService {
     @Transactional(readOnly = true)
     public List<MovementResponseDTO> findByWarehouse(Long warehouseId) {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
-        warehouseAccessService.requireWarehouseAccess(currentUser, warehouseId);
         return movementRepository.findByOriginWarehouseIdOrDestinationWarehouseId(warehouseId, warehouseId).stream()
+            .filter(movement -> hasMovementAccess(currentUser, movement))
             .map(movementMapper::entityToDTO)
             .toList();
     }
 
     private void hydrateRelations(Movement movement, MovementRequestDTO dto, AppUser currentUser) {
-        movement.setEmployee(currentUser);
+        movement.setRegisteredByUser(currentUser);
+        movement.setPerformedByEmployee(resolvePerformedByEmployee(dto, currentUser));
         movement.setOriginWarehouse(resolveWarehouse(dto.originWarehouseId()));
         movement.setDestinationWarehouse(resolveWarehouse(dto.destinationWarehouseId()));
         movement.setProduct(resolveProduct(dto.productId()));
@@ -172,6 +176,37 @@ public class MovementServiceImpl implements MovementService {
     private Product resolveProduct(Long id) {
         return productRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Product not found with id " + id));
+    }
+
+    private AppUser resolvePerformedByEmployee(MovementRequestDTO dto, AppUser currentUser) {
+        AppUser employee = appUserRepository.findById(dto.performedByEmployeeId())
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Employee not found with id " + dto.performedByEmployeeId()));
+
+        if (employee.getRole() != UserRole.EMPLOYEE) {
+            throw new ResponseStatusException(BAD_REQUEST, "performedByEmployeeId must belong to a user with EMPLOYEE role");
+        }
+
+        Long employeeWarehouseId = employee.getWarehouse() != null ? employee.getWarehouse().getId() : null;
+        if (employeeWarehouseId == null) {
+            throw new ResponseStatusException(BAD_REQUEST, "Selected employee does not have an assigned warehouse");
+        }
+
+        boolean matchesMovementWarehouse = switch (dto.movementType()) {
+            case ENTRY -> employeeWarehouseId.equals(dto.destinationWarehouseId());
+            case EXIT -> employeeWarehouseId.equals(dto.originWarehouseId());
+            case TRANSFER -> employeeWarehouseId.equals(dto.originWarehouseId())
+                || employeeWarehouseId.equals(dto.destinationWarehouseId());
+        };
+
+        if (!matchesMovementWarehouse) {
+            throw new ResponseStatusException(BAD_REQUEST, "Selected employee must belong to a warehouse participating in the movement");
+        }
+
+        if (!warehouseAccessService.isAdmin(currentUser)) {
+            warehouseAccessService.requireWarehouseAccess(currentUser, employeeWarehouseId);
+        }
+
+        return employee;
     }
 
     private void requireMovementAccess(AppUser currentUser, Movement movement) {

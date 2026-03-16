@@ -14,15 +14,21 @@ public class MovementMapper {
             return null;
         }
 
-        String registeredByName = movement.getEmployee() == null
+        String registeredByName = movement.getRegisteredByUser() == null
             ? null
-            : movement.getEmployee().getFirstName() + " " + movement.getEmployee().getLastName();
+            : movement.getRegisteredByUser().getFirstName() + " " + movement.getRegisteredByUser().getLastName();
+
+        String performedByEmployeeName = movement.getPerformedByEmployee() == null
+            ? null
+            : movement.getPerformedByEmployee().getFirstName() + " " + movement.getPerformedByEmployee().getLastName();
 
         return new MovementResponseDTO(
             movement.getId(),
             movement.getMovementType(),
-            movement.getEmployee() != null ? movement.getEmployee().getId() : null,
+            movement.getRegisteredByUser() != null ? movement.getRegisteredByUser().getId() : null,
             registeredByName,
+            movement.getPerformedByEmployee() != null ? movement.getPerformedByEmployee().getId() : null,
+            performedByEmployeeName,
             movement.getOriginWarehouse() != null ? movement.getOriginWarehouse().getId() : null,
             movement.getOriginWarehouse() != null ? movement.getOriginWarehouse().getName() : null,
             movement.getDestinationWarehouse() != null ? movement.getDestinationWarehouse().getId() : null,

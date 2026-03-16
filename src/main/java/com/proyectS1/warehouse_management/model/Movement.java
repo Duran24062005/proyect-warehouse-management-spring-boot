@@ -32,8 +32,13 @@ public class Movement extends BaseTimeEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_user_id", nullable = false)
-    private AppUser employee;
+    @JoinColumn(name = "registered_by_user_id", nullable = false)
+    private AppUser registeredByUser;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "performed_by_employee_id", nullable = false)
+    private AppUser performedByEmployee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origin_warehouse_id")

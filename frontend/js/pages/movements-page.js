@@ -10,6 +10,7 @@ const tableBody = document.querySelector("#movements-body");
 
 let currentUser = null;
 let movements = [];
+let employees = [];
 
 function syncMovementFields() {
   const type = document.querySelector("#movement-type").value;
@@ -42,6 +43,7 @@ function editMovement(id) {
 
   form.movementId.value = movement.id;
   form.movementType.value = movement.movementType;
+  form.performedByEmployeeId.value = movement.performedByEmployeeId;
   form.productId.value = movement.productId;
   form.originWarehouseId.value = movement.originWarehouseId || "";
   form.destinationWarehouseId.value = movement.destinationWarehouseId || "";
@@ -51,12 +53,23 @@ function editMovement(id) {
 }
 
 async function loadCatalogs(user) {
-  const [products, warehouses] = await Promise.all([
+  const employeeRequest = user.role === "ADMIN"
+    ? request("/users/role", { auth: true, query: { role: "EMPLOYEE" } })
+    : request("/users/employees/my-warehouses", { auth: true });
+
+  const [products, managedWarehouses, referenceWarehouses, employeeResponse] = await Promise.all([
     request("/products", { auth: true }),
-    request("/warehouses", { auth: true })
+    request("/warehouses", { auth: true }),
+    request("/warehouses", {
+      auth: true,
+      query: { scope: "references" }
+    }),
+    employeeRequest
   ]);
 
-  if (user.role !== "ADMIN" && !warehouses.length) {
+  employees = employeeResponse;
+
+  if (user.role !== "ADMIN" && !managedWarehouses.length) {
     showNotice(
       notice,
       "No tienes una bodega asignada como manager. Un administrador debe asignarte una para registrar y consultar movimientos.",
@@ -72,15 +85,19 @@ async function loadCatalogs(user) {
     placeholder: "Todos los productos",
     label: (item) => item.name
   });
-  fillSelect(document.querySelector("#movement-origin-id"), warehouses, {
+  fillSelect(document.querySelector("#movement-performed-by-id"), employees, {
+    placeholder: "Selecciona un empleado",
+    label: (item) => `${item.firstName} ${item.lastName} - ${item.warehouseName || "Sin bodega"}`
+  });
+  fillSelect(document.querySelector("#movement-origin-id"), referenceWarehouses, {
     placeholder: "Sin origen",
     label: (item) => item.name
   });
-  fillSelect(document.querySelector("#movement-destination-id"), warehouses, {
+  fillSelect(document.querySelector("#movement-destination-id"), referenceWarehouses, {
     placeholder: "Sin destino",
     label: (item) => item.name
   });
-  fillSelect(document.querySelector("#filter-warehouse-id"), warehouses, {
+  fillSelect(document.querySelector("#filter-warehouse-id"), referenceWarehouses, {
     placeholder: "Todas las bodegas",
     label: (item) => item.name
   });
@@ -99,6 +116,7 @@ async function loadMovements(filters = {}) {
     (item) => `
       <tr>
         <td class="px-4 py-3">${item.movementType}</td>
+        <td class="px-4 py-3">${item.performedByEmployeeName || "-"}</td>
         <td class="px-4 py-3">${item.productName}</td>
         <td class="px-4 py-3">${item.originWarehouseName || "-"}</td>
         <td class="px-4 py-3">${item.destinationWarehouseName || "-"}</td>
@@ -111,7 +129,7 @@ async function loadMovements(filters = {}) {
         </td>
       </tr>
     `,
-    { colspan: 6, emptyMessage: "No hay movimientos para mostrar." }
+    { colspan: 7, emptyMessage: "No hay movimientos para mostrar." }
   );
 }
 
@@ -178,6 +196,7 @@ form.addEventListener("submit", async (event) => {
 
   const payload = {
     movementType: form.movementType.value,
+    performedByEmployeeId: Number(form.performedByEmployeeId.value),
     originWarehouseId: form.originWarehouseId.value ? Number(form.originWarehouseId.value) : null,
     destinationWarehouseId: form.destinationWarehouseId.value ? Number(form.destinationWarehouseId.value) : null,
     productId: Number(form.productId.value),

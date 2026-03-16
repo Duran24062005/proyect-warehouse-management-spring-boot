@@ -10,6 +10,9 @@ public record MovementRequestDTO(
     @NotNull
     @Schema(description = "Movement type", example = "ENTRY")
     MovementType movementType,
+    @NotNull
+    @Schema(description = "Employee id that physically performed the movement", example = "5")
+    Long performedByEmployeeId,
     @Schema(description = "Origin warehouse id", example = "1")
     Long originWarehouseId,
     @Schema(description = "Destination warehouse id", example = "2")

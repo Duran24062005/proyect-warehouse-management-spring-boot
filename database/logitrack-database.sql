@@ -17,15 +17,17 @@ CREATE TABLE IF NOT EXISTS app_user (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     phone_number VARCHAR(100) NOT NULL,
-    role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',
+    role ENUM('ADMIN', 'USER', 'EMPLOYEE') NOT NULL DEFAULT 'USER',
     user_status ENUM('PENDING', 'ACTIVE', 'BLOCKED') NOT NULL DEFAULT 'PENDING',
     enable BOOLEAN NOT NULL DEFAULT TRUE,
+    warehouse_id BIGINT UNSIGNED NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT chk_app_user_status_enabled CHECK (
         (user_status = 'ACTIVE' AND enable = TRUE)
         OR (user_status IN ('PENDING', 'BLOCKED') AND enable = FALSE)
     ),
+    KEY ix_app_user_warehouse (warehouse_id),
     UNIQUE KEY uq_app_user_email (email)
 ) ENGINE=InnoDB;
 
@@ -44,6 +46,12 @@ CREATE TABLE IF NOT EXISTS warehouse (
         ON DELETE SET NULL
         ON UPDATE RESTRICT
 ) ENGINE=InnoDB;
+
+ALTER TABLE app_user
+    ADD CONSTRAINT fk_app_user_warehouse
+        FOREIGN KEY (warehouse_id) REFERENCES warehouse(id)
+        ON DELETE SET NULL
+        ON UPDATE RESTRICT;
 
 CREATE TABLE IF NOT EXISTS product (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -95,7 +103,8 @@ CREATE TABLE IF NOT EXISTS audit_change (
 CREATE TABLE IF NOT EXISTS movement (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     movement_type ENUM('ENTRY', 'EXIT', 'TRANSFER') NOT NULL,
-    employee_user_id BIGINT UNSIGNED NOT NULL,
+    registered_by_user_id BIGINT UNSIGNED NOT NULL,
+    performed_by_employee_id BIGINT UNSIGNED NOT NULL,
     origin_warehouse_id BIGINT UNSIGNED NULL,
     destination_warehouse_id BIGINT UNSIGNED NULL,
     product_id BIGINT UNSIGNED NOT NULL,
@@ -103,7 +112,8 @@ CREATE TABLE IF NOT EXISTS movement (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY ix_movement_date (created_at),
-    KEY ix_movement_employee_date (employee_user_id, created_at),
+    KEY ix_movement_registered_by_date (registered_by_user_id, created_at),
+    KEY ix_movement_performed_by_date (performed_by_employee_id, created_at),
     KEY ix_movement_product_date (product_id, created_at),
     CONSTRAINT chk_movement_quantity CHECK (quantity > 0),
     CONSTRAINT chk_movement_warehouses CHECK (
@@ -116,8 +126,12 @@ CREATE TABLE IF NOT EXISTS movement (
             AND origin_warehouse_id <> destination_warehouse_id
         )
     ),
-    CONSTRAINT fk_mov_emp
-        FOREIGN KEY (employee_user_id) REFERENCES app_user(id)
+    CONSTRAINT fk_movement_registered_by
+        FOREIGN KEY (registered_by_user_id) REFERENCES app_user(id)
+        ON DELETE RESTRICT
+        ON UPDATE RESTRICT,
+    CONSTRAINT fk_movement_performed_by
+        FOREIGN KEY (performed_by_employee_id) REFERENCES app_user(id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT,
     CONSTRAINT fk_mov_origin
@@ -147,12 +161,13 @@ INSERT INTO app_user (
     phone_number,
     role,
     user_status,
-    enable
+    enable,
+    warehouse_id
 ) VALUES
-    (1, 'admin@logitrack.com', '$2a$10$adminhashlogitrack', 'Alexi', 'Duran', '3000000001', 'ADMIN', 'ACTIVE', TRUE),
-    (2, 'mlopez@logitrack.com', '$2a$10$mlopezhashlogitrack', 'Maria', 'Lopez', '3000000002', 'USER', 'ACTIVE', TRUE),
-    (3, 'jgarcia@logitrack.com', '$2a$10$jgarciahashlogitrack', 'Juan', 'Garcia', '3000000003', 'USER', 'PENDING', FALSE),
-    (4, 'cperez@logitrack.com', '$2a$10$cperezhashlogitrack', 'Camila', 'Perez', '3000000004', 'USER', 'BLOCKED', FALSE);
+    (1, 'admin@logitrack.com', '$2a$10$adminhashlogitrack', 'Alexi', 'Duran', '3000000001', 'ADMIN', 'ACTIVE', TRUE, NULL),
+    (2, 'mlopez@logitrack.com', '$2a$10$mlopezhashlogitrack', 'Maria', 'Lopez', '3000000002', 'USER', 'ACTIVE', TRUE, NULL),
+    (3, 'jgarcia@logitrack.com', '$2a$10$jgarciahashlogitrack', 'Juan', 'Garcia', '3000000003', 'USER', 'PENDING', FALSE, NULL),
+    (4, 'cperez@logitrack.com', '$2a$10$cperezhashlogitrack', 'Camila', 'Perez', '3000000004', 'USER', 'BLOCKED', FALSE, NULL);
 
 INSERT INTO warehouse (
     id,
@@ -165,6 +180,20 @@ INSERT INTO warehouse (
     (1, 'Bodega Central Bogota', 'Bogota, DC', 5000.000, 2, '2026-03-01 09:00:00'),
     (2, 'Bodega Norte Medellin', 'Medellin, Antioquia', 3200.000, 3, '2026-03-01 09:10:00'),
     (3, 'Bodega Costa Barranquilla', 'Barranquilla, Atlantico', 2800.000, 4, '2026-03-01 09:20:00');
+
+INSERT INTO app_user (
+    id,
+    email,
+    hash_password,
+    first_name,
+    last_name,
+    phone_number,
+    role,
+    user_status,
+    enable,
+    warehouse_id
+) VALUES
+    (5, 'lrojas@logitrack.com', '$2a$10$lrojashashlogitrack', 'Luis', 'Rojas', '3000000005', 'EMPLOYEE', 'ACTIVE', TRUE, 1);
 
 INSERT INTO product (
     id,
@@ -206,7 +235,7 @@ INSERT INTO audit_change (
         1,
         1,
         NULL,
-        JSON_OBJECT('table', 'app_user', 'inserted_rows', 4),
+        JSON_OBJECT('table', 'app_user', 'inserted_rows', 5),
         '2026-03-01 10:10:00'
     ),
     (
@@ -249,22 +278,23 @@ INSERT INTO audit_change (
 INSERT INTO movement (
     id,
     movement_type,
-    employee_user_id,
+    registered_by_user_id,
+    performed_by_employee_id,
     origin_warehouse_id,
     destination_warehouse_id,
     product_id,
     quantity,
     created_at
 ) VALUES
-    (1, 'ENTRY', 2, NULL, 1, 1, 25, '2026-03-02 10:00:00'),
-    (2, 'ENTRY', 2, NULL, 1, 2, 40, '2026-03-02 10:30:00'),
-    (3, 'ENTRY', 3, NULL, 2, 3, 18, '2026-03-03 09:00:00'),
-    (4, 'TRANSFER', 2, 1, 2, 1, 25, '2026-03-04 14:00:00'),
-    (5, 'EXIT', 3, 2, NULL, 3, 4, '2026-03-05 16:00:00'),
-    (6, 'ENTRY', 4, NULL, 3, 5, 15, '2026-03-06 11:00:00'),
-    (7, 'TRANSFER', 4, 3, 1, 5, 15, '2026-03-07 12:00:00'),
-    (8, 'EXIT', 2, 1, NULL, 2, 6, '2026-03-08 15:30:00'),
-    (9, 'ENTRY', 3, NULL, 2, 4, 20, '2026-03-09 09:45:00');
+    (1, 'ENTRY', 2, 5, NULL, 1, 1, 25, '2026-03-02 10:00:00'),
+    (2, 'ENTRY', 2, 5, NULL, 1, 2, 40, '2026-03-02 10:30:00'),
+    (3, 'ENTRY', 3, 5, NULL, 2, 3, 18, '2026-03-03 09:00:00'),
+    (4, 'TRANSFER', 2, 5, 1, 2, 1, 25, '2026-03-04 14:00:00'),
+    (5, 'EXIT', 3, 5, 2, NULL, 3, 4, '2026-03-05 16:00:00'),
+    (6, 'ENTRY', 4, 5, NULL, 1, 5, 15, '2026-03-06 11:00:00'),
+    (7, 'TRANSFER', 4, 5, 1, 3, 5, 15, '2026-03-07 12:00:00'),
+    (8, 'EXIT', 2, 5, 1, NULL, 2, 6, '2026-03-08 15:30:00'),
+    (9, 'ENTRY', 3, 5, NULL, 1, 4, 20, '2026-03-09 09:45:00');
 
 -- Sample queries are available in:
 -- database/logitrack-queries.sql

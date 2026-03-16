@@ -21,11 +21,13 @@ SELECT
     m.quantity,
     COALESCE(wo.name, 'EXTERNAL') AS origin_warehouse,
     COALESCE(wd.name, 'EXTERNAL') AS destination_warehouse,
-    CONCAT(u.first_name, ' ', u.last_name) AS employee_name,
+    CONCAT(ru.first_name, ' ', ru.last_name) AS registered_by_name,
+    CONCAT(eu.first_name, ' ', eu.last_name) AS performed_by_employee_name,
     m.created_at
 FROM movement AS m
 INNER JOIN product AS p ON p.id = m.product_id
-INNER JOIN app_user AS u ON u.id = m.employee_user_id
+INNER JOIN app_user AS ru ON ru.id = m.registered_by_user_id
+INNER JOIN app_user AS eu ON eu.id = m.performed_by_employee_id
 LEFT JOIN warehouse AS wo ON wo.id = m.origin_warehouse_id
 LEFT JOIN warehouse AS wd ON wd.id = m.destination_warehouse_id
 ORDER BY m.created_at, m.id;
@@ -58,13 +60,13 @@ GROUP BY w.id, w.name, p.id, p.name
 HAVING SUM(stock_delta.quantity_delta) > 0
 ORDER BY w.name, p.name;
 
--- 4. Movement summary by employee
+-- 4. Movement summary by executing employee
 SELECT
     CONCAT(u.first_name, ' ', u.last_name) AS employee_name,
     COUNT(m.id) AS total_movements,
     SUM(m.quantity) AS total_units_moved
 FROM movement AS m
-INNER JOIN app_user AS u ON u.id = m.employee_user_id
+INNER JOIN app_user AS u ON u.id = m.performed_by_employee_id
 GROUP BY u.id, u.first_name, u.last_name
 ORDER BY total_units_moved DESC, total_movements DESC;
 
