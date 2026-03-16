@@ -3,12 +3,12 @@ const TOKEN_KEY = "logitrack-token";
 const USER_KEY = "logitrack-user";
 
 export function getApiBase() {
-  return localStorage.getItem(API_BASE_KEY) || "http://localhost:8000/api";
+  return localStorage.getItem(API_BASE_KEY) || "http://172.16.41.168:8000/api";
 }
 
 export function setApiBase(value) {
   const normalized = String(value || "").trim().replace(/\/+$/, "");
-  localStorage.setItem(API_BASE_KEY, normalized || "http://localhost:8000/api");
+  localStorage.setItem(API_BASE_KEY, normalized || "http://172.16.41.168:8000/api");
 }
 
 export function getToken() {
