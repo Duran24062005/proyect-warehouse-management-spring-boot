@@ -11,9 +11,9 @@ body {
 
 .page-bg {
   background:
-    radial-gradient(circle at top left, rgba(244, 162, 89, 0.2), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(82, 121, 111, 0.16), transparent 24%),
-    #f8f4ec;
+    radial-gradient(circle at top left, rgba(244, 162, 89, 0.1), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(82, 121, 111, 0.08), transparent 22%),
+    linear-gradient(180deg, #44546f 0%, #31425d 100%);
 }
 
 .glass-panel {

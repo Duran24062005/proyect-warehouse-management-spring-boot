@@ -4,17 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LogiTrack | Login</title>
-  <link rel="shortcut icon" href="../img/appLogo_backgroundless.png" type="image/x-icon">
+  <link rel="shortcut icon" href="./img/appLogo_backgroundless.png" type="image/x-icon">
   <script src="./js/core/tailwind-theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./styles/base.css">
   <link rel="stylesheet" href="./styles/auth.css">
   <link rel="stylesheet" href="./styles/app.css">
 </head>
-<body class="page-bg min-h-screen text-ink bg-slate-700">
+<body class="page-bg min-h-screen text-ink bg-gradient-to-t from-slate-700 to-slate-300">
   <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
     <div class="auth-grid">
-      <section class="auth-hero section-card flex flex-col justify-between p-8 lg:p-10">
+      <section class="section-card p-8 lg:p-10 bg-slate-200">
+        <h2 class="section-title">Iniciar sesion</h2>
+        <p class="mt-3 text-sm text-slate-600">Usa tu email y contrasena para entrar al sistema.</p>
+
+        <div id="login-notice" class="hidden mt-6"></div>
+
+        <form id="login-form" class="mt-6 space-y-4">
+          <div>
+            <label class="mb-2 block text-sm font-medium">Correo</label>
+            <input class="input-shell bg-slate-100" type="email" name="email" placeholder="admin@logitrack.com" required>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium">Contrasena</label>
+            <input class="input-shell bg-slate-100" type="password" name="password" placeholder="Minimo 6 caracteres" required>
+          </div>
+          <button class="btn-primary w-full" type="submit">Entrar</button>
+        </form>
+
+        <p class="mt-5 text-sm text-slate-600">
+          Aun no tienes cuenta?
+          <a class="font-semibold text-clay" href="./register.html">Registrate aqui</a>
+        </p>
+
+        <div class="mt-8 rounded-2xl bg-mist/70 p-5">
+          <h3 class="font-semibold">Configuracion rapida</h3>
+          <p class="mt-1 text-sm text-slate-600">Si tu backend corre en otra URL, cambiala aqui.</p>
+          <form data-api-base-form class="mt-4 space-y-3">
+            <input class="input-shell bg-slate-100" type="text" name="apiBase" placeholder="http://localhost:8000/api">
+            <button class="btn-secondary w-full" type="submit">Guardar base URL</button>
+            <div data-api-base-feedback class="hidden"></div>
+          </form>
+        </div>
+      </section>
+      
+      <section class="auth-hero section-card flex flex-col justify-between p-8 lg:p-10"
+      style=
+        "background-image: 
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.4)),
+        url('./img/4-Basics-to-Know-About-Warehouse-Storage-Services.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      ">
         <div>
           <div class="container flex justify-center">
             <img
@@ -33,40 +75,6 @@
           <p>1. Inicia sesion</p>
           <p>2. Entra al panel</p>
           <p>3. Administra productos, bodegas, movimientos y usuarios</p>
-        </div>
-      </section>
-
-      <section class="section-card p-8 lg:p-10 bg-slate-200">
-        <h2 class="section-title">Iniciar sesion</h2>
-        <p class="mt-3 text-sm text-slate-600">Usa tu email y contrasena para entrar al sistema.</p>
-
-        <div id="login-notice" class="hidden mt-6"></div>
-
-        <form id="login-form" class="mt-6 space-y-4">
-          <div>
-            <label class="mb-2 block text-sm font-medium">Correo</label>
-            <input class="input-shell" type="email" name="email" placeholder="admin@logitrack.com" required>
-          </div>
-          <div>
-            <label class="mb-2 block text-sm font-medium">Contrasena</label>
-            <input class="input-shell" type="password" name="password" placeholder="Minimo 6 caracteres" required>
-          </div>
-          <button class="btn-primary w-full" type="submit">Entrar</button>
-        </form>
-
-        <p class="mt-5 text-sm text-slate-600">
-          Aun no tienes cuenta?
-          <a class="font-semibold text-clay" href="./register.html">Registrate aqui</a>
-        </p>
-
-        <div class="mt-8 rounded-2xl bg-mist/70 p-5">
-          <h3 class="font-semibold">Configuracion rapida</h3>
-          <p class="mt-1 text-sm text-slate-600">Si tu backend corre en otra URL, cambiala aqui.</p>
-          <form data-api-base-form class="mt-4 space-y-3">
-            <input class="input-shell" type="text" name="apiBase" placeholder="http://localhost:8000/api">
-            <button class="btn-secondary w-full" type="submit">Guardar base URL</button>
-            <div data-api-base-feedback class="hidden"></div>
-          </form>
         </div>
       </section>
     </div>

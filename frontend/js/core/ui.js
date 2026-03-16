@@ -17,12 +17,12 @@ export function showNotice(element, message, type = "success") {
   }
 
   const palette = {
-    success: "border-moss/30 bg-moss/10 text-moss",
-    error: "border-wine/30 bg-wine/10 text-wine",
-    info: "border-ink/20 bg-white/80 text-ink"
+    success: "bg-green-500 text-white",
+    error: "bg-red-500 text-white",
+    info: "bg-orange-500 text-white"
   };
 
-  element.className = `rounded-2xl border px-4 py-3 text-sm ${palette[type] || palette.info}`;
+  element.className = `notice-shell ${palette[type] || palette.info}`;
   element.textContent = message;
 }
 

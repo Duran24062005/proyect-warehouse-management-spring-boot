@@ -9,13 +9,13 @@ async function init() {
   if (!user) return;
 
   setupLayout("system", user);
+  showNotice(notice, "");
 
   try {
-    const [products, warehouses, movements, lowStock, users] = await Promise.all([
+    const [products, warehouses, movements, users] = await Promise.all([
       request("/products", { auth: true }),
       request("/warehouses", { auth: true }),
       request("/movements", { auth: true }),
-      request("/products/low-stock", { auth: true }),
       user.role === "ADMIN" ? request("/users", { auth: true }) : Promise.resolve([])
     ]);
 
@@ -24,17 +24,25 @@ async function init() {
     document.querySelector("#movements-count").textContent = movements.length;
     document.querySelector("#users-count").textContent = user.role === "ADMIN" ? users.length : "No aplica";
 
+    if (user.role !== "ADMIN" && !warehouses.length) {
+      showNotice(
+        notice,
+        "Tu usuario no tiene una bodega asignada como manager. Por eso no aparece informacion operativa en el panel.",
+        "info"
+      );
+    }
+
     renderTable(
-      document.querySelector("#low-stock-body"),
-      lowStock,
+      document.querySelector("#warehouse-summary-body"),
+      warehouses.slice(0, 5),
       (item) => `
         <tr>
           <td class="px-4 py-3">${item.name}</td>
-          <td class="px-4 py-3">${item.category}</td>
-          <td class="px-4 py-3">${item.warehouseName || "-"}</td>
+          <td class="px-4 py-3">${item.ubication}</td>
+          <td class="px-4 py-3">${item.managerName || "Sin manager"}</td>
         </tr>
       `,
-      { colspan: 3, emptyMessage: "No hay productos con stock bajo." }
+      { colspan: 3, emptyMessage: "No hay bodegas registradas." }
     );
 
     renderTable(

@@ -12,7 +12,6 @@ const notice = document.querySelector("#products-notice");
 const form = document.querySelector("#product-form");
 const resetButton = document.querySelector("#reset-product-form");
 const tableBody = document.querySelector("#products-body");
-const lowTableBody = document.querySelector("#low-products-body");
 const warehouseSelect = document.querySelector("#product-warehouse-id");
 
 let products = [];
@@ -35,11 +34,10 @@ function editProduct(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-async function loadData() {
-  const [productsResponse, warehousesResponse, lowStockResponse] = await Promise.all([
+async function loadData(user) {
+  const [productsResponse, warehousesResponse] = await Promise.all([
     request("/products", { auth: true }),
-    request("/warehouses", { auth: true }),
-    request("/products/low-stock", { auth: true })
+    request("/warehouses", { auth: true })
   ]);
 
   products = productsResponse;
@@ -49,6 +47,14 @@ async function loadData() {
     placeholder: "Sin bodega",
     label: (item) => item.name
   });
+
+  if (user.role !== "ADMIN" && !warehouses.length) {
+    showNotice(
+      notice,
+      "No tienes una bodega asignada como manager. Por eso no hay productos visibles para tu usuario.",
+      "info"
+    );
+  }
 
   renderTable(
     tableBody,
@@ -69,19 +75,6 @@ async function loadData() {
     `,
     { colspan: 5, emptyMessage: "No hay productos creados." }
   );
-
-  renderTable(
-    lowTableBody,
-    lowStockResponse,
-    (item) => `
-      <tr>
-        <td class="px-4 py-3">${item.name}</td>
-        <td class="px-4 py-3">${item.category}</td>
-        <td class="px-4 py-3">${item.warehouseName || "-"}</td>
-      </tr>
-    `,
-    { colspan: 3, emptyMessage: "No hay alertas de stock bajo." }
-  );
 }
 
 async function init() {
@@ -89,9 +82,10 @@ async function init() {
   if (!user) return;
 
   setupLayout("products", user);
+  showNotice(notice, "");
 
   try {
-    await loadData();
+    await loadData(user);
   } catch (error) {
     showNotice(notice, error.message, "error");
   }
@@ -117,7 +111,7 @@ tableBody.addEventListener("click", async (event) => {
         auth: true
       });
       showNotice(notice, "Producto eliminado correctamente.", "success");
-      await loadData();
+      await loadData(await requireAuth());
       resetForm();
     } catch (error) {
       showNotice(notice, error.message, "error");
@@ -150,7 +144,7 @@ form.addEventListener("submit", async (event) => {
       "success"
     );
     resetForm();
-    await loadData();
+    await loadData(await requireAuth());
   } catch (error) {
     showNotice(notice, error.message, "error");
   }

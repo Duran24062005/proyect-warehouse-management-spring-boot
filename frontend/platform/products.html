@@ -47,7 +47,7 @@
         <div id="products-notice" class="hidden"></div>
 
         <section class="grid gap-6 2xl:grid-cols-[minmax(27rem,30rem)_minmax(0,1fr)]">
-          <article class="section-card p-6 xl:p-7">
+          <article class="section-card p-6 xl:p-7 lg:h-[35rem]">
             <div class="flex items-center justify-between gap-4">
               <div>
                 <h3 class="text-xl font-semibold">Formulario</h3>
@@ -78,47 +78,28 @@
             </form>
           </article>
 
-          <div class="space-y-6">
-            <article class="section-card p-6 xl:p-7">
-              <div class="flex items-center justify-between gap-4">
-                <div>
-                  <h3 class="text-xl font-semibold">Listado</h3>
-                  <p class="text-sm text-slate-600">Haz clic en editar para traer un registro al formulario.</p>
-                </div>
+          <article class="section-card p-6 xl:p-7">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <h3 class="text-xl font-semibold">Listado</h3>
+                <p class="text-sm text-slate-600">Haz clic en editar para traer un registro al formulario.</p>
               </div>
-              <div class="table-shell mt-5">
-                <table class="text-sm">
-                  <thead class="bg-mist/70 text-left">
-                    <tr>
-                      <th class="px-4 py-3">Nombre</th>
-                      <th class="px-4 py-3">Categoria</th>
-                      <th class="px-4 py-3">Precio</th>
-                      <th class="px-4 py-3">Bodega</th>
-                      <th class="px-4 py-3">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody id="products-body"></tbody>
-                </table>
-              </div>
-            </article>
-
-            <article class="section-card p-6 xl:p-7">
-              <h3 class="text-xl font-semibold">Stock bajo</h3>
-              <p class="mt-1 text-sm text-slate-600">Sirve para revisar rapido lo que necesita atencion.</p>
-              <div class="table-shell mt-5">
-                <table class="text-sm">
-                  <thead class="bg-mist/70 text-left">
-                    <tr>
-                      <th class="px-4 py-3">Producto</th>
-                      <th class="px-4 py-3">Categoria</th>
-                      <th class="px-4 py-3">Bodega</th>
-                    </tr>
-                  </thead>
-                  <tbody id="low-products-body"></tbody>
-                </table>
-              </div>
-            </article>
-          </div>
+            </div>
+            <div class="table-shell mt-5">
+              <table class="text-sm">
+                <thead class="bg-mist/70 text-left">
+                  <tr>
+                    <th class="px-4 py-3">Nombre</th>
+                    <th class="px-4 py-3">Categoria</th>
+                    <th class="px-4 py-3">Precio</th>
+                    <th class="px-4 py-3">Bodega</th>
+                    <th class="px-4 py-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="products-body"></tbody>
+              </table>
+            </div>
+          </article>
         </section>
       </section>
     </div>

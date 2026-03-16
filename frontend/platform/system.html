@@ -73,21 +73,21 @@
           <article class="section-card p-6">
             <div class="flex items-center justify-between gap-4">
               <div>
-                <h3 class="text-xl font-semibold">Productos con stock bajo</h3>
-                <p class="text-sm text-slate-600">Consulta directa a `/api/products/low-stock`.</p>
+                <h3 class="text-xl font-semibold">Bodegas registradas</h3>
+                <p class="text-sm text-slate-600">Vista corta de las bodegas y sus managers actuales.</p>
               </div>
-              <a class="btn-secondary" href="./products.html">Abrir modulo</a>
+              <a class="btn-secondary" href="./warehouses.html">Abrir modulo</a>
             </div>
             <div class="table-shell mt-5">
               <table class="text-sm">
                 <thead class="bg-mist/70 text-left">
                   <tr>
-                    <th class="px-4 py-3">Producto</th>
-                    <th class="px-4 py-3">Categoria</th>
                     <th class="px-4 py-3">Bodega</th>
+                    <th class="px-4 py-3">Ubicacion</th>
+                    <th class="px-4 py-3">Manager</th>
                   </tr>
                 </thead>
-                <tbody id="low-stock-body"></tbody>
+                <tbody id="warehouse-summary-body"></tbody>
               </table>
             </div>
           </article>

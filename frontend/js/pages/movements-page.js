@@ -10,7 +10,6 @@ const tableBody = document.querySelector("#movements-body");
 
 let currentUser = null;
 let movements = [];
-let users = [];
 
 function syncMovementFields() {
   const type = document.querySelector("#movement-type").value;
@@ -34,9 +33,6 @@ function syncMovementFields() {
 function resetForm() {
   form.reset();
   form.movementId.value = "";
-  if (currentUser) {
-    form.employeeUserId.value = currentUser.id;
-  }
   syncMovementFields();
 }
 
@@ -46,7 +42,6 @@ function editMovement(id) {
 
   form.movementId.value = movement.id;
   form.movementType.value = movement.movementType;
-  form.employeeUserId.value = movement.employeeUserId;
   form.productId.value = movement.productId;
   form.originWarehouseId.value = movement.originWarehouseId || "";
   form.destinationWarehouseId.value = movement.destinationWarehouseId || "";
@@ -56,13 +51,18 @@ function editMovement(id) {
 }
 
 async function loadCatalogs(user) {
-  const [products, warehouses, usersResponse] = await Promise.all([
+  const [products, warehouses] = await Promise.all([
     request("/products", { auth: true }),
-    request("/warehouses", { auth: true }),
-    user.role === "ADMIN" ? request("/users", { auth: true }) : Promise.resolve([user])
+    request("/warehouses", { auth: true })
   ]);
 
-  users = usersResponse;
+  if (user.role !== "ADMIN" && !warehouses.length) {
+    showNotice(
+      notice,
+      "No tienes una bodega asignada como manager. Un administrador debe asignarte una para registrar y consultar movimientos.",
+      "info"
+    );
+  }
 
   fillSelect(document.querySelector("#movement-product-id"), products, {
     placeholder: "Selecciona un producto",
@@ -84,12 +84,7 @@ async function loadCatalogs(user) {
     placeholder: "Todas las bodegas",
     label: (item) => item.name
   });
-  fillSelect(document.querySelector("#movement-employee-id"), users, {
-    placeholder: "Selecciona un empleado",
-    label: (item) => `${item.firstName} ${item.lastName}`
-  });
-
-  form.employeeUserId.value = user.id;
+  document.querySelector("#movement-registered-by").textContent = `${user.firstName} ${user.lastName}`;
 }
 
 async function loadMovements(filters = {}) {
@@ -126,6 +121,7 @@ async function init() {
 
   currentUser = user;
   setupLayout("movements", user);
+  showNotice(notice, "");
 
   try {
     await loadCatalogs(user);
@@ -182,7 +178,6 @@ form.addEventListener("submit", async (event) => {
 
   const payload = {
     movementType: form.movementType.value,
-    employeeUserId: Number(form.employeeUserId.value),
     originWarehouseId: form.originWarehouseId.value ? Number(form.originWarehouseId.value) : null,
     destinationWarehouseId: form.destinationWarehouseId.value ? Number(form.destinationWarehouseId.value) : null,
     productId: Number(form.productId.value),

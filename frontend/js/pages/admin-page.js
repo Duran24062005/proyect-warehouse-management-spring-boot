@@ -12,6 +12,37 @@ let filters = {
   status: ""
 };
 
+function renderQuickActions(user) {
+  const actions = [];
+
+  if (user.userStatus === "PENDING") {
+    actions.push(
+      `<button class="btn-secondary" data-mode="approve" data-id="${user.id}" type="button">Aprobar</button>`
+    );
+    actions.push(
+      `<button class="btn-danger" data-mode="block" data-id="${user.id}" type="button">Bloquear</button>`
+    );
+  }
+
+  if (user.userStatus === "ACTIVE") {
+    actions.push(
+      `<button class="btn-danger" data-mode="block" data-id="${user.id}" type="button">Bloquear</button>`
+    );
+  }
+
+  if (user.userStatus === "BLOCKED") {
+    actions.push(
+      `<button class="btn-secondary" data-mode="unblock" data-id="${user.id}" type="button">Desbloquear</button>`
+    );
+  }
+
+  if (!actions.length) {
+    return `<span class="text-sm text-slate-500">Sin acciones</span>`;
+  }
+
+  return actions.join("");
+}
+
 async function loadUsers() {
   let path = "/users";
   let query = {};
@@ -41,8 +72,8 @@ async function loadUsers() {
         <td class="px-4 py-3">${item.role}</td>
         <td class="px-4 py-3">${item.userStatus || "-"}</td>
         <td class="px-4 py-3">
-          <form class="flex flex-wrap gap-2" data-status-form="${item.id}">
-            <select class="select-shell max-w-[150px]" name="status">
+          <form class="compact-actions flex flex-wrap gap-2 lg:items-center" data-status-form="${item.id}">
+            <select class="select-shell compact-control max-w-[140px] lg:max-w-[124px]" name="status">
               <option value="PENDING" ${item.userStatus === "PENDING" ? "selected" : ""}>PENDING</option>
               <option value="ACTIVE" ${item.userStatus === "ACTIVE" ? "selected" : ""}>ACTIVE</option>
               <option value="BLOCKED" ${item.userStatus === "BLOCKED" ? "selected" : ""}>BLOCKED</option>
@@ -51,10 +82,8 @@ async function loadUsers() {
           </form>
         </td>
         <td class="px-4 py-3">
-          <div class="flex flex-wrap gap-2">
-            <button class="btn-secondary" data-mode="approve" data-id="${item.id}" type="button">Aprobar</button>
-            <button class="btn-secondary" data-mode="unblock" data-id="${item.id}" type="button">Desbloquear</button>
-            <button class="btn-danger" data-mode="block" data-id="${item.id}" type="button">Bloquear</button>
+          <div class="compact-actions flex flex-wrap gap-2">
+            ${renderQuickActions(item)}
           </div>
         </td>
       </tr>

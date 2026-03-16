@@ -97,6 +97,33 @@
   color: #8c1c13;
 }
 
+@media (min-width: 1024px) {
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    padding: 0.65rem 0.95rem;
+    font-size: 0.92rem;
+    line-height: 1.15;
+  }
+
+  .compact-control {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.92rem;
+  }
+
+  .compact-actions {
+    gap: 0.55rem;
+  }
+
+  .compact-actions .btn-primary,
+  .compact-actions .btn-secondary,
+  .compact-actions .btn-danger {
+    min-width: 0;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+  }
+}
+
 .stat-card {
   border-radius: 1.4rem;
   border: 1px solid rgba(16, 37, 66, 0.08);
@@ -107,4 +134,31 @@
 .app-sidebar {
   position: sticky;
   top: 1.5rem;
+}
+
+.notice-shell {
+  border-radius: 1rem;
+  border: 1px solid rgba(16, 37, 66, 0.16);
+  padding: 0.95rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  box-shadow: 0 12px 28px rgba(16, 37, 66, 0.08);
+}
+
+.notice-success {
+  border-color: rgba(82, 121, 111, 0.35);
+  background: rgba(82, 121, 111, 0.14);
+  color: #355d53;
+}
+
+.notice-error {
+  border-color: rgba(140, 28, 19, 0.32);
+  background: rgba(140, 28, 19, 0.12);
+  color: #8c1c13;
+}
+
+.notice-info {
+  border-color: rgba(16, 37, 66, 0.18);
+  background: rgba(255, 255, 255, 0.9);
+  color: #102542;
 }

@@ -48,7 +48,7 @@
         <div id="movements-notice" class="hidden"></div>
 
         <section class="grid gap-6 2xl:grid-cols-[minmax(27rem,30rem)_minmax(0,1fr)]">
-          <article class="section-card p-6 xl:p-7">
+          <article class="section-card p-6 xl:p-7 lg:h-[45rem]">
             <div class="flex items-center justify-between gap-4">
               <div>
                 <h3 class="text-xl font-semibold">Formulario</h3>
@@ -67,9 +67,9 @@
                   <option value="TRANSFER">TRANSFER</option>
                 </select>
               </div>
-              <div>
-                <label class="mb-2 block text-sm font-medium">Empleado</label>
-                <select id="movement-employee-id" class="select-shell" name="employeeUserId"></select>
+              <div class="rounded-2xl bg-mist/70 px-4 py-3 text-sm text-slate-600">
+                <p class="font-semibold text-ink">Registrado por</p>
+                <p id="movement-registered-by" class="mt-1"></p>
               </div>
               <div>
                 <label class="mb-2 block text-sm font-medium">Producto</label>

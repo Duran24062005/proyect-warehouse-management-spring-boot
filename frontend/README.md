@@ -15,7 +15,7 @@ Frontend multi pagina hecho con:
 - `platform/system.html`
   Panel general.
 - `platform/products.html`
-  CRUD de productos y stock bajo.
+  CRUD de productos.
 - `platform/warehouses.html`
   CRUD de bodegas.
 - `platform/movements.html`

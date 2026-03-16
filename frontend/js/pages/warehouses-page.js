@@ -4,6 +4,7 @@ import { fillSelect, renderTable, setupLayout, showNotice } from "../core/ui.js"
 
 const notice = document.querySelector("#warehouses-notice");
 const form = document.querySelector("#warehouse-form");
+const formCard = document.querySelector("#warehouse-form-card");
 const resetButton = document.querySelector("#reset-warehouse-form");
 const managerSelect = document.querySelector("#warehouse-manager-id");
 const tableBody = document.querySelector("#warehouses-body");
@@ -36,6 +37,20 @@ async function loadData(user) {
   const [warehousesResponse, usersResponse] = await Promise.all(requests);
   warehouses = warehousesResponse;
 
+  if (user.role !== "ADMIN") {
+    formCard?.classList.add("hidden");
+
+    if (!warehouses.length) {
+      showNotice(
+        notice,
+        "No tienes una bodega asignada como manager. Un administrador debe asignarte una para ver informacion operativa.",
+        "info"
+      );
+    }
+  } else {
+    formCard?.classList.remove("hidden");
+  }
+
   fillSelect(managerSelect, usersResponse.filter((item) => item.userStatus === "ACTIVE"), {
     placeholder: "Sin manager asignado",
     label: (item) => `${item.firstName} ${item.lastName}`
@@ -67,6 +82,7 @@ async function init() {
   if (!user) return;
 
   setupLayout("warehouses", user);
+  showNotice(notice, "");
 
   try {
     await loadData(user);
