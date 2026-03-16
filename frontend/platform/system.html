@@ -24,10 +24,10 @@
         <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
         <h1 class="mt-3 font-display text-3xl">Tu flujo</h1>
         <nav class="mt-6 space-y-2 text-sm font-medium">
-          <a class="nav-link" data-nav="system" href="./system.html">Resumen</a>
-          <a class="nav-link" data-nav="products" href="./products.html">Productos</a>
-          <a class="nav-link" data-nav="warehouses" href="./warehouses.html">Bodegas</a>
-          <a class="nav-link" data-nav="movements" href="./movements.html">Movimientos</a>
+          <a class="nav-link" data-nav="system" data-employee-hidden href="./system.html">Resumen</a>
+          <a class="nav-link" data-nav="products" data-employee-hidden href="./products.html">Productos</a>
+          <a class="nav-link" data-nav="warehouses" data-employee-hidden href="./warehouses.html">Bodegas</a>
+          <a class="nav-link" data-nav="movements" data-employee-hidden href="./movements.html">Movimientos</a>
           <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
           <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
         </nav>
@@ -64,7 +64,7 @@
             <p id="movements-count" class="mt-2 text-3xl font-semibold">0</p>
           </article>
           <article class="stat-card">
-            <p class="text-sm text-slate-500">Usuarios</p>
+            <p id="users-label" class="text-sm text-slate-500">Usuarios</p>
             <p id="users-count" class="mt-2 text-3xl font-semibold">-</p>
           </article>
         </section>
@@ -114,6 +114,28 @@
               </table>
             </div>
           </article>
+        </section>
+
+        <section id="employees-summary-section" class="section-card p-6 hidden">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-semibold">Empleados a cargo</h3>
+              <p class="text-sm text-slate-600">Personal operativo asignado a las bodegas que administras.</p>
+            </div>
+          </div>
+          <div class="table-shell mt-5">
+            <table class="text-sm">
+              <thead class="bg-mist/70 text-left">
+                <tr>
+                  <th class="px-4 py-3">Empleado</th>
+                  <th class="px-4 py-3">Telefono</th>
+                  <th class="px-4 py-3">Bodega</th>
+                  <th class="px-4 py-3">Estado</th>
+                </tr>
+              </thead>
+              <tbody id="employees-summary-body"></tbody>
+            </table>
+          </div>
         </section>
       </section>
     </div>

@@ -11,6 +11,7 @@ function renderProfile(user) {
   document.querySelector("#profile-phone").textContent = user.phoneNumber;
   document.querySelector("#profile-role").textContent = user.role;
   document.querySelector("#profile-status").textContent = user.userStatus || "-";
+  document.querySelector("#profile-warehouse").textContent = user.warehouseName || "Sin bodega asignada";
 }
 
 async function init() {

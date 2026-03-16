@@ -21,6 +21,10 @@ public record UserResponseDTO(
     @Schema(description = "Enabled status")
     Boolean enabled,
     @Schema(description="User status")
-    UserStatus userStatus
+    UserStatus userStatus,
+    @Schema(description = "Assigned warehouse id")
+    Long warehouseId,
+    @Schema(description = "Assigned warehouse name")
+    String warehouseName
 ) {
 }

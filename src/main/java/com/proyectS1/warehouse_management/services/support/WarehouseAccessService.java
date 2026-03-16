@@ -76,4 +76,19 @@ public class WarehouseAccessService {
             throw new ResponseStatusException(FORBIDDEN, "Access denied for one or more warehouses");
         }
     }
+
+    public void requireAnyWarehouseAccess(AppUser user, List<Long> warehouseIds) {
+        if (isAdmin(user)) {
+            return;
+        }
+
+        Set<Long> managedWarehouseIds = getManagedWarehouseIds(user);
+        boolean hasAccess = warehouseIds.stream()
+            .filter(warehouseId -> warehouseId != null)
+            .anyMatch(managedWarehouseIds::contains);
+
+        if (!hasAccess) {
+            throw new ResponseStatusException(FORBIDDEN, "At least one warehouse must belong to your operational scope");
+        }
+    }
 }

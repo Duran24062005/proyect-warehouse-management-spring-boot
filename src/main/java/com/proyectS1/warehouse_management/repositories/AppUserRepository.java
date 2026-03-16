@@ -1,5 +1,6 @@
 package com.proyectS1.warehouse_management.repositories;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,5 +16,6 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByEmail(String email);
     boolean existsByEmail(String email);
     List<AppUser> findByRole(UserRole role);
+    List<AppUser> findByRoleAndWarehouseIdIn(UserRole role, Collection<Long> warehouseIds);
     List<AppUser> findByUserStatus(UserStatus userStatus);
 }

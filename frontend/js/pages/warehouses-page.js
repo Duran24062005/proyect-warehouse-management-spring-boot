@@ -51,7 +51,7 @@ async function loadData(user) {
     formCard?.classList.remove("hidden");
   }
 
-  fillSelect(managerSelect, usersResponse.filter((item) => item.userStatus === "ACTIVE"), {
+  fillSelect(managerSelect, usersResponse.filter((item) => item.userStatus === "ACTIVE" && item.role === "USER"), {
     placeholder: "Sin manager asignado",
     label: (item) => `${item.firstName} ${item.lastName}`
   });

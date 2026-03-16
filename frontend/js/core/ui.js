@@ -100,6 +100,12 @@ export function setupLayout(pageKey, user) {
     });
   }
 
+  if (user?.role === "EMPLOYEE") {
+    document.querySelectorAll("[data-employee-hidden]").forEach((node) => {
+      node.classList.add("hidden");
+    });
+  }
+
   document.querySelectorAll("[data-action='logout']").forEach((button) => {
     button.addEventListener("click", logout);
   });

@@ -25,7 +25,9 @@ public class UserMapper {
             user.getPhoneNumber(),
             user.getRole(),
             user.getEnabled(),
-            user.getUserStatus()
+            user.getUserStatus(),
+            user.getWarehouse() != null ? user.getWarehouse().getId() : null,
+            user.getWarehouse() != null ? user.getWarehouse().getName() : null
         );
     }
 
@@ -42,6 +44,7 @@ public class UserMapper {
         user.setRole(UserRole.USER);
         user.setEnabled(Boolean.FALSE);
         user.setUserStatus(UserStatus.PENDING);
+        user.setWarehouse(null);
         return user;
     }
 
@@ -59,6 +62,7 @@ public class UserMapper {
         boolean enabled = dto.enabled() != null ? dto.enabled() : Boolean.TRUE;
         user.setEnabled(enabled);
         user.setUserStatus(enabled ? UserStatus.ACTIVE : UserStatus.BLOCKED);
+        user.setWarehouse(null);
         return user;
     }
 }

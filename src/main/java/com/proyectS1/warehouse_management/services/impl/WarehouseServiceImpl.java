@@ -1,5 +1,7 @@
 package com.proyectS1.warehouse_management.services.impl;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import com.proyectS1.warehouse_management.dtos.response.WarehouseResponseDTO;
 import com.proyectS1.warehouse_management.mapper.WarehouseMapper;
 import com.proyectS1.warehouse_management.model.AppUser;
 import com.proyectS1.warehouse_management.model.Warehouse;
+import com.proyectS1.warehouse_management.model.enums.UserRole;
 import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
 import com.proyectS1.warehouse_management.services.WarehouseService;
@@ -80,6 +83,19 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<WarehouseResponseDTO> findAllForReferences() {
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        if (currentUser.getRole() == UserRole.EMPLOYEE) {
+            throw new ResponseStatusException(FORBIDDEN, "Employees cannot access the warehouse reference catalog");
+        }
+
+        return warehouseRepository.findAll().stream()
+            .map(warehouseMapper::entityToDTO)
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public WarehouseResponseDTO findOne(Long id) {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         Warehouse warehouse = findWarehouseById(id);
@@ -97,7 +113,13 @@ public class WarehouseServiceImpl implements WarehouseService {
             return null;
         }
 
-        return appUserRepository.findById(userId)
+        AppUser user = appUserRepository.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found with id " + userId));
+
+        if (user.getRole() != UserRole.USER) {
+            throw new ResponseStatusException(BAD_REQUEST, "Only users with USER role can be assigned as warehouse manager");
+        }
+
+        return user;
     }
 }

@@ -10,5 +10,6 @@ public interface WarehouseService {
     WarehouseResponseDTO updateWarehouse(WarehouseRequestDTO dto, Long id);
     void deleteWarehouse(Long id);
     List<WarehouseResponseDTO> findAll();
+    List<WarehouseResponseDTO> findAllForReferences();
     WarehouseResponseDTO findOne(Long id);
 }

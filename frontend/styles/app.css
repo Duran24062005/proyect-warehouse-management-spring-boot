@@ -162,3 +162,32 @@
   background: rgba(255, 255, 255, 0.9);
   color: #102542;
 }
+
+.admin-users-shell {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.admin-users-table {
+  min-width: 1080px;
+}
+
+.admin-users-table th:nth-child(1),
+.admin-users-table td:nth-child(1) {
+  min-width: 250px;
+}
+
+.admin-users-table th:nth-child(3),
+.admin-users-table td:nth-child(3) {
+  min-width: 140px;
+}
+
+.admin-users-table th:nth-child(5),
+.admin-users-table td:nth-child(5) {
+  min-width: 170px;
+}
+
+.admin-users-table th:nth-child(6),
+.admin-users-table td:nth-child(6) {
+  min-width: 220px;
+}

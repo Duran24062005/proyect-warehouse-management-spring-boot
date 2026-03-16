@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.proyectS1.warehouse_management.dtos.request.WarehouseRequestDTO;
 import com.proyectS1.warehouse_management.dtos.response.WarehouseResponseDTO;
@@ -42,8 +43,14 @@ public class WarehouseController {
             @ApiResponse(responseCode = "401", description = "Authentication required")
         }
     )
-    @Operation(summary = "Lista todos los almacenes")
-    public ResponseEntity<List<WarehouseResponseDTO>> getAllWarehouses() {
+    @Operation(summary = "Lista almacenes", description = "Por defecto lista las bodegas visibles para la gestion del usuario. Con scope=references devuelve el catalogo completo para referencias operativas como movimientos.")
+    public ResponseEntity<List<WarehouseResponseDTO>> getAllWarehouses(
+        @RequestParam(defaultValue = "managed") String scope
+    ) {
+        if ("references".equalsIgnoreCase(scope)) {
+            return ResponseEntity.ok(warehouseService.findAllForReferences());
+        }
+
         return ResponseEntity.ok(warehouseService.findAll());
     }
 

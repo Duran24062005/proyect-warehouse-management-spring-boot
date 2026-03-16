@@ -1,6 +1,7 @@
 import { request } from "./api.js";
 import {
   clearSession,
+  getUser,
   getToken,
   isAuthenticated,
   setUser
@@ -8,6 +9,10 @@ import {
 
 function inPlatform() {
   return window.location.pathname.includes("/platform/");
+}
+
+function isProfilePage() {
+  return window.location.pathname.endsWith("/profile.html");
 }
 
 export function getLoginPath() {
@@ -19,7 +24,9 @@ export function getRegisterPath() {
 }
 
 export function getDashboardPath() {
-  return inPlatform() ? "./system.html" : "./platform/system.html";
+  const user = getUser();
+  const target = user?.role === "EMPLOYEE" ? "profile.html" : "system.html";
+  return inPlatform() ? `./${target}` : `./platform/${target}`;
 }
 
 export function logout() {
@@ -47,6 +54,11 @@ export async function requireAuth(options = {}) {
 
     if (adminOnly && user.role !== "ADMIN") {
       window.location.href = inPlatform() ? "./system.html" : getDashboardPath();
+      return null;
+    }
+
+    if (user.role === "EMPLOYEE" && !isProfilePage()) {
+      window.location.href = inPlatform() ? "./profile.html" : "./platform/profile.html";
       return null;
     }
 
