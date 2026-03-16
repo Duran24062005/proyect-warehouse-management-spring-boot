@@ -79,24 +79,6 @@ public class ProductController {
         return ResponseEntity.ok(this.productService.findOne(id));
     }
 
-    @GetMapping("/low-stock")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Low-stock products successfully obtained"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Authentication required"
-                    )
-            }
-    )
-    @Operation(summary = "Lista productos con stock bajo", description = "Lista productos cuyo stock calculado es menor o igual al umbral configurado")
-    public ResponseEntity<List<ProductResponseDTO>> getLowStockProducts() {
-        return ResponseEntity.ok(this.productService.findLowStock());
-    }
-
     @PostMapping
     @ApiResponses(
             value = {

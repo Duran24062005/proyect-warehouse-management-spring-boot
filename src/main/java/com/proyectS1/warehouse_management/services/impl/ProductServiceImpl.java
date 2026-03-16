@@ -28,8 +28,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Transactional
 public class ProductServiceImpl implements ProductService {
 
-    private static final int LOW_STOCK_THRESHOLD = 5;
-
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
@@ -96,25 +94,6 @@ public class ProductServiceImpl implements ProductService {
         Product product = findProductById(id);
         requireProductAccess(currentUser, product);
         return this.productMapper.entityToDTO(product);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductResponseDTO> findLowStock() {
-        AppUser currentUser = warehouseAccessService.getCurrentUser();
-        Set<Long> managedWarehouseIds = warehouseAccessService.getManagedWarehouseIds(currentUser);
-        if (!warehouseAccessService.isAdmin(currentUser) && managedWarehouseIds.isEmpty()) {
-            return List.of();
-        }
-
-        return this.productRepository.findLowStockProducts(
-                LOW_STOCK_THRESHOLD,
-                managedWarehouseIds,
-                warehouseAccessService.isAdmin(currentUser)
-            )
-            .stream()
-            .map(this.productMapper::entityToDTO)
-            .toList();
     }
 
     private Product findProductById(Long id) {

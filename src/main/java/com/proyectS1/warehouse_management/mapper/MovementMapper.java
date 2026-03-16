@@ -14,7 +14,7 @@ public class MovementMapper {
             return null;
         }
 
-        String employeeName = movement.getEmployee() == null
+        String registeredByName = movement.getEmployee() == null
             ? null
             : movement.getEmployee().getFirstName() + " " + movement.getEmployee().getLastName();
 
@@ -22,7 +22,7 @@ public class MovementMapper {
             movement.getId(),
             movement.getMovementType(),
             movement.getEmployee() != null ? movement.getEmployee().getId() : null,
-            employeeName,
+            registeredByName,
             movement.getOriginWarehouse() != null ? movement.getOriginWarehouse().getId() : null,
             movement.getOriginWarehouse() != null ? movement.getOriginWarehouse().getName() : null,
             movement.getDestinationWarehouse() != null ? movement.getDestinationWarehouse().getId() : null,

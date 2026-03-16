@@ -10,9 +10,6 @@ public record MovementRequestDTO(
     @NotNull
     @Schema(description = "Movement type", example = "ENTRY")
     MovementType movementType,
-    @NotNull
-    @Schema(description = "Employee user id", example = "2")
-    Long employeeUserId,
     @Schema(description = "Origin warehouse id", example = "1")
     Long originWarehouseId,
     @Schema(description = "Destination warehouse id", example = "2")

@@ -11,5 +11,4 @@ public interface  ProductService {
     void deleteProduct(Long id);
     List<ProductResponseDTO> findAll();
     ProductResponseDTO findOne(Long id);
-    List<ProductResponseDTO> findLowStock();
 }

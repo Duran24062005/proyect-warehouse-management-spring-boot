@@ -11,10 +11,10 @@ public record MovementResponseDTO(
     Long id,
     @Schema(description = "Movement type")
     MovementType movementType,
-    @Schema(description = "Employee user id")
-    Long employeeUserId,
-    @Schema(description = "Employee full name")
-    String employeeName,
+    @Schema(description = "User id that registered the movement")
+    Long registeredByUserId,
+    @Schema(description = "Full name of the user that registered the movement")
+    String registeredByName,
     @Schema(description = "Origin warehouse id")
     Long originWarehouseId,
     @Schema(description = "Origin warehouse name")

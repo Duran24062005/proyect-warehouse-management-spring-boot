@@ -19,7 +19,6 @@ import com.proyectS1.warehouse_management.model.Movement;
 import com.proyectS1.warehouse_management.model.Product;
 import com.proyectS1.warehouse_management.model.Warehouse;
 import com.proyectS1.warehouse_management.model.enums.MovementType;
-import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.repositories.MovementRepository;
 import com.proyectS1.warehouse_management.repositories.ProductRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
@@ -35,7 +34,6 @@ import lombok.RequiredArgsConstructor;
 public class MovementServiceImpl implements MovementService {
 
     private final MovementRepository movementRepository;
-    private final AppUserRepository appUserRepository;
     private final WarehouseRepository warehouseRepository;
     private final ProductRepository productRepository;
     private final MovementMapper movementMapper;
@@ -49,7 +47,7 @@ public class MovementServiceImpl implements MovementService {
         warehouseAccessService.requireWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
 
         Movement movement = movementMapper.dtoToEntity(dto);
-        hydrateRelations(movement, dto);
+        hydrateRelations(movement, dto, currentUser);
         MovementResponseDTO response = movementMapper.entityToDTO(movementRepository.save(movement));
         auditService.logInsert("movement", "Catalog for product movements", currentUser, response);
         return response;
@@ -65,7 +63,7 @@ public class MovementServiceImpl implements MovementService {
         MovementResponseDTO oldValues = movementMapper.entityToDTO(movement);
         warehouseAccessService.requireWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
         movementMapper.updateEntityFromDTO(movement, dto);
-        hydrateRelations(movement, dto);
+        hydrateRelations(movement, dto, currentUser);
         MovementResponseDTO newValues = movementMapper.entityToDTO(movementRepository.save(movement));
         auditService.logUpdate("movement", "Catalog for product movements", currentUser, oldValues, newValues);
         return newValues;
@@ -128,8 +126,8 @@ public class MovementServiceImpl implements MovementService {
             .toList();
     }
 
-    private void hydrateRelations(Movement movement, MovementRequestDTO dto) {
-        movement.setEmployee(resolveUser(dto.employeeUserId()));
+    private void hydrateRelations(Movement movement, MovementRequestDTO dto, AppUser currentUser) {
+        movement.setEmployee(currentUser);
         movement.setOriginWarehouse(resolveWarehouse(dto.originWarehouseId()));
         movement.setDestinationWarehouse(resolveWarehouse(dto.destinationWarehouseId()));
         movement.setProduct(resolveProduct(dto.productId()));
@@ -160,11 +158,6 @@ public class MovementServiceImpl implements MovementService {
     private Movement findMovementById(Long id) {
         return movementRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Movement not found with id " + id));
-    }
-
-    private AppUser resolveUser(Long id) {
-        return appUserRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found with id " + id));
     }
 
     private Warehouse resolveWarehouse(Long id) {

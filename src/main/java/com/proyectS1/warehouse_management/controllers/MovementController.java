@@ -78,7 +78,7 @@ public class MovementController {
             @ApiResponse(responseCode = "201", description = "Movement successfully created"),
             @ApiResponse(responseCode = "400", description = "Invalid data or malformed request"),
             @ApiResponse(responseCode = "401", description = "Authentication required"),
-            @ApiResponse(responseCode = "404", description = "Related user, warehouse or product not found")
+            @ApiResponse(responseCode = "404", description = "Related warehouse or product not found")
         }
     )
     @Operation(summary = "Crea un movimiento")
