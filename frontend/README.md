@@ -37,7 +37,6 @@ Frontend multi pagina hecho con:
 1. Levanta el backend Spring Boot en `http://localhost:8000`.
 2. Sirve esta carpeta con un servidor estatico.
 3. Entra a `frontend/index.html`.
-4. Si tu backend usa otra URL, cambiala en el bloque "Configuracion rapida".
 
 Ejemplo con Live Server:
 

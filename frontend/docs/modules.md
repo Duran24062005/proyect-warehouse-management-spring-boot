@@ -95,7 +95,7 @@ Funciones principales:
 
 Notas:
 
-- `setupLayout()` tambien registra logout y el formulario para cambiar la base URL del backend.
+- `setupLayout()` tambien registra logout y pinta la sesion lateral compartida con avatar, nombre y rol.
 - `showNotice()` oculta el contenedor cuando el mensaje esta vacio.
 
 ## `js/core/tailwind-theme.js`

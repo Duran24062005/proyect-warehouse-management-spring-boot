@@ -12,7 +12,6 @@ Comportamiento:
 - redirige al dashboard si ya existe sesion
 - envia credenciales a `POST /auth/login`
 - guarda token y usuario con `saveLogin()`
-- permite cambiar la base URL del backend desde la UI
 
 ### Registro
 
@@ -114,11 +113,13 @@ Endpoints usados:
 Responsabilidad:
 
 - mostrar datos del usuario autenticado
+- mostrar y actualizar foto de perfil
 - cambiar contrasena
 
 Endpoints usados:
 
 - `GET /auth/me` por `requireAuth()`
+- `PATCH /users/me/profile-photo`
 - `PATCH /auth/change-password`
 
 ### Administracion de usuarios

@@ -15,7 +15,7 @@ Describir la estructura del frontend estatico integrado en Spring Boot y como se
 - `src/main/resources/static/platform/products.html`
   Gestion y consulta de productos.
 - `src/main/resources/static/platform/profile.html`
-  Perfil del usuario autenticado.
+  Perfil del usuario autenticado, foto de perfil y cambio de contrasena.
 - `src/main/resources/static/platform/admin.html`
   Consola administrativa.
 
@@ -39,7 +39,7 @@ Describir la estructura del frontend estatico integrado en Spring Boot y como se
 - `products-page.js`
   Catalogo y operaciones de productos.
 - `profile-page.js`
-  Datos del usuario y cambio de contrasena.
+  Datos del usuario, foto de perfil y cambio de contrasena.
 - `admin-page.js`
   Alta de usuarios y flujos administrativos.
 - `app-common.js`
@@ -71,3 +71,4 @@ Describir la estructura del frontend estatico integrado en Spring Boot y como se
 2. El frontend consume `register` o `login`.
 3. Al iniciar sesion, el token se almacena localmente.
 4. Las paginas `platform/*` reutilizan ese token para llamar productos, bodegas, movimientos, perfil y usuarios.
+5. La pantalla de perfil tambien consume la subida de foto y reutiliza `profilePhotoUrl` para pintar avatar en perfil y sidebar.

@@ -10,6 +10,7 @@ OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
 - `PATCH /api/auth/change-password`
+- `PATCH /api/users/me/profile-photo`
 - `GET|POST /api/users`
 - `GET /api/users/role?role=ADMIN`
 - `GET|POST|PUT|DELETE /api/products`
@@ -27,11 +28,12 @@ OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 - Requiere Bearer token:
   - `/api/auth/me`
   - `/api/auth/change-password`
+  - `PATCH /api/users/me/profile-photo`
   - `/api/products/**`
   - `/api/warehouses/**`
   - `/api/movements/**`
 - Requiere rol `ADMIN`:
-  - `/api/users/**`
+  - `/api/users/**` excepto `PATCH /api/users/me/profile-photo`
 
 ## Reglas de Negocio Clave
 
@@ -39,6 +41,7 @@ OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 - `EXIT` requiere bodega origen y no usa bodega destino.
 - `TRANSFER` requiere ambas bodegas y deben ser distintas.
 - En registro y login se dispara una notificacion por email si la integracion esta habilitada.
+- Las fotos de perfil se publican bajo `/uploads/profile-images/**`.
 
 ## Frontend Integrado
 

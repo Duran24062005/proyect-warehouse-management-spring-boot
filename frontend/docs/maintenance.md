@@ -5,7 +5,7 @@
 1. Inicia el backend en `http://localhost:8000`.
 2. Sirve la carpeta `frontend/` con un servidor estatico.
 3. Abre [index.html](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/frontend/index.html).
-4. Si hace falta, cambia la base URL desde el formulario de configuracion rapida.
+4. Si hace falta, revisa `frontend/js/core/session.js` para ajustar la base URL por defecto del backend.
 
 ## Convenciones del proyecto
 

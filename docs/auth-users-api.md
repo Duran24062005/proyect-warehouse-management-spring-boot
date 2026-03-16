@@ -58,9 +58,20 @@ Request:
 }
 ```
 
+## Profile Photo
+
+### `PATCH /api/users/me/profile-photo`
+
+- Requiere Bearer token.
+- Permite al usuario autenticado subir o reemplazar su foto de perfil.
+- Acepta `multipart/form-data` con el campo `file`.
+- Tipos permitidos: `image/jpeg`, `image/png`, `image/webp`.
+- Tamano maximo: `5 MB`.
+- Retorna `UserResponseDTO` actualizado con `profilePhotoUrl`.
+
 ## Users
 
-Todos los endpoints de `Users` requieren rol `ADMIN`.
+Todos los endpoints de `Users` requieren rol `ADMIN`, excepto `PATCH /api/users/me/profile-photo`, que solo requiere autenticacion.
 
 ### `GET /api/users`
 
@@ -89,10 +100,11 @@ Crea un usuario desde administracion.
 ## Integracion con el Frontend
 
 - `index.html` consume `register` y `login`.
-- `platform/profile.html` consume `me` y `change-password`.
+- `platform/profile.html` consume `me`, `change-password` y `PATCH /api/users/me/profile-photo`.
 - `platform/admin.html` consume `GET /api/users`, `GET /api/users/role` y `POST /api/users`.
 
 ## Regla de Roles
 
 - El registro publico no permite elegir rol; siempre crea `USER`.
 - La creacion administrativa si permite definir `USER` o `ADMIN`.
+- La foto de perfil siempre la carga el propio usuario autenticado.
