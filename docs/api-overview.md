@@ -13,7 +13,6 @@ OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 - `GET|POST /api/users`
 - `GET /api/users/role?role=ADMIN`
 - `GET|POST|PUT|DELETE /api/products`
-- `GET /api/products/low-stock`
 - `GET|POST|PUT|DELETE /api/warehouses`
 - `GET|POST|PUT|DELETE /api/movements`
 - `GET /api/movements?productId={id}`
@@ -39,7 +38,6 @@ OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 - `ENTRY` requiere bodega destino y no usa bodega origen.
 - `EXIT` requiere bodega origen y no usa bodega destino.
 - `TRANSFER` requiere ambas bodegas y deben ser distintas.
-- El stock bajo de productos se calcula a partir de movimientos.
 - En registro y login se dispara una notificacion por email si la integracion esta habilitada.
 
 ## Frontend Integrado

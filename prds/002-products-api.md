@@ -2,13 +2,12 @@
 
 ## Objetivo
 
-Proveer una API REST completa para gestionar productos y consultar productos con stock bajo.
+Proveer una API REST completa para gestionar productos como catalogo administrativo del sistema.
 
 ## Alcance
 
 - Operaciones CRUD para productos.
 - Consulta de producto por id.
-- Consulta de stock bajo basada en movimientos de inventario.
 - Documentacion Swagger de endpoints y payloads.
 - Proteccion Bearer JWT para todos los endpoints de productos.
 
@@ -19,7 +18,6 @@ Proveer una API REST completa para gestionar productos y consultar productos con
 - `POST /api/products` debe crear un producto para usuarios autenticados.
 - `PUT /api/products/{id}` debe actualizar un producto para usuarios autenticados.
 - `DELETE /api/products/{id}` debe eliminar un producto para usuarios autenticados.
-- `GET /api/products/low-stock` debe retornar productos con stock calculado menor o igual al umbral configurado para usuarios autenticados.
 
 ## Requisitos de Datos
 
@@ -31,5 +29,4 @@ Proveer una API REST completa para gestionar productos y consultar productos con
 - Las operaciones CRUD persisten sobre la tabla `product`.
 - Un `warehouseId` invalido retorna `404`.
 - Un producto inexistente retorna `404`.
-- Los resultados de stock bajo se calculan desde la tabla `movement`.
 - Las solicitudes anonimas a `/api/products/**` retornan `401`.

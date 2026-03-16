@@ -59,9 +59,6 @@ Por eso, la primera implementacion segura del control por bodega debe usar el mo
 - `save`, `update`, `delete`:
   - los admins operan libremente
   - los usuarios no admin solo si la bodega del producto pertenece a su alcance
-- `low-stock`:
-  - los admins reciben el resultado completo
-  - los usuarios no admin solo reciben productos con stock bajo dentro de sus bodegas
 
 ### Movimientos
 

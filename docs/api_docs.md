@@ -128,10 +128,6 @@ Lista todos los productos.
 
 Obtiene un producto por id.
 
-### `GET /api/products/low-stock`
-
-Lista productos con stock calculado menor o igual a `5`.
-
 ### `POST /api/products`
 
 Crea un producto.
@@ -211,7 +207,6 @@ Ejemplo `TRANSFER`:
 ```json
 {
   "movementType": "TRANSFER",
-  "employeeUserId": 2,
   "originWarehouseId": 1,
   "destinationWarehouseId": 2,
   "productId": 1,

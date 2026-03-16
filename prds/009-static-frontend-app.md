@@ -17,7 +17,7 @@ Proveer un frontend ligero en HTML, Tailwind y JavaScript vanilla para consumir 
 - `frontend/index.html` debe exponer la pantalla de login.
 - `frontend/register.html` debe exponer la pantalla de registro.
 - `frontend/platform/system.html` debe exponer el dashboard autenticado.
-- `frontend/platform/products.html` debe exponer gestion de productos y vistas de stock bajo.
+- `frontend/platform/products.html` debe exponer gestion de productos.
 - `frontend/platform/warehouses.html` debe exponer gestion de bodegas.
 - `frontend/platform/movements.html` debe exponer gestion y filtrado de movimientos.
 - `frontend/platform/profile.html` debe exponer datos del usuario actual y cambio de contrasena.

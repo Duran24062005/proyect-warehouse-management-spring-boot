@@ -1,210 +1,188 @@
 # Warehouse Management System - System Overview
 
-## Descripción General
+## Descripcion General
 
-Este proyecto implementa un sistema backend para la gestión de bodegas e inventarios.
+Este proyecto implementa un sistema backend para la gestion de bodegas y el registro de movimientos entre ellas.
 
-La empresa **LogiTrack S.A.** administra múltiples bodegas distribuidas en distintas ciudades, encargadas de almacenar productos y registrar movimientos de inventario como entradas, salidas y transferencias.
+La empresa **LogiTrack S.A.** administra multiples bodegas distribuidas en distintas ciudades y necesita centralizar la informacion operativa relacionada con:
 
-Anteriormente, el control de inventarios y auditorías se realizaba manualmente en hojas de cálculo, lo que generaba problemas de trazabilidad, control de accesos y consistencia de la información.
+- bodegas
+- productos como catalogo
+- movimientos de entrada, salida y transferencia
+- usuarios con acceso controlado
+- auditoria de cambios
 
-El objetivo del sistema es centralizar la gestión de inventarios y permitir el registro controlado de movimientos entre bodegas, garantizando seguridad, trazabilidad y acceso controlado mediante autenticación.
+El sistema no esta planteado como un POS ni como un modulo de ventas. Su foco principal es la **gestion administrativa y trazable de movimientos entre bodegas**, con autenticacion y control de acceso por rol y por alcance operativo.
 
 ---
 
 # Modelo Organizacional del Sistema
 
-El sistema contempla **dos tipos de usuarios dentro de la autenticación**, pero **tres tipos de personas dentro del modelo organizacional del sistema**.
+El sistema contempla **tres tipos de personas en la operacion**, pero **solo dos usan directamente la plataforma**.
 
 ## Administrador General
 
-El **Administrador General** es el responsable de la gestión completa del sistema.
+El **Administrador General** es el usuario con vista global del sistema y rol `ADMIN`.
 
 Entre sus responsabilidades se encuentran:
 
-* Registrar, actualizar y eliminar bodegas.
-* Asignar o remover líderes (managers) de una bodega.
-* Asignar empleados a bodegas o cambiarlos entre ellas.
-* Crear nuevos usuarios dentro del sistema y asignarles un rol.
-* Consultar todos los productos registrados en el sistema.
-* Consultar todos los usuarios registrados.
-* Visualizar toda la información del sistema con filtros.
-
-El administrador tiene una **vista global del sistema** y no está limitado a una bodega específica.
-
----
+- crear, actualizar y eliminar bodegas
+- asignar managers a una bodega
+- crear usuarios dentro del sistema
+- aprobar, bloquear o desbloquear usuarios
+- consultar todos los productos, movimientos y usuarios
+- visualizar toda la informacion del sistema sin restricciones por bodega
 
 ## Manager de Bodega
 
-El **Manager de Bodega** es el responsable de administrar las operaciones dentro de una bodega específica.
+El **Manager de Bodega** es el usuario operativo de plataforma con rol `USER`.
 
 Entre sus funciones se encuentran:
 
-* Registrar movimientos de inventario.
-* Supervisar las acciones realizadas por los empleados de su bodega.
-* Consultar los productos disponibles en su bodega.
-* Visualizar las bodegas disponibles dentro del sistema.
-* Consultar los usuarios asignados a su bodega.
+- registrar movimientos de entrada, salida y transferencia
+- consultar productos visibles dentro de su alcance
+- consultar movimientos relacionados con las bodegas que gestiona
+- consultar bodegas y datos operativos del sistema segun su alcance
 
-El manager es responsable de **registrar formalmente los movimientos realizados dentro de la bodega**, incluso si la acción fue realizada por un empleado.
+El manager es quien **registra formalmente los movimientos en la plataforma**.
 
-Por ejemplo, si un empleado mueve un producto de una bodega a otra, el manager debe registrar ese movimiento dentro del sistema.
+## Empleado
 
----
+El **Empleado** existe dentro del modelo organizacional del negocio, pero no como usuario directo de la plataforma en la version actual del sistema.
 
-## Empleados
+Es decir:
 
-Los empleados son los usuarios operativos dentro de una bodega.
-
-Sus acciones son supervisadas por el **manager de la bodega**, quien se encarga de registrar formalmente los movimientos de inventario en el sistema.
-
-Los empleados están asociados a una bodega específica y forman parte del equipo gestionado por el manager.
+- puede participar en la operacion fisica de una bodega
+- sus acciones son supervisadas por el manager
+- el movimiento oficial se registra en el sistema por parte del manager o del administrador
 
 ---
 
-# Registro y Aprobación de Usuarios
+# Registro y Aprobacion de Usuarios
 
-El sistema permite que nuevos usuarios se registren mediante el proceso de registro de cuenta.
+El sistema permite que nuevos usuarios se registren mediante el flujo de creacion de cuenta.
 
 Sin embargo, el registro de un usuario **no implica acceso inmediato al sistema**.
 
 Cuando un usuario se registra:
 
-1. Su cuenta queda en estado **pendiente**.
-2. Un **Administrador General** debe revisar la solicitud.
-3. El administrador puede:
+1. su cuenta queda en estado `PENDING`
+2. un administrador debe revisar la solicitud
+3. el administrador puede aprobar, bloquear o mantener pendiente la cuenta
 
-   * **Aceptar** al usuario y activarlo dentro del sistema.
-   * **Bloquear o rechazar** la solicitud.
+Mientras un usuario se encuentre en estado `PENDING` o `BLOCKED`, no podra ingresar al sistema.
 
-Mientras un usuario se encuentre en estado **pendiente o bloqueado**, no podrá acceder a la información del sistema.
-
-Esto permite evitar que usuarios no autorizados tengan acceso inmediato a los datos del sistema.
-
-Además del registro automático, los **Administradores Generales también pueden crear usuarios directamente dentro del sistema y asignarles un rol desde el inicio**.
+Ademas del registro publico, los administradores pueden crear usuarios directamente desde la plataforma.
 
 ---
 
-# Gestión de Bodegas
+# Gestion de Bodegas
 
-El sistema permite administrar bodegas con la siguiente información:
+El sistema permite administrar bodegas con la siguiente informacion:
 
-* identificador
-* nombre
-* ubicación
-* capacidad
-* encargado
+- identificador
+- nombre
+- ubicacion
+- capacidad
+- manager asignado
 
-Las bodegas representan los centros físicos donde se almacenan los productos.
-
----
-
-# Gestión de Productos
-
-El sistema permite realizar operaciones completas de gestión sobre los productos registrados.
-
-Cada producto contiene información como:
-
-* identificador
-* nombre
-* categoría
-* stock
-* precio
-
-Los productos representan los artículos que se almacenan y se mueven entre bodegas.
+Las bodegas representan los espacios fisicos donde se registran los movimientos operativos.
 
 ---
 
-# Movimientos de Inventario
+# Gestion de Productos
 
-El sistema permite registrar tres tipos de movimientos de inventario:
+El sistema permite realizar operaciones CRUD sobre los productos registrados.
 
-* **Entrada**
-* **Salida**
-* **Transferencia**
+Cada producto contiene informacion como:
 
-Cada movimiento almacena información como:
+- identificador
+- nombre
+- categoria
+- precio
+- bodega asociada
 
-* fecha del movimiento
-* tipo de movimiento
-* usuario responsable
-* bodega origen
-* bodega destino
-* productos involucrados
-* cantidades
-
-Estos movimientos permiten llevar un registro claro de los cambios en el inventario y facilitan la trazabilidad de las operaciones realizadas.
+Dentro del alcance actual, el producto funciona como un **catalogo administrativo relacionado con una bodega**, no como una entidad con stock propio persistido.
 
 ---
 
-# Auditoría de Cambios
+# Movimientos entre Bodegas
 
-El sistema incluye un mecanismo de auditoría que registra las acciones realizadas sobre las entidades principales.
+El sistema permite registrar tres tipos de movimientos:
 
-Cada registro de auditoría guarda información como:
+- **ENTRY**
+- **EXIT**
+- **TRANSFER**
 
-* tipo de operación realizada
-* fecha y hora de la acción
-* usuario responsable
-* entidad afectada
-* valores anteriores
-* valores nuevos
+Cada movimiento almacena informacion como:
 
-Esto permite mantener un historial completo de las modificaciones realizadas dentro del sistema.
+- fecha de registro
+- tipo de movimiento
+- usuario que registra el movimiento
+- bodega origen
+- bodega destino
+- producto
+- cantidad
+
+Estos movimientos constituyen el eje central del sistema porque permiten trazabilidad operativa entre bodegas.
+
+---
+
+# Auditoria de Cambios
+
+El sistema incluye un mecanismo de auditoria que registra las acciones realizadas sobre las entidades principales.
+
+Cada registro de auditoria guarda informacion como:
+
+- tipo de operacion realizada
+- fecha y hora de la accion
+- usuario responsable
+- entidad afectada
+- valores anteriores
+- valores nuevos
+
+Esto permite mantener historial de cambios sobre usuarios, productos, bodegas y movimientos.
 
 ---
 
 # Sistema de Notificaciones
 
-El sistema incluye un mecanismo de **notificaciones por correo electrónico** para informar a los usuarios sobre eventos importantes relacionados con su cuenta.
+El sistema incluye notificaciones por correo electronico para eventos clave relacionados con la autenticacion.
 
-Actualmente se envían notificaciones en tres situaciones principales.
+Actualmente se contemplan eventos como:
 
-## Registro de Usuario
+- registro de usuario
+- creacion administrativa de cuentas
+- inicio de sesion
 
-Cuando un usuario se registra en el sistema, recibe un correo electrónico informando que su registro fue realizado correctamente y que su cuenta se encuentra pendiente de aprobación por parte de un administrador.
-
-## Registro por Administrador
-
-Cuando un administrador crea un usuario directamente dentro del sistema, el usuario recibe un correo indicando que su cuenta ha sido creada y que ya se encuentra activa.
-
-## Inicio de Sesión
-
-Cada vez que un usuario inicia sesión en el sistema, se envía una notificación a su correo electrónico indicando que se ha realizado un inicio de sesión en su cuenta.
-
-Estas notificaciones permiten mantener informados a los usuarios sobre el estado de su cuenta y sobre el uso de la misma.
+Estas notificaciones ayudan a mantener informado al usuario sobre el estado y uso de su cuenta.
 
 ---
 
-# Reportes y Consultas
+# Consultas del Sistema
 
-El sistema permite realizar consultas y reportes sobre la información almacenada.
+El sistema permite realizar consultas operativas sobre la informacion almacenada, especialmente relacionadas con:
 
-Entre ellos se incluyen:
+- productos registrados
+- bodegas
+- movimientos
+- usuarios
+- auditoria
 
-* consulta de productos con bajo stock
-* consulta de movimientos en un rango de fechas
-* auditorías filtradas por usuario
-* auditorías filtradas por tipo de operación
-
-También se genera un reporte general que muestra:
-
-* el stock total por bodega
-* los productos con mayor movimiento dentro del sistema
+El enfoque actual esta en la consulta administrativa y la trazabilidad de movimientos, no en reportes avanzados de inventario o ventas.
 
 ---
 
-# Documentación de la API
+# Documentacion de la API
 
-El sistema cuenta con documentación interactiva de la API que permite explorar y probar los endpoints disponibles.
-
-Esto facilita la comprensión y el uso de los servicios expuestos por el backend.
+El sistema cuenta con documentacion interactiva de la API para explorar y probar los endpoints disponibles.
 
 ---
 
 # Estructura del Proyecto
 
-El proyecto está organizado siguiendo una arquitectura por capas que separa responsabilidades entre diferentes módulos del sistema.
+El proyecto esta organizado siguiendo una arquitectura por capas:
 
-Esta organización permite mantener el código estructurado, facilitar su mantenimiento y mejorar la escalabilidad del proyecto.
+`Controller -> Service -> Repository`
 
+Esta organizacion permite separar responsabilidades, mantener el codigo legible y facilitar su evolucion.

@@ -27,7 +27,7 @@ Proveer una API REST protegida para registrar y consultar movimientos de inventa
 - `ENTRY` requiere `destinationWarehouseId` y no `originWarehouseId`.
 - `EXIT` requiere `originWarehouseId` y no `destinationWarehouseId`.
 - `TRANSFER` requiere ambas bodegas y estas deben ser diferentes.
-- Los ids relacionados como `employeeUserId`, `productId`, `originWarehouseId` y `destinationWarehouseId` deben existir.
+- Los ids relacionados como `productId`, `originWarehouseId` y `destinationWarehouseId` deben existir.
 
 ## Criterios de Aceptacion
 
@@ -35,4 +35,4 @@ Proveer una API REST protegida para registrar y consultar movimientos de inventa
 - Los ids relacionados invalidos retornan `404`.
 - Las combinaciones invalidas de bodegas retornan `400`.
 - Las solicitudes anonimas a `/api/movements/**` retornan `401`.
-- Los calculos de stock bajo pueden apoyarse en movimientos persistidos.
+- El usuario autenticado queda como responsable del movimiento registrado.

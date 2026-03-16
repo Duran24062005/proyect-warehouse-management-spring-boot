@@ -32,7 +32,7 @@
 - `Users`
   Consulta y creacion administrativa de usuarios.
 - `Products`
-  CRUD y consulta de stock bajo.
+  CRUD de catalogo de productos.
 - `Warehouses`
   CRUD y asignacion de manager.
 - `Movements`
@@ -101,7 +101,7 @@ Relaciones relevantes:
 
 - Un `Warehouse` puede tener un manager (`AppUser`).
 - Un `Product` puede estar asociado a una bodega.
-- Un `Movement` referencia producto, empleado y una o dos bodegas segun el tipo.
+- Un `Movement` referencia producto, usuario responsable y una o dos bodegas segun el tipo.
 
 ## Limitaciones Actuales
 

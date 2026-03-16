@@ -24,10 +24,6 @@ Lista todos los productos.
 
 Obtiene un producto por id.
 
-### `GET /api/products/low-stock`
-
-Lista productos con stock bajo. El stock se calcula a partir de la tabla `movement` y el umbral actual es `<= 5`.
-
 ### `POST /api/products`
 
 Crea un producto.
@@ -67,4 +63,3 @@ Elimina un producto por id.
 - Si el producto no existe, la API responde `404`.
 - Si el `warehouseId` no existe, la API responde `404`.
 - Las respuestas no exponen la entidad `Warehouse` completa; solo resumen de relacion.
-- El endpoint de stock bajo es especialmente usado por el dashboard del frontend.

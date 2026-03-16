@@ -76,10 +76,7 @@ Ya esta implementado:
 
 - CRUD completo de productos.
 - Consulta de productos por id.
-- Consulta de productos con stock bajo.
 - Restriccion por bodega para usuarios no admin segun las bodegas que gestionan.
-
-Tambien existe una consulta custom en repositorio para calcular stock bajo a partir de movimientos.
 
 ### Gestion de bodegas
 
@@ -226,15 +223,12 @@ Todavia no estan implementados completamente los reportes solicitados, como:
 - movimientos por rango de fechas
 - auditorias por usuario
 - auditorias por tipo de operacion
-- stock total por bodega
 - productos mas movidos
 
 ### Reglas de inventario mas completas
 
 El sistema valida estructura de movimientos, pero aun faltan reglas de negocio mas fuertes, por ejemplo:
 
-- evitar salidas sin stock suficiente
-- evitar transferencias sin stock disponible en la bodega origen
 - validar si el usuario que registra el movimiento pertenece realmente a la bodega
 
 ### Notificacion para usuarios creados por administrador
