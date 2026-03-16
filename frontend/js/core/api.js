@@ -27,6 +27,7 @@ export async function request(path, options = {}) {
   const headers = {
     Accept: "application/json"
   };
+  const url = buildUrl(path, query);
 
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";
@@ -39,7 +40,7 @@ export async function request(path, options = {}) {
     }
   }
 
-  const response = await fetch(buildUrl(path, query), {
+  const response = await fetch(url, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined
@@ -52,13 +53,28 @@ export async function request(path, options = {}) {
       clearSession();
     }
 
+    const details = Array.isArray(data?.details) ? data.details.filter(Boolean) : [];
     const message =
       data?.message ||
       data?.error ||
       (typeof data === "string" && data) ||
       "No se pudo completar la solicitud";
 
-    throw new Error(message);
+    console.error("API request failed", {
+      method,
+      url,
+      status: response.status,
+      statusText: response.statusText,
+      requestBody: body,
+      responseBody: data,
+      details
+    });
+
+    const fullMessage = details.length ? `${message}: ${details.join(" | ")}` : message;
+    const error = new Error(fullMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
   }
 
   return data;
