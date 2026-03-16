@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="./styles/auth.css">
   <link rel="stylesheet" href="./styles/app.css">
 </head>
-<body class="page-bg min-h-screen text-ink bg-slate-700">
+<body class="page-bg min-h-screen text-ink">
   <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-    <div class="auth-grid">
-      <section class="section-card p-8 lg:p-10  bg-slate-200">
+    <div class="auth-grid section-card">
+      <section class="auth-panel auth-form-panel p-8 lg:p-10">
         <h1 class="section-title">Crear cuenta</h1>
         <p class="mt-3 text-sm text-slate-600">Este formulario usa el endpoint publico de registro del backend.</p>
 
@@ -52,7 +52,7 @@
         </p>
       </section>
 
-      <section class="auth-hero section-card flex flex-col justify-between p-8 lg:p-10"
+      <section class="auth-panel auth-hero hidden flex-col justify-between p-8 lg:p-10 md:flex"
       style=
         "background-image: 
         linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.4)),

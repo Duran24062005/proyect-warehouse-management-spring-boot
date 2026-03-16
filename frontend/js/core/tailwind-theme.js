@@ -3,16 +3,16 @@ window.tailwind.config = {
   theme: {
     extend: {
       colors: {
-        ink: "#102542",
-        sand: "#f8f4ec",
-        clay: "#d66a32",
-        moss: "#52796f",
-        mist: "#e9eef2",
-        wine: "#8c1c13",
-        sun: "#f4a259"
+        ink: "#f4f7fb",
+        sand: "#f7f5ef",
+        clay: "#ff8c42",
+        moss: "#22c55e",
+        mist: "#edf2f7",
+        wine: "#ef4444",
+        sun: "#f59e0b"
       },
       boxShadow: {
-        panel: "0 20px 45px rgba(16, 37, 66, 0.12)"
+        panel: "0 28px 80px rgba(0, 0, 0, 0.32)"
       },
       fontFamily: {
         display: ["Sora", "sans-serif"],

@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -145,6 +146,27 @@ public class GlobalExceptionHandler {
             "Database constraint validation failed",
             request.getRequestURI(),
             List.of(extractDeepestMessage(exception))
+        ));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiErrorResponse> handleMaxUploadSizeExceededException(
+        MaxUploadSizeExceededException exception,
+        HttpServletRequest request
+    ) {
+        log.warn(
+            "Uploaded file exceeded size limit on {} {}. Message: {}",
+            request.getMethod(),
+            request.getRequestURI(),
+            exception.getMessage(),
+            exception
+        );
+        return ResponseEntity.badRequest().body(buildErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            "Uploaded file exceeds the maximum allowed size",
+            request.getRequestURI(),
+            List.of("Maximum allowed size is 5 MB")
         ));
     }
 

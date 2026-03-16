@@ -1,16 +1,23 @@
 import { request } from "../core/api.js";
 import { requireAuth } from "../core/auth.js";
 import {
+  closeModal,
   fillSelect,
   formatMoney,
+  openModal,
   renderTable,
+  setupModal,
   setupLayout,
   showNotice
 } from "../core/ui.js";
 
 const notice = document.querySelector("#products-notice");
 const form = document.querySelector("#product-form");
+const modal = document.querySelector("#product-modal");
+const openModalButton = document.querySelector("#open-product-modal");
 const resetButton = document.querySelector("#reset-product-form");
+const formTitle = document.querySelector("#product-form-title");
+const submitButton = document.querySelector("#submit-product-form");
 const tableBody = document.querySelector("#products-body");
 const warehouseSelect = document.querySelector("#product-warehouse-id");
 
@@ -20,6 +27,8 @@ let warehouses = [];
 function resetForm() {
   form.reset();
   form.productId.value = "";
+  formTitle.textContent = "Nuevo producto";
+  submitButton.textContent = "Guardar producto";
 }
 
 function editProduct(id) {
@@ -31,7 +40,9 @@ function editProduct(id) {
   form.category.value = product.category;
   form.price.value = product.price;
   form.warehouseId.value = product.warehouseId || "";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  formTitle.textContent = "Editar producto";
+  submitButton.textContent = "Guardar cambios";
+  openModal(modal);
 }
 
 async function loadData(user) {
@@ -82,6 +93,7 @@ async function init() {
   if (!user) return;
 
   setupLayout("products", user);
+  setupModal(modal);
   showNotice(notice, "");
 
   try {
@@ -90,6 +102,11 @@ async function init() {
     showNotice(notice, error.message, "error");
   }
 }
+
+openModalButton?.addEventListener("click", () => {
+  resetForm();
+  openModal(modal);
+});
 
 resetButton.addEventListener("click", resetForm);
 
@@ -144,6 +161,7 @@ form.addEventListener("submit", async (event) => {
       "success"
     );
     resetForm();
+    closeModal(modal);
     await loadData(await requireAuth());
   } catch (error) {
     showNotice(notice, error.message, "error");

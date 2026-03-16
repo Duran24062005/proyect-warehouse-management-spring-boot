@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/app.css">
 </head>
-<body class="page-bg min-h-screen text-ink  bg-slate-700">
+<body class="page-bg min-h-screen text-ink">
   <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
     <div class="app-shell">
       <aside class="app-sidebar section-card p-5 lg:p-6">
@@ -31,73 +31,36 @@
           <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
           <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
         </nav>
-        <div class="mt-8 rounded-2xl bg-mist/70 p-4 text-sm">
-          <p class="font-semibold">Usuario</p>
-          <p class="mt-2 js-user-name"></p>
-          <p class="js-user-role text-slate-500"></p>
+        <div class="sidebar-session">
+          <p class="font-semibold">Sesion</p>
+          <div class="sidebar-session-user">
+            <div class="sidebar-avatar-wrap">
+              <div class="sidebar-avatar-placeholder js-user-initials">LT</div>
+              <img class="sidebar-avatar-image js-user-photo hidden" alt="Foto de perfil">
+            </div>
+            <div class="min-w-0">
+              <p class="js-user-name truncate font-medium"></p>
+              <p class="js-user-role text-slate-500"></p>
+            </div>
+          </div>
           <button class="btn-secondary mt-4 w-full" data-action="logout" type="button">Cerrar sesion</button>
         </div>
       </aside>
 
       <section class="space-y-6">
         <header class="section-card p-6">
-          <h2 class="section-title">Movimientos de inventario</h2>
-          <p class="mt-3 text-sm text-slate-600">Puedes registrar entradas, salidas y transferencias. El formulario ajusta origen y destino segun el tipo.</p>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="section-title">Movimientos de inventario</h2>
+              <p class="mt-3 text-sm text-slate-600">Puedes registrar entradas, salidas y transferencias. El formulario ajusta origen y destino segun el tipo.</p>
+            </div>
+            <button id="open-movement-modal" class="btn-primary" type="button">Nuevo movimiento</button>
+          </div>
         </header>
 
         <div id="movements-notice" class="hidden"></div>
 
-        <section class="grid gap-6 2xl:grid-cols-[minmax(27rem,30rem)_minmax(0,1fr)]">
-          <article class="section-card p-6 xl:p-7 lg:h-[55rem]">
-            <div class="flex items-center justify-between gap-4">
-              <div>
-                <h3 class="text-xl font-semibold">Formulario</h3>
-                <p class="text-sm text-slate-600">La misma vista te deja crear o editar.</p>
-              </div>
-              <button id="reset-movement-form" class="btn-secondary" type="button">Limpiar</button>
-            </div>
-
-            <form id="movement-form" class="mt-5 space-y-4">
-              <input type="hidden" name="movementId">
-              <div>
-                <label class="mb-2 block text-sm font-medium">Tipo</label>
-                <select id="movement-type" class="select-shell" name="movementType" required>
-                  <option value="ENTRY">ENTRY</option>
-                  <option value="EXIT">EXIT</option>
-                  <option value="TRANSFER">TRANSFER</option>
-                </select>
-              </div>
-              <div class="rounded-2xl bg-mist/70 px-4 py-3 text-sm text-slate-600">
-                <p class="font-semibold text-ink">Registrado por</p>
-                <p id="movement-registered-by" class="mt-1"></p>
-              </div>
-              <div>
-                <label class="mb-2 block text-sm font-medium">Empleado que realizo el movimiento</label>
-                <select id="movement-performed-by-id" class="select-shell" name="performedByEmployeeId" required></select>
-                <p id="movement-performed-by-help" class="mt-2 text-xs text-slate-500">
-                  Selecciona el empleado que ejecuto fisicamente este movimiento.
-                </p>
-              </div>
-              <div>
-                <label class="mb-2 block text-sm font-medium">Producto</label>
-                <select id="movement-product-id" class="select-shell" name="productId" required></select>
-              </div>
-              <div id="origin-shell">
-                <label class="mb-2 block text-sm font-medium">Bodega origen</label>
-                <select id="movement-origin-id" class="select-shell" name="originWarehouseId"></select>
-              </div>
-              <div id="destination-shell">
-                <label class="mb-2 block text-sm font-medium">Bodega destino</label>
-                <select id="movement-destination-id" class="select-shell" name="destinationWarehouseId"></select>
-              </div>
-              <div>
-                <label class="mb-2 block text-sm font-medium">Cantidad</label>
-                <input class="input-shell" type="number" name="quantity" min="1" required>
-              </div>
-              <button id="submit-movement-form" class="btn-primary w-full" type="submit">Guardar movimiento</button>
-            </form>
-          </article>
-
+        <section>
           <div class="space-y-6">
             <article class="section-card p-6 xl:p-7">
               <h3 class="text-xl font-semibold">Filtros</h3>
@@ -132,6 +95,66 @@
       </section>
     </div>
   </main>
+
+  <div
+    id="movement-modal"
+    class="modal-shell fixed inset-0 z-[60] hidden items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+    aria-hidden="true"
+  >
+    <div class="modal-panel w-full max-w-2xl overflow-hidden">
+      <div class="modal-header flex items-start justify-between gap-4 p-6 pb-0">
+        <div>
+          <h3 id="movement-form-title" class="text-xl font-semibold">Nuevo movimiento</h3>
+          <p class="mt-1 text-sm text-slate-400">La misma vista te deja crear o editar.</p>
+        </div>
+        <button class="modal-close" data-modal-close type="button">Cerrar</button>
+      </div>
+      <div class="modal-body max-h-[calc(100vh-4rem)] overflow-y-auto p-6 pt-5">
+        <div class="flex items-center justify-end">
+          <button id="reset-movement-form" class="btn-secondary" type="button">Limpiar</button>
+        </div>
+        <form id="movement-form" class="mt-5 space-y-4">
+          <input type="hidden" name="movementId">
+          <div>
+            <label class="mb-2 block text-sm font-medium">Tipo</label>
+            <select id="movement-type" class="select-shell" name="movementType" required>
+              <option value="ENTRY">ENTRY</option>
+              <option value="EXIT">EXIT</option>
+              <option value="TRANSFER">TRANSFER</option>
+            </select>
+          </div>
+          <div class="rounded-2xl bg-mist/70 px-4 py-3 text-sm text-slate-600">
+            <p class="font-semibold text-ink">Registrado por</p>
+            <p id="movement-registered-by" class="mt-1"></p>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium">Empleado que realizo el movimiento</label>
+            <select id="movement-performed-by-id" class="select-shell" name="performedByEmployeeId" required></select>
+            <p id="movement-performed-by-help" class="mt-2 text-xs text-slate-500">
+              Selecciona el empleado que ejecuto fisicamente este movimiento.
+            </p>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium">Producto</label>
+            <select id="movement-product-id" class="select-shell" name="productId" required></select>
+          </div>
+          <div id="origin-shell">
+            <label class="mb-2 block text-sm font-medium">Bodega origen</label>
+            <select id="movement-origin-id" class="select-shell" name="originWarehouseId"></select>
+          </div>
+          <div id="destination-shell">
+            <label class="mb-2 block text-sm font-medium">Bodega destino</label>
+            <select id="movement-destination-id" class="select-shell" name="destinationWarehouseId"></select>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium">Cantidad</label>
+            <input class="input-shell" type="number" name="quantity" min="1" required>
+          </div>
+          <button id="submit-movement-form" class="btn-primary w-full" type="submit">Guardar movimiento</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="../js/pages/movements-page.js"></script>
 </body>

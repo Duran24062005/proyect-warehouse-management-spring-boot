@@ -1,11 +1,22 @@
 import { request } from "../core/api.js";
 import { requireAuth } from "../core/auth.js";
-import { fillSelect, renderTable, setupLayout, showNotice } from "../core/ui.js";
+import {
+  closeModal,
+  fillSelect,
+  openModal,
+  renderTable,
+  setupLayout,
+  setupModal,
+  showNotice
+} from "../core/ui.js";
 
 const notice = document.querySelector("#warehouses-notice");
 const form = document.querySelector("#warehouse-form");
-const formCard = document.querySelector("#warehouse-form-card");
+const modal = document.querySelector("#warehouse-modal");
+const openModalButton = document.querySelector("#open-warehouse-modal");
 const resetButton = document.querySelector("#reset-warehouse-form");
+const formTitle = document.querySelector("#warehouse-form-title");
+const submitButton = document.querySelector("#submit-warehouse-form");
 const managerSelect = document.querySelector("#warehouse-manager-id");
 const tableBody = document.querySelector("#warehouses-body");
 
@@ -14,6 +25,8 @@ let warehouses = [];
 function resetForm() {
   form.reset();
   form.warehouseId.value = "";
+  formTitle.textContent = "Nueva bodega";
+  submitButton.textContent = "Guardar bodega";
 }
 
 function editWarehouse(id) {
@@ -25,7 +38,9 @@ function editWarehouse(id) {
   form.ubication.value = warehouse.ubication;
   form.capacity.value = warehouse.capacity || "";
   form.managerUserId.value = warehouse.managerUserId || "";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  formTitle.textContent = "Editar bodega";
+  submitButton.textContent = "Guardar cambios";
+  openModal(modal);
 }
 
 async function loadData(user) {
@@ -38,7 +53,7 @@ async function loadData(user) {
   warehouses = warehousesResponse;
 
   if (user.role !== "ADMIN") {
-    formCard?.classList.add("hidden");
+    openModalButton?.classList.add("hidden");
 
     if (!warehouses.length) {
       showNotice(
@@ -48,7 +63,7 @@ async function loadData(user) {
       );
     }
   } else {
-    formCard?.classList.remove("hidden");
+    openModalButton?.classList.remove("hidden");
   }
 
   fillSelect(managerSelect, usersResponse.filter((item) => item.userStatus === "ACTIVE" && item.role === "USER"), {
@@ -82,6 +97,7 @@ async function init() {
   if (!user) return;
 
   setupLayout("warehouses", user);
+  setupModal(modal);
   showNotice(notice, "");
 
   try {
@@ -90,6 +106,11 @@ async function init() {
     showNotice(notice, error.message, "error");
   }
 }
+
+openModalButton?.addEventListener("click", () => {
+  resetForm();
+  openModal(modal);
+});
 
 resetButton.addEventListener("click", resetForm);
 
@@ -143,6 +164,7 @@ form.addEventListener("submit", async (event) => {
       "success"
     );
     resetForm();
+    closeModal(modal);
     await init();
   } catch (error) {
     showNotice(notice, error.message, "error");

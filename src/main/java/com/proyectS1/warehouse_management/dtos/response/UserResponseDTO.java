@@ -25,6 +25,8 @@ public record UserResponseDTO(
     @Schema(description = "Assigned warehouse id")
     Long warehouseId,
     @Schema(description = "Assigned warehouse name")
-    String warehouseName
+    String warehouseName,
+    @Schema(description = "Public profile photo URL")
+    String profilePhotoUrl
 ) {
 }

@@ -1,5 +1,23 @@
+import { resolveBackendUrl } from "./api.js";
 import { logout } from "./auth.js";
 import { getApiBase, isAdmin, setApiBase } from "./session.js";
+
+let toastHost = null;
+let toastSequence = 0;
+
+function ensureToastHost() {
+  if (toastHost) return toastHost;
+
+  toastHost = document.querySelector("[data-toast-host]");
+  if (!toastHost) {
+    toastHost = document.createElement("div");
+    toastHost.dataset.toastHost = "true";
+    toastHost.className = "toast-host";
+    document.body.append(toastHost);
+  }
+
+  return toastHost;
+}
 
 export function fillText(selector, value) {
   document.querySelectorAll(selector).forEach((node) => {
@@ -7,23 +25,125 @@ export function fillText(selector, value) {
   });
 }
 
-export function showNotice(element, message, type = "success") {
-  if (!element) return;
+function getInitials(user) {
+  const first = user?.firstName?.trim()?.[0] || "";
+  const last = user?.lastName?.trim()?.[0] || "";
+  return `${first}${last}`.toUpperCase() || "LT";
+}
 
+export function showNotice(element, message, type = "success") {
   if (!message) {
-    element.className = "hidden";
-    element.textContent = "";
+    if (element) {
+      element.className = "hidden";
+      element.textContent = "";
+    }
     return;
   }
 
+  const host = ensureToastHost();
   const palette = {
-    success: "bg-green-500 text-white",
-    error: "bg-red-500 text-white",
-    info: "bg-orange-500 text-white"
+    success: {
+      label: "Correcto",
+      className: "toast-success",
+      duration: 3600
+    },
+    error: {
+      label: "Error",
+      className: "toast-error",
+      duration: 5200
+    },
+    info: {
+      label: "Aviso",
+      className: "toast-info",
+      duration: 4200
+    }
+  };
+  const config = palette[type] || palette.info;
+  const toast = document.createElement("article");
+  const toastId = `toast-${Date.now()}-${toastSequence += 1}`;
+
+  toast.className = `toast-shell ${config.className}`;
+  toast.dataset.toastId = toastId;
+  toast.innerHTML = `
+    <div class="toast-copy">
+      <p class="toast-label">${config.label}</p>
+      <p class="toast-message"></p>
+    </div>
+    <button class="toast-close" type="button" aria-label="Cerrar notificacion">Cerrar</button>
+  `;
+  toast.querySelector(".toast-message").textContent = message;
+
+  const removeToast = () => {
+    if (!toast.isConnected) return;
+    toast.classList.add("toast-out");
+    window.setTimeout(() => {
+      toast.remove();
+    }, 180);
   };
 
-  element.className = `notice-shell ${palette[type] || palette.info}`;
-  element.textContent = message;
+  toast.querySelector(".toast-close")?.addEventListener("click", removeToast);
+  host.append(toast);
+
+  window.setTimeout(() => {
+    toast.classList.add("toast-visible");
+  }, 10);
+  window.setTimeout(removeToast, config.duration);
+}
+
+export function setupModal(modal) {
+  if (!modal) return null;
+  if (modal.dataset.modalReady === "true") {
+    return {
+      openModal: modal.__openModal,
+      closeModal: modal.__closeModal
+    };
+  }
+
+  const closeModal = () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+  };
+
+  const openModal = () => {
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+  };
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target.closest("[data-modal-close]")) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal.getAttribute("aria-hidden") === "false") {
+      closeModal();
+    }
+  });
+
+  modal.dataset.modalReady = "true";
+  modal.__openModal = openModal;
+  modal.__closeModal = closeModal;
+
+  return { openModal, closeModal };
+}
+
+export function openModal(modal) {
+  if (!modal) return;
+
+  const controller = setupModal(modal);
+  controller?.openModal();
+}
+
+export function closeModal(modal) {
+  if (!modal) return;
+
+  const controller = setupModal(modal);
+  controller?.closeModal();
 }
 
 export function formatDate(value) {
@@ -87,6 +207,22 @@ export function setupLayout(pageKey, user) {
   fillText(".js-user-name", userName);
   fillText(".js-user-role", userRole);
   fillText(".js-api-base", getApiBase());
+  fillText(".js-user-initials", getInitials(user));
+
+  document.querySelectorAll(".js-user-photo").forEach((image) => {
+    const placeholder = image.parentElement?.querySelector(".js-user-initials");
+
+    if (user?.profilePhotoUrl) {
+      image.src = resolveBackendUrl(user.profilePhotoUrl);
+      image.classList.remove("hidden");
+      placeholder?.classList.add("hidden");
+      return;
+    }
+
+    image.removeAttribute("src");
+    image.classList.add("hidden");
+    placeholder?.classList.remove("hidden");
+  });
 
   document.querySelectorAll("[data-nav]").forEach((link) => {
     if (link.dataset.nav === pageKey) {

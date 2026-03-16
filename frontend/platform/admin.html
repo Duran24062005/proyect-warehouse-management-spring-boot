@@ -10,10 +10,10 @@
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/app.css">
 </head>
-<body class="page-bg min-h-screen text-ink bg-slate-700">
+<body class="page-bg min-h-screen text-ink">
   <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
     <div class="app-shell">
-      <aside class="app-sidebar section-card p-5 lg:p-6 bg-slate-200">
+      <aside class="app-sidebar section-card p-5 lg:p-6">
         <div class="flex justify-center">
           <img
             src="../img/appLogo_backgroundless.png"
@@ -31,77 +31,37 @@
           <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
           <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
         </nav>
-        <div class="mt-8 rounded-2xl bg-mist/70 p-4 text-sm">
-          <p class="font-semibold">Solo admin</p>
-          <p class="mt-2 text-slate-600">Esta pantalla consume `/api/users/**`.</p>
+        <div class="sidebar-session">
+          <p class="font-semibold">Sesion</p>
+          <div class="sidebar-session-user">
+            <div class="sidebar-avatar-wrap">
+              <div class="sidebar-avatar-placeholder js-user-initials">LT</div>
+              <img class="sidebar-avatar-image js-user-photo hidden" alt="Foto de perfil">
+            </div>
+            <div class="min-w-0">
+              <p class="js-user-name truncate font-medium"></p>
+              <p class="js-user-role text-slate-500"></p>
+            </div>
+          </div>
           <button class="btn-secondary mt-4 w-full" data-action="logout" type="button">Cerrar sesion</button>
         </div>
       </aside>
 
       <section class="space-y-6">
         <header class="section-card p-6">
-          <h2 class="section-title">Consola administrativa</h2>
-          <p class="mt-3 text-sm text-slate-600">Crea usuarios, asigna empleados a bodegas, edita roles y controla estados desde un solo lugar.</p>
-          <p class="mt-2 text-sm text-slate-500">Si un empleado va a convertirse en manager, primero cambiale el rol a <strong>USER</strong> aqui y luego asignalo como manager desde el modulo de bodegas.</p>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="section-title">Consola administrativa</h2>
+              <p class="mt-3 text-sm text-slate-600">Crea usuarios, asigna empleados a bodegas, edita roles y controla estados desde un solo lugar.</p>
+              <p class="mt-2 text-sm text-slate-500">Si un empleado va a convertirse en manager, primero cambiale el rol a <strong>USER</strong> aqui y luego asignalo como manager desde el modulo de bodegas.</p>
+            </div>
+            <button id="open-user-modal" class="btn-primary" type="button">Nuevo usuario</button>
+          </div>
         </header>
 
         <div id="admin-notice" class="hidden"></div>
 
-        <section class="grid gap-6 2xl:grid-cols-[minmax(28rem,32rem)_minmax(0,1fr)]">
-          <article class="section-card p-6 xl:p-7 lg:h-[44rem]">
-            <div class="flex items-center justify-between gap-4">
-              <h3 id="user-form-title" class="text-xl font-semibold">Crear usuario</h3>
-              <button id="reset-user-form" class="btn-secondary" type="button">Limpiar</button>
-            </div>
-            <form id="user-create-form" class="mt-5 space-y-4">
-              <input type="hidden" name="userId">
-              <div>
-                <label class="mb-2 block text-sm font-medium">Correo</label>
-                <input class="input-shell" type="email" name="email" required>
-              </div>
-              <div id="user-password-shell">
-                <label class="mb-2 block text-sm font-medium">Contrasena</label>
-                <input class="input-shell" type="password" name="password" minlength="6" required>
-              </div>
-              <div class="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label class="mb-2 block text-sm font-medium">Nombre</label>
-                  <input class="input-shell" type="text" name="firstName" required>
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-medium">Apellido</label>
-                  <input class="input-shell" type="text" name="lastName" required>
-                </div>
-              </div>
-              <div>
-                <label class="mb-2 block text-sm font-medium">Telefono</label>
-                <input class="input-shell" type="text" name="phoneNumber" required>
-              </div>
-              <div class="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label class="mb-2 block text-sm font-medium">Rol</label>
-                  <select class="select-shell" name="role">
-                    <option value="USER">USER</option>
-                    <option value="EMPLOYEE">EMPLOYEE</option>
-                    <option value="ADMIN">ADMIN</option>
-                  </select>
-                </div>
-                <div id="user-enabled-shell">
-                  <label class="mb-2 block text-sm font-medium">Activo</label>
-                  <select class="select-shell" name="enabled">
-                    <option value="true">true</option>
-                    <option value="false">false</option>
-                  </select>
-                </div>
-              </div>
-              <div id="user-warehouse-shell" class="hidden">
-                <label class="mb-2 block text-sm font-medium">Bodega del empleado</label>
-                <select class="select-shell" name="warehouseId"></select>
-              </div>
-              <button id="user-submit-button" class="btn-primary w-full" type="submit">Crear usuario</button>
-            </form>
-          </article>
-
+        <section>
           <div class="space-y-6">
             <article class="section-card p-6 xl:p-7">
               <h3 class="text-xl font-semibold">Filtros</h3>
@@ -145,6 +105,74 @@
       </section>
     </div>
   </main>
+
+  <div
+    id="user-modal"
+    class="modal-shell fixed inset-0 z-[60] hidden items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+    aria-hidden="true"
+  >
+    <div class="modal-panel w-full max-w-2xl overflow-hidden">
+      <div class="modal-header flex items-start justify-between gap-4 p-6 pb-0">
+        <div>
+          <h3 id="user-form-title" class="text-xl font-semibold">Crear usuario</h3>
+          <p class="mt-1 text-sm text-slate-400">Usa este modal para crear o editar usuarios sin salir del listado.</p>
+        </div>
+        <button class="modal-close" data-modal-close type="button">Cerrar</button>
+      </div>
+      <div class="modal-body max-h-[calc(100vh-4rem)] overflow-y-auto p-6 pt-5">
+        <div class="flex items-center justify-end">
+          <button id="reset-user-form" class="btn-secondary" type="button">Limpiar</button>
+        </div>
+        <form id="user-create-form" class="mt-5 space-y-4">
+          <input type="hidden" name="userId">
+          <div>
+            <label class="mb-2 block text-sm font-medium">Correo</label>
+            <input class="input-shell" type="email" name="email" required>
+          </div>
+          <div id="user-password-shell">
+            <label class="mb-2 block text-sm font-medium">Contrasena</label>
+            <input class="input-shell" type="password" name="password" minlength="6" required>
+          </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-medium">Nombre</label>
+              <input class="input-shell" type="text" name="firstName" required>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium">Apellido</label>
+              <input class="input-shell" type="text" name="lastName" required>
+            </div>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium">Telefono</label>
+            <input class="input-shell" type="text" name="phoneNumber" required>
+          </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-medium">Rol</label>
+              <select class="select-shell" name="role">
+                <option value="USER">USER</option>
+                <option value="EMPLOYEE">EMPLOYEE</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+            <div id="user-enabled-shell">
+              <label class="mb-2 block text-sm font-medium">Activo</label>
+              <select class="select-shell" name="enabled">
+                <option value="true">true</option>
+                <option value="false">false</option>
+              </select>
+            </div>
+          </div>
+          <div id="user-warehouse-shell" class="hidden">
+            <label class="mb-2 block text-sm font-medium">Bodega del empleado</label>
+            <select class="select-shell" name="warehouseId"></select>
+          </div>
+          <button id="user-submit-button" class="btn-primary w-full" type="submit">Crear usuario</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="../js/pages/admin-page.js"></script>
 </body>

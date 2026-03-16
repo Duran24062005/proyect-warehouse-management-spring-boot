@@ -1,12 +1,23 @@
 import { request } from "../core/api.js";
 import { requireAuth } from "../core/auth.js";
-import { fillSelect, renderTable, setupLayout, showNotice } from "../core/ui.js";
+import {
+  closeModal,
+  fillSelect,
+  openModal,
+  renderTable,
+  setupLayout,
+  setupModal,
+  showNotice
+} from "../core/ui.js";
 
 const notice = document.querySelector("#movements-notice");
 const form = document.querySelector("#movement-form");
+const modal = document.querySelector("#movement-modal");
 const filterForm = document.querySelector("#movement-filter-form");
+const openModalButton = document.querySelector("#open-movement-modal");
 const resetButton = document.querySelector("#reset-movement-form");
 const tableBody = document.querySelector("#movements-body");
+const formTitle = document.querySelector("#movement-form-title");
 const performedByHelp = document.querySelector("#movement-performed-by-help");
 const submitButton = document.querySelector("#submit-movement-form");
 
@@ -49,6 +60,8 @@ function syncMovementFields() {
 function resetForm() {
   form.reset();
   form.movementId.value = "";
+  formTitle.textContent = "Nuevo movimiento";
+  submitButton.textContent = "Guardar movimiento";
   syncMovementFields();
   syncEmployeeState();
 }
@@ -64,8 +77,10 @@ function editMovement(id) {
   form.originWarehouseId.value = movement.originWarehouseId || "";
   form.destinationWarehouseId.value = movement.destinationWarehouseId || "";
   form.quantity.value = movement.quantity;
+  formTitle.textContent = "Editar movimiento";
+  submitButton.textContent = "Guardar cambios";
   syncMovementFields();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  openModal(modal);
 }
 
 async function loadCatalogs(user) {
@@ -156,6 +171,7 @@ async function init() {
 
   currentUser = user;
   setupLayout("movements", user);
+  setupModal(modal);
   showNotice(notice, "");
 
   try {
@@ -168,6 +184,10 @@ async function init() {
 }
 
 document.querySelector("#movement-type").addEventListener("change", syncMovementFields);
+openModalButton?.addEventListener("click", () => {
+  resetForm();
+  openModal(modal);
+});
 resetButton.addEventListener("click", resetForm);
 
 filterForm.addEventListener("submit", async (event) => {
@@ -240,6 +260,7 @@ form.addEventListener("submit", async (event) => {
       "success"
     );
     resetForm();
+    closeModal(modal);
     await loadMovements();
   } catch (error) {
     showNotice(notice, error.message, "error");

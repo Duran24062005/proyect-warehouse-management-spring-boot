@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/app.css">
 </head>
-<body class="page-bg min-h-screen text-ink bg-slate-700">
+<body class="page-bg min-h-screen text-ink">
   <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
     <div class="app-shell">
       <aside class="app-sidebar section-card p-5 lg:p-6">
@@ -31,9 +31,18 @@
           <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
           <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
         </nav>
-        <div class="mt-8 rounded-2xl bg-mist/70 p-4 text-sm">
-          <p class="font-semibold">API actual</p>
-          <p class="js-api-base mt-2 break-all text-slate-600"></p>
+        <div class="sidebar-session">
+          <p class="font-semibold">Sesion</p>
+          <div class="sidebar-session-user">
+            <div class="sidebar-avatar-wrap">
+              <div class="sidebar-avatar-placeholder js-user-initials">LT</div>
+              <img class="sidebar-avatar-image js-user-photo hidden" alt="Foto de perfil">
+            </div>
+            <div class="min-w-0">
+              <p class="js-user-name truncate font-medium"></p>
+              <p class="js-user-role text-slate-500"></p>
+            </div>
+          </div>
           <button class="btn-secondary mt-4 w-full" data-action="logout" type="button">Cerrar sesion</button>
         </div>
       </aside>
@@ -48,7 +57,11 @@
 
         <section class="grid gap-6 xl:grid-cols-2">
           <article class="section-card p-6 xl:p-7">
-            <h3 class="text-xl font-semibold">Datos actuales</h3>
+            <div class="profile-summary">
+              <div id="profile-photo-placeholder" class="profile-avatar-placeholder">LT</div>
+              <img id="profile-photo-image" class="profile-avatar-image hidden" alt="Foto de perfil">
+            </div>
+            <h3 class="mt-6 text-xl font-semibold">Datos actuales</h3>
             <dl class="mt-5 space-y-4 text-sm">
               <div>
                 <dt class="text-slate-500">Nombre</dt>
@@ -78,6 +91,24 @@
           </article>
 
           <article class="section-card p-6 xl:p-7">
+            <h3 class="text-xl font-semibold">Foto de perfil</h3>
+            <p class="mt-2 text-sm text-slate-600">Sube una imagen JPG, PNG o WEBP de hasta 5 MB.</p>
+            <form id="profile-photo-form" class="mt-5 space-y-4">
+              <div>
+                <label class="mb-2 block text-sm font-medium">Archivo</label>
+                <input
+                  id="profile-photo-input"
+                  class="input-shell"
+                  type="file"
+                  name="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  required
+                >
+              </div>
+              <button class="btn-secondary w-full" type="submit">Actualizar foto</button>
+            </form>
+
+            <div class="my-6 h-px bg-white/10"></div>
             <h3 class="text-xl font-semibold">Cambiar contrasena</h3>
             <form id="profile-form" class="mt-5 space-y-4">
               <div>

@@ -67,6 +67,9 @@ public class AppUser extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus = UserStatus.PENDING;
 
+    @Column(name = "profile_photo_filename", length = 255)
+    private String profilePhotoFilename;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;

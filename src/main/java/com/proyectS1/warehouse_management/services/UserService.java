@@ -2,6 +2,8 @@ package com.proyectS1.warehouse_management.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.proyectS1.warehouse_management.dtos.request.AdminUserRequestDTO;
 import com.proyectS1.warehouse_management.dtos.request.AdminUserUpdateRequestDTO;
 import com.proyectS1.warehouse_management.dtos.request.UserStatusUpdateRequestDTO;
@@ -20,4 +22,5 @@ public interface UserService {
     UserResponseDTO approveUser(Long userId);
     UserResponseDTO blockUser(Long userId);
     UserResponseDTO unblockUser(Long userId);
+    UserResponseDTO uploadProfilePhoto(MultipartFile file);
 }

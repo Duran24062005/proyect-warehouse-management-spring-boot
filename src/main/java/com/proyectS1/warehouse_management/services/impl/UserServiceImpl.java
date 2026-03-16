@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.proyectS1.warehouse_management.dtos.request.AdminUserRequestDTO;
@@ -29,6 +30,7 @@ import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
 import com.proyectS1.warehouse_management.services.UserService;
 import com.proyectS1.warehouse_management.services.support.AuditService;
+import com.proyectS1.warehouse_management.services.support.ProfilePhotoStorageService;
 import com.proyectS1.warehouse_management.services.support.WarehouseAccessService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final WarehouseAccessService warehouseAccessService;
     private final AuditService auditService;
+    private final ProfilePhotoStorageService profilePhotoStorageService;
 
     @Override
     public List<UserResponseDTO> findAll() {
@@ -168,6 +171,21 @@ public class UserServiceImpl implements UserService {
         AppUser savedUser = saveStatus(user, UserStatus.ACTIVE);
         UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
         auditService.logUpdate("app_user", "Catalog for application users", actorUser, oldValues, newValues);
+        return newValues;
+    }
+
+    @Override
+    public UserResponseDTO uploadProfilePhoto(MultipartFile file) {
+        AppUser user = warehouseAccessService.getCurrentUser();
+        UserResponseDTO oldValues = userMapper.entityToDTO(user);
+
+        user.setProfilePhotoFilename(
+            profilePhotoStorageService.storeProfilePhoto(user.getId(), file, user.getProfilePhotoFilename())
+        );
+
+        AppUser savedUser = appUserRepository.save(user);
+        UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
+        auditService.logUpdate("app_user", "Catalog for application users", savedUser, oldValues, newValues);
         return newValues;
     }
 

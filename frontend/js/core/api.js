@@ -22,14 +22,27 @@ async function parseResponse(response) {
   return response.text();
 }
 
+export function getBackendBaseUrl() {
+  const url = new URL(getApiBase());
+  url.pathname = url.pathname.replace(/\/api\/?$/, "/");
+  return url.toString().replace(/\/$/, "");
+}
+
+export function resolveBackendUrl(path) {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${getBackendBaseUrl()}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 export async function request(path, options = {}) {
   const { method = "GET", body, query, auth = false } = options;
+  const isFormData = body instanceof FormData;
   const headers = {
     Accept: "application/json"
   };
   const url = buildUrl(path, query);
 
-  if (body !== undefined) {
+  if (body !== undefined && !isFormData) {
     headers["Content-Type"] = "application/json";
   }
 
@@ -43,7 +56,12 @@ export async function request(path, options = {}) {
   const response = await fetch(url, {
     method,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined
+    body:
+      body === undefined
+        ? undefined
+        : isFormData
+          ? body
+          : JSON.stringify(body)
   });
 
   const data = await parseResponse(response);

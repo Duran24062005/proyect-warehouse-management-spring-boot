@@ -1,11 +1,21 @@
 import { request } from "../core/api.js";
 import { requireAuth } from "../core/auth.js";
-import { fillSelect, renderTable, setupLayout, showNotice } from "../core/ui.js";
+import {
+  closeModal,
+  fillSelect,
+  openModal,
+  renderTable,
+  setupLayout,
+  setupModal,
+  showNotice
+} from "../core/ui.js";
 
 const notice = document.querySelector("#admin-notice");
 const form = document.querySelector("#user-create-form");
+const modal = document.querySelector("#user-modal");
 const filterForm = document.querySelector("#user-filter-form");
 const tableBody = document.querySelector("#users-body");
+const openModalButton = document.querySelector("#open-user-modal");
 const resetButton = document.querySelector("#reset-user-form");
 const formTitle = document.querySelector("#user-form-title");
 const submitButton = document.querySelector("#user-submit-button");
@@ -66,7 +76,7 @@ function editUser(id) {
   form.role.value = user.role;
   form.warehouseId.value = user.warehouseId || "";
   syncRoleFields();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  openModal(modal);
 }
 
 function renderQuickActions(user) {
@@ -165,6 +175,7 @@ async function init() {
   if (!user) return;
 
   setupLayout("admin", user);
+  setupModal(modal);
   setCreateMode();
 
   try {
@@ -176,6 +187,10 @@ async function init() {
 }
 
 form.role.addEventListener("change", syncRoleFields);
+openModalButton?.addEventListener("click", () => {
+  setCreateMode();
+  openModal(modal);
+});
 resetButton.addEventListener("click", setCreateMode);
 
 form.addEventListener("submit", async (event) => {
@@ -217,6 +232,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     setCreateMode();
+    closeModal(modal);
     await loadCatalogs();
     await loadUsers();
   } catch (error) {
