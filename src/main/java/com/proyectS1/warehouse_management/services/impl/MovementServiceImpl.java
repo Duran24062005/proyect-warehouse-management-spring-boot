@@ -5,10 +5,12 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.proyectS1.warehouse_management.dtos.request.MovementRequestDTO;
@@ -47,11 +49,11 @@ public class MovementServiceImpl implements MovementService {
     public MovementResponseDTO saveMovement(MovementRequestDTO dto) {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         validateWarehouseRules(dto);
-        warehouseAccessService.requireAnyWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
+        warehouseAccessService.requireAnyWarehouseAccess(currentUser, getParticipatingWarehouseIds(dto));
 
         Movement movement = movementMapper.dtoToEntity(dto);
         hydrateRelations(movement, dto, currentUser);
-        MovementResponseDTO response = movementMapper.entityToDTO(movementRepository.save(movement));
+        MovementResponseDTO response = movementMapper.entityToDTO(saveAndFlushMovement(movement));
         auditService.logInsert("movement", "Catalog for product movements", currentUser, response);
         return response;
     }
@@ -64,10 +66,10 @@ public class MovementServiceImpl implements MovementService {
         Movement movement = findMovementById(id);
         requireMovementAccess(currentUser, movement);
         MovementResponseDTO oldValues = movementMapper.entityToDTO(movement);
-        warehouseAccessService.requireAnyWarehouseAccess(currentUser, List.of(dto.originWarehouseId(), dto.destinationWarehouseId()));
+        warehouseAccessService.requireAnyWarehouseAccess(currentUser, getParticipatingWarehouseIds(dto));
         movementMapper.updateEntityFromDTO(movement, dto);
         hydrateRelations(movement, dto, currentUser);
-        MovementResponseDTO newValues = movementMapper.entityToDTO(movementRepository.save(movement));
+        MovementResponseDTO newValues = movementMapper.entityToDTO(saveAndFlushMovement(movement));
         auditService.logUpdate("movement", "Catalog for product movements", currentUser, oldValues, newValues);
         return newValues;
     }
@@ -207,6 +209,20 @@ public class MovementServiceImpl implements MovementService {
         }
 
         return employee;
+    }
+
+    private Movement saveAndFlushMovement(Movement movement) {
+        try {
+            return movementRepository.saveAndFlush(movement);
+        } catch (DataIntegrityViolationException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, "Movement data violates a database rule", exception);
+        }
+    }
+
+    private List<Long> getParticipatingWarehouseIds(MovementRequestDTO dto) {
+        return java.util.stream.Stream.of(dto.originWarehouseId(), dto.destinationWarehouseId())
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     private void requireMovementAccess(AppUser currentUser, Movement movement) {

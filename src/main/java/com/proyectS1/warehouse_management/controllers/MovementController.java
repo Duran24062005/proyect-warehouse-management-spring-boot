@@ -18,6 +18,8 @@ import com.proyectS1.warehouse_management.dtos.request.MovementRequestDTO;
 import com.proyectS1.warehouse_management.dtos.response.MovementResponseDTO;
 import com.proyectS1.warehouse_management.services.MovementService;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -81,7 +83,29 @@ public class MovementController {
             @ApiResponse(responseCode = "404", description = "Related warehouse or product not found")
         }
     )
-    @Operation(summary = "Crea un movimiento")
+    @Operation(
+        summary = "Crea un movimiento",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "The employee executing the movement must be sent in performedByEmployeeId.",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "entryMovement",
+                    value = """
+                        {
+                          "movementType": "ENTRY",
+                          "performedByEmployeeId": 5,
+                          "originWarehouseId": 1,
+                          "destinationWarehouseId": 2,
+                          "productId": 1,
+                          "quantity": 25
+                        }
+                        """
+                )
+            )
+        )
+    )
     public ResponseEntity<MovementResponseDTO> createMovement(@Valid @RequestBody MovementRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(movementService.saveMovement(dto));
     }
@@ -95,7 +119,29 @@ public class MovementController {
             @ApiResponse(responseCode = "404", description = "Movement or related data not found")
         }
     )
-    @Operation(summary = "Actualiza un movimiento")
+    @Operation(
+        summary = "Actualiza un movimiento",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            description = "The employee executing the movement must be sent in performedByEmployeeId.",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "updateMovement",
+                    value = """
+                        {
+                          "movementType": "TRANSFER",
+                          "performedByEmployeeId": 5,
+                          "originWarehouseId": 1,
+                          "destinationWarehouseId": 2,
+                          "productId": 1,
+                          "quantity": 10
+                        }
+                        """
+                )
+            )
+        )
+    )
     public ResponseEntity<MovementResponseDTO> updateMovement(@PathVariable Long id, @Valid @RequestBody MovementRequestDTO dto) {
         return ResponseEntity.ok(movementService.updateMovement(dto, id));
     }

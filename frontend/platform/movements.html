@@ -74,6 +74,9 @@
               <div>
                 <label class="mb-2 block text-sm font-medium">Empleado que realizo el movimiento</label>
                 <select id="movement-performed-by-id" class="select-shell" name="performedByEmployeeId" required></select>
+                <p id="movement-performed-by-help" class="mt-2 text-xs text-slate-500">
+                  Selecciona el empleado que ejecuto fisicamente este movimiento.
+                </p>
               </div>
               <div>
                 <label class="mb-2 block text-sm font-medium">Producto</label>
@@ -91,7 +94,7 @@
                 <label class="mb-2 block text-sm font-medium">Cantidad</label>
                 <input class="input-shell" type="number" name="quantity" min="1" required>
               </div>
-              <button class="btn-primary w-full" type="submit">Guardar movimiento</button>
+              <button id="submit-movement-form" class="btn-primary w-full" type="submit">Guardar movimiento</button>
             </form>
           </article>
 

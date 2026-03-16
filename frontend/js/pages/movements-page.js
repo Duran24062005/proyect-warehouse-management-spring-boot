@@ -7,10 +7,25 @@ const form = document.querySelector("#movement-form");
 const filterForm = document.querySelector("#movement-filter-form");
 const resetButton = document.querySelector("#reset-movement-form");
 const tableBody = document.querySelector("#movements-body");
+const performedByHelp = document.querySelector("#movement-performed-by-help");
+const submitButton = document.querySelector("#submit-movement-form");
 
 let currentUser = null;
 let movements = [];
 let employees = [];
+
+function syncEmployeeState() {
+  const hasEmployees = employees.length > 0;
+
+  form.performedByEmployeeId.disabled = !hasEmployees;
+  submitButton.disabled = !hasEmployees;
+  submitButton.classList.toggle("opacity-60", !hasEmployees);
+  submitButton.classList.toggle("cursor-not-allowed", !hasEmployees);
+
+  performedByHelp.textContent = hasEmployees
+    ? "Selecciona el empleado que ejecuto fisicamente este movimiento."
+    : "No hay empleados disponibles para registrar este movimiento. Primero asigna empleados a una bodega.";
+}
 
 function syncMovementFields() {
   const type = document.querySelector("#movement-type").value;
@@ -35,6 +50,7 @@ function resetForm() {
   form.reset();
   form.movementId.value = "";
   syncMovementFields();
+  syncEmployeeState();
 }
 
 function editMovement(id) {
@@ -102,6 +118,7 @@ async function loadCatalogs(user) {
     label: (item) => item.name
   });
   document.querySelector("#movement-registered-by").textContent = `${user.firstName} ${user.lastName}`;
+  syncEmployeeState();
 }
 
 async function loadMovements(filters = {}) {
@@ -193,6 +210,12 @@ tableBody.addEventListener("click", async (event) => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  if (!form.performedByEmployeeId.value) {
+    showNotice(notice, "Debes seleccionar el empleado que realizo el movimiento.", "error");
+    form.performedByEmployeeId.focus();
+    return;
+  }
 
   const payload = {
     movementType: form.movementType.value,
