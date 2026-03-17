@@ -34,7 +34,9 @@ export function createMovementAnalyticsChart(container, payload, options = {}) {
     return createEmptyState(container, emptyMessage);
   }
 
-  const { createChart, LineSeries } = getLibrary();
+  // LineSeries
+
+  const { createChart, HistogramSeries } = getLibrary();
   container.innerHTML = "";
   const chartHost = document.createElement("div");
   chartHost.className = "analytics-chart-canvas";
@@ -70,7 +72,7 @@ export function createMovementAnalyticsChart(container, payload, options = {}) {
   });
 
   const seriesRefs = payload.series.map((series) => {
-    const lineSeries = chart.addSeries(LineSeries, {
+    const lineSeries = chart.addSeries(HistogramSeries, {
       color: series.color,
       lineWidth: series.id === "total" ? 3 : 2,
       crosshairMarkerVisible: true,
