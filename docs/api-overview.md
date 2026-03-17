@@ -18,6 +18,8 @@ OpenAPI JSON: `http://localhost:8000/v3/api-docs`
 - `GET|POST|PUT|DELETE /api/movements`
 - `GET /api/movements?productId={id}`
 - `GET /api/movements?warehouseId={id}`
+- `GET /api/reports?type={type}&format={format}`
+- `GET /api/reports/analytics/movements?window=30d`
 
 ## Seguridad
 
@@ -32,6 +34,7 @@ OpenAPI JSON: `http://localhost:8000/v3/api-docs`
   - `/api/products/**`
   - `/api/warehouses/**`
   - `/api/movements/**`
+  - `/api/reports/**`
 - Requiere rol `ADMIN`:
   - `/api/users/**` excepto `PATCH /api/users/me/profile-photo`
 
@@ -50,6 +53,7 @@ La aplicacion incluye cliente web servido por Spring Boot:
 - `/`
 - `/register.html`
 - `/platform/system.html`
+- `/platform/reports.html`
 - `/platform/products.html`
 - `/platform/profile.html`
 - `/platform/admin.html`

@@ -35,6 +35,7 @@ Responsabilidad:
 
 - cargar resumen general del sistema
 - mostrar conteos de productos, bodegas, movimientos y usuarios
+- mostrar analitica visual de movimientos de los ultimos 30 dias
 - mostrar una tabla corta de bodegas
 - mostrar movimientos recientes
 
@@ -43,6 +44,7 @@ Endpoints usados:
 - `GET /products`
 - `GET /warehouses`
 - `GET /movements`
+- `GET /reports/analytics/movements`
 - `GET /users` solo para admin
 
 ### Productos
@@ -121,6 +123,26 @@ Endpoints usados:
 - `GET /auth/me` por `requireAuth()`
 - `PATCH /users/me/profile-photo`
 - `PATCH /auth/change-password`
+
+### Reportes
+
+- HTML: [reports.html](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/frontend/platform/reports.html)
+- Script: [reports-page.js](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/frontend/js/pages/reports-page.js)
+
+Responsabilidad:
+
+- previsualizar reportes por entidad
+- descargar reportes en `PDF`, `IMG`, `TXT` y `CSV`
+- mostrar resumen KPI del dataset
+- mostrar analitica visual cuando el reporte sea de movimientos
+
+Endpoints usados:
+
+- `GET /reports`
+- `GET /reports/analytics/movements`
+- `GET /products`
+- `GET /warehouses`
+- `GET /users/role` solo para admin
 
 ### Administracion de usuarios
 

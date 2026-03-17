@@ -6,17 +6,19 @@ Describir la estructura del frontend estatico integrado en Spring Boot y como se
 
 ## Estructura
 
-- `src/main/resources/static/index.html`
+- `frontend/index.html`
   Login.
-- `src/main/resources/static/register.html`
+- `frontend/register.html`
   Registro.
-- `src/main/resources/static/platform/system.html`
-  Dashboard general.
-- `src/main/resources/static/platform/products.html`
+- `frontend/platform/system.html`
+  Dashboard general y analitica visual de movimientos.
+- `frontend/platform/reports.html`
+  Reportes descargables y analitica visual sincronizada.
+- `frontend/platform/products.html`
   Gestion y consulta de productos.
-- `src/main/resources/static/platform/profile.html`
+- `frontend/platform/profile.html`
   Perfil del usuario autenticado, foto de perfil y cambio de contrasena.
-- `src/main/resources/static/platform/admin.html`
+- `frontend/platform/admin.html`
   Consola administrativa.
 
 ## JavaScript
@@ -25,8 +27,8 @@ Describir la estructura del frontend estatico integrado en Spring Boot y como se
 
 - `auth.js`
   Maneja sesion, token Bearer y llamadas base autenticadas.
-- `demo-users.js`
-  Soporte para usuarios demo o multiusuario del cliente.
+- `charts.js`
+  Inicializa y destruye las graficas de Lightweight Charts.
 - `ui.js`
   Utilidades compartidas de interfaz.
 
@@ -35,15 +37,15 @@ Describir la estructura del frontend estatico integrado en Spring Boot y como se
 - `auth-page.js`
   Flujo de login y registro.
 - `dashboard-page.js`
-  Dashboard principal.
+  Dashboard principal y bloque de analitica.
+- `reports-page.js`
+  Centro de reportes y analitica visual de movimientos.
 - `products-page.js`
   Catalogo y operaciones de productos.
 - `profile-page.js`
   Datos del usuario, foto de perfil y cambio de contrasena.
 - `admin-page.js`
   Alta de usuarios y flujos administrativos.
-- `app-common.js`
-  Helpers de pagina reutilizables.
 
 ## CSS
 
@@ -70,5 +72,6 @@ Describir la estructura del frontend estatico integrado en Spring Boot y como se
 1. El usuario entra a `/` o `/register.html`.
 2. El frontend consume `register` o `login`.
 3. Al iniciar sesion, el token se almacena localmente.
-4. Las paginas `platform/*` reutilizan ese token para llamar productos, bodegas, movimientos, perfil y usuarios.
-5. La pantalla de perfil tambien consume la subida de foto y reutiliza `profilePhotoUrl` para pintar avatar en perfil y sidebar.
+4. Las paginas `platform/*` reutilizan ese token para llamar productos, bodegas, movimientos, reportes, perfil y usuarios.
+5. `Dashboard` y `Reportes` consumen analiticas de movimientos y renderizan graficas con Lightweight Charts.
+6. La pantalla de perfil tambien consume la subida de foto y reutiliza `profilePhotoUrl` para pintar avatar en perfil y sidebar.
