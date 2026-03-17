@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiTrack | Reportes</title>
+  <link rel="shortcut icon" href="../img/appLogo_backgroundless.png" type="image/x-icon">
+  <script src="../js/core/tailwind-theme.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/app.css">
+</head>
+<body class="page-bg min-h-screen text-ink">
+  <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
+    <div class="app-shell">
+      <aside class="app-sidebar section-card p-5 lg:p-6">
+        <div class="flex justify-center">
+          <img
+            src="../img/appLogo_backgroundless.png"
+            alt="Logo de LogiTrack"
+            class="h-24 w-auto lg:h-[12rem]"
+          >
+        </div>
+        <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
+        <h1 class="mt-3 font-display text-3xl">Reportes</h1>
+        <nav class="mt-6 space-y-2 text-sm font-medium">
+          <a class="nav-link" data-nav="system" data-employee-hidden href="./system.html">Resumen</a>
+          <a class="nav-link" data-nav="products" data-employee-hidden href="./products.html">Productos</a>
+          <a class="nav-link" data-nav="warehouses" data-employee-hidden href="./warehouses.html">Bodegas</a>
+          <a class="nav-link" data-nav="movements" data-employee-hidden href="./movements.html">Movimientos</a>
+          <a class="nav-link" data-nav="reports" data-employee-hidden href="./reports.html">Reportes</a>
+          <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
+          <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
+        </nav>
+        <div class="sidebar-session">
+          <p class="font-semibold">Sesion</p>
+          <div class="sidebar-session-user">
+            <div class="sidebar-avatar-wrap">
+              <div class="sidebar-avatar-placeholder js-user-initials">LT</div>
+              <img class="sidebar-avatar-image js-user-photo hidden" alt="Foto de perfil">
+            </div>
+            <div class="min-w-0">
+              <p class="js-user-name truncate font-medium"></p>
+              <p class="js-user-role text-slate-500"></p>
+            </div>
+          </div>
+          <button class="btn-secondary mt-4 w-full" data-action="logout" type="button">Cerrar sesion</button>
+        </div>
+      </aside>
+
+      <section class="space-y-6">
+        <header class="section-card p-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Centro de reportes</p>
+              <h2 class="section-title mt-3">Descargas operativas</h2>
+              <p id="reports-description" class="mt-3 max-w-3xl text-sm text-slate-600">
+                Previsualiza la informacion antes de descargarla en PDF, imagen, TXT o CSV.
+              </p>
+            </div>
+            <div class="report-format-pill">
+              <span>Formatos</span>
+              <strong>PDF · IMG · TXT · CSV</strong>
+            </div>
+          </div>
+        </header>
+
+        <div id="reports-notice" class="hidden"></div>
+
+        <section class="grid gap-6 2xl:grid-cols-[420px_minmax(0,1fr)]">
+          <article class="section-card p-6 xl:p-7">
+            <div>
+              <h3 class="text-xl font-semibold">Configurar reporte</h3>
+              <p class="mt-2 text-sm text-slate-600">Elige el tipo, ajusta filtros y decide si quieres previsualizar o descargar.</p>
+            </div>
+
+            <form id="report-form" class="mt-6 space-y-5">
+              <div>
+                <label class="mb-2 block text-sm font-medium" for="report-type">Tipo de reporte</label>
+                <select id="report-type" class="select-shell" name="type">
+                  <option value="movements">Movimientos</option>
+                  <option value="products">Productos</option>
+                  <option value="warehouses">Bodegas</option>
+                </select>
+              </div>
+
+              <div class="report-filter-group" data-filter-group="movements">
+                <label class="mb-2 block text-sm font-medium" for="report-product-id">Producto</label>
+                <select id="report-product-id" class="select-shell" name="productId"></select>
+              </div>
+
+              <div class="report-filter-group" data-filter-group="movements products">
+                <label class="mb-2 block text-sm font-medium" for="report-warehouse-id">Bodega</label>
+                <select id="report-warehouse-id" class="select-shell" name="warehouseId"></select>
+              </div>
+
+              <div class="report-filter-group" data-filter-group="movements">
+                <label class="mb-2 block text-sm font-medium" for="report-movement-type">Tipo de movimiento</label>
+                <select id="report-movement-type" class="select-shell" name="movementType">
+                  <option value="">Todos</option>
+                  <option value="ENTRY">ENTRY</option>
+                  <option value="EXIT">EXIT</option>
+                  <option value="TRANSFER">TRANSFER</option>
+                </select>
+              </div>
+
+              <div class="report-filter-group" data-filter-group="products">
+                <label class="mb-2 block text-sm font-medium" for="report-category">Categoria</label>
+                <select id="report-category" class="select-shell" name="category"></select>
+              </div>
+
+              <div class="report-filter-group" data-filter-group="warehouses">
+                <label class="mb-2 block text-sm font-medium" for="report-manager-user-id">Manager</label>
+                <select id="report-manager-user-id" class="select-shell" name="managerUserId"></select>
+                <p id="report-manager-help" class="mt-2 text-xs text-slate-500"></p>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium" for="report-format">Formato de descarga</label>
+                <select id="report-format" class="select-shell" name="format">
+                  <option value="pdf">PDF</option>
+                  <option value="img">IMG</option>
+                  <option value="txt">TXT</option>
+                  <option value="csv">CSV</option>
+                </select>
+              </div>
+
+              <div class="grid gap-3 sm:grid-cols-2">
+                <button id="preview-report-button" class="btn-secondary w-full" type="button">Previsualizar</button>
+                <button id="download-report-button" class="btn-primary w-full" type="button">Descargar</button>
+              </div>
+            </form>
+          </article>
+
+          <section class="space-y-6">
+            <article class="section-card p-6 xl:p-7">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-semibold">Previsualizacion</h3>
+                  <p id="reports-preview-meta" class="mt-2 text-sm text-slate-600">Todavia no has generado una vista previa.</p>
+                </div>
+                <div id="reports-filters-chipset" class="report-chipset"></div>
+              </div>
+
+              <div id="reports-summary" class="report-summary-grid mt-6"></div>
+            </article>
+
+            <article class="section-card p-6 xl:p-7">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-semibold">Detalle</h3>
+                  <p class="text-sm text-slate-600">La tabla siempre parte del mismo dataset que se usa para exportar.</p>
+                </div>
+              </div>
+
+              <div class="table-shell mt-5">
+                <table class="text-sm">
+                  <thead id="reports-table-head" class="bg-mist/70 text-left"></thead>
+                  <tbody id="reports-table-body"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="../js/pages/reports-page.js"></script>
+</body>
+</html>

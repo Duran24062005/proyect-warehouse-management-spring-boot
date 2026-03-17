@@ -500,3 +500,72 @@
 .admin-users-table td:nth-child(6) {
   min-width: 220px;
 }
+
+.report-format-pill {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  background: linear-gradient(180deg, rgba(16, 24, 42, 0.88), rgba(7, 12, 24, 0.92));
+  padding: 0.95rem 1.2rem;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+}
+
+.report-format-pill span {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.report-format-pill strong {
+  color: #f8fafc;
+}
+
+.report-chipset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.report-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.48rem 0.85rem;
+  font-size: 0.8rem;
+  color: #dbe7f5;
+}
+
+.report-summary-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.report-kpi-card {
+  border-radius: 1.3rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(18, 26, 44, 0.95), rgba(8, 13, 26, 0.96));
+  padding: 1rem 1rem 1.1rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+.report-kpi-label {
+  color: #94a3b8;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.report-kpi-value {
+  margin-top: 0.7rem;
+  color: #f8fafc;
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.1;
+}

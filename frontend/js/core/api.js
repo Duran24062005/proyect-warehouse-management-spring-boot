@@ -22,6 +22,26 @@ async function parseResponse(response) {
   return response.text();
 }
 
+function buildHeaders({ auth = false, body } = {}) {
+  const isFormData = body instanceof FormData;
+  const headers = {
+    Accept: "application/json"
+  };
+
+  if (body !== undefined && !isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (auth) {
+    const token = getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  return { headers, isFormData };
+}
+
 export function getBackendBaseUrl() {
   const url = new URL(getApiBase());
   url.pathname = url.pathname.replace(/\/api\/?$/, "/");
@@ -36,22 +56,8 @@ export function resolveBackendUrl(path) {
 
 export async function request(path, options = {}) {
   const { method = "GET", body, query, auth = false } = options;
-  const isFormData = body instanceof FormData;
-  const headers = {
-    Accept: "application/json"
-  };
+  const { headers, isFormData } = buildHeaders({ auth, body });
   const url = buildUrl(path, query);
-
-  if (body !== undefined && !isFormData) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  if (auth) {
-    const token = getToken();
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-  }
 
   const response = await fetch(url, {
     method,
@@ -96,4 +102,56 @@ export async function request(path, options = {}) {
   }
 
   return data;
+}
+
+function extractFilename(response, fallback = "download.bin") {
+  const contentDisposition = response.headers.get("content-disposition") || "";
+  const match = contentDisposition.match(/filename=\"?([^\";]+)\"?/i);
+  return match?.[1] || fallback;
+}
+
+export async function download(path, options = {}) {
+  const { method = "GET", body, query, auth = false, fallbackFilename } = options;
+  const { headers, isFormData } = buildHeaders({ auth, body });
+  headers.Accept = "*/*";
+  const url = buildUrl(path, query);
+
+  const response = await fetch(url, {
+    method,
+    headers,
+    body:
+      body === undefined
+        ? undefined
+        : isFormData
+          ? body
+          : JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    const data = await parseResponse(response);
+
+    if (response.status === 401) {
+      clearSession();
+    }
+
+    const details = Array.isArray(data?.details) ? data.details.filter(Boolean) : [];
+    const message =
+      data?.message ||
+      data?.error ||
+      (typeof data === "string" && data) ||
+      "No se pudo completar la solicitud";
+
+    const fullMessage = details.length ? `${message}: ${details.join(" | ")}` : message;
+    const error = new Error(fullMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
+
+  const blob = await response.blob();
+  return {
+    blob,
+    filename: extractFilename(response, fallbackFilename || "download.bin"),
+    contentType: response.headers.get("content-type") || blob.type
+  };
 }
