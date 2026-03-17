@@ -1,10 +1,13 @@
 package com.proyectS1.warehouse_management.model;
 
+import com.proyectS1.warehouse_management.audit.AuditEntityListener;
+import com.proyectS1.warehouse_management.audit.AuditableEntity;
 import com.proyectS1.warehouse_management.model.enums.UserRole;
 import com.proyectS1.warehouse_management.model.enums.UserStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -22,11 +25,12 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "app_user")
+@EntityListeners(AuditEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppUser extends BaseTimeEntity {
+public class AppUser extends BaseTimeEntity implements AuditableEntity {
 
     @Email
     @NotBlank
@@ -73,4 +77,14 @@ public class AppUser extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;
+
+    @Override
+    public String auditEntityName() {
+        return "app_user";
+    }
+
+    @Override
+    public String auditEntityDescription() {
+        return "Catalog for application users";
+    }
 }

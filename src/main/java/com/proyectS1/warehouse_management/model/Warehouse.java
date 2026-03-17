@@ -2,8 +2,12 @@ package com.proyectS1.warehouse_management.model;
 
 import java.math.BigDecimal;
 
+import com.proyectS1.warehouse_management.audit.AuditEntityListener;
+import com.proyectS1.warehouse_management.audit.AuditableEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -18,11 +22,12 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "warehouse")
+@EntityListeners(AuditEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Warehouse extends BaseTimeEntity {
+public class Warehouse extends BaseTimeEntity implements AuditableEntity {
 
     @NotBlank
     @Size(max = 255)
@@ -41,4 +46,14 @@ public class Warehouse extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_user_id")
     private AppUser manager;
+
+    @Override
+    public String auditEntityName() {
+        return "warehouse";
+    }
+
+    @Override
+    public String auditEntityDescription() {
+        return "Catalog for warehouses";
+    }
 }

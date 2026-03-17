@@ -1,9 +1,12 @@
 package com.proyectS1.warehouse_management.model;
 
+import com.proyectS1.warehouse_management.audit.AuditEntityListener;
+import com.proyectS1.warehouse_management.audit.AuditableEntity;
 import com.proyectS1.warehouse_management.model.enums.MovementType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -19,11 +22,12 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "movement")
+@EntityListeners(AuditEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Movement extends BaseTimeEntity {
+public class Movement extends BaseTimeEntity implements AuditableEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -57,4 +61,14 @@ public class Movement extends BaseTimeEntity {
     @Positive
     @Column(nullable = false)
     private Integer quantity;
+
+    @Override
+    public String auditEntityName() {
+        return "movement";
+    }
+
+    @Override
+    public String auditEntityDescription() {
+        return "Catalog for product movements";
+    }
 }

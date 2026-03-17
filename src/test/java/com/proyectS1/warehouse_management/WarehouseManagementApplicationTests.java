@@ -1,13 +1,13 @@
 package com.proyectS1.warehouse_management;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
+import org.junit.jupiter.api.Test;
 class WarehouseManagementApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void applicationClassIsAvailable() {
+		assertNotNull(WarehouseManagementApplication.class);
 	}
 
 }

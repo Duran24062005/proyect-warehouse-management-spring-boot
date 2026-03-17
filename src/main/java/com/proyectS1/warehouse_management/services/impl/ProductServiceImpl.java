@@ -16,7 +16,6 @@ import com.proyectS1.warehouse_management.model.Warehouse;
 import com.proyectS1.warehouse_management.repositories.ProductRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
 import com.proyectS1.warehouse_management.services.ProductService;
-import com.proyectS1.warehouse_management.services.support.AuditService;
 import com.proyectS1.warehouse_management.services.support.WarehouseAccessService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseAccessService warehouseAccessService;
-    private final AuditService auditService;
 
     @Override
     public ProductResponseDTO saveProduct(ProductRequestDTO dto) {
@@ -41,9 +39,7 @@ public class ProductServiceImpl implements ProductService {
         Product newProduct = this.productMapper.DTOToEntity(dto);
         newProduct.setWarehouse(resolveWarehouse(dto.warehouseId()));
         Product saveProduct = this.productRepository.save(newProduct);
-        ProductResponseDTO response = this.productMapper.entityToDTO(saveProduct);
-        auditService.logInsert("product", "Catalog for products", currentUser, response);
-        return response;
+        return this.productMapper.entityToDTO(saveProduct);
     }
 
     @Override
@@ -51,14 +47,11 @@ public class ProductServiceImpl implements ProductService {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         Product currentProduct = findProductById(id);
         requireProductAccess(currentUser, currentProduct);
-        ProductResponseDTO oldValues = this.productMapper.entityToDTO(currentProduct);
         warehouseAccessService.requireWarehouseAccess(currentUser, dto.warehouseId());
         this.productMapper.updateEntityFromDTO(currentProduct, dto);
         currentProduct.setWarehouse(resolveWarehouse(dto.warehouseId()));
         Product updatedProduct = this.productRepository.save(currentProduct);
-        ProductResponseDTO newValues = this.productMapper.entityToDTO(updatedProduct);
-        auditService.logUpdate("product", "Catalog for products", currentUser, oldValues, newValues);
-        return newValues;
+        return this.productMapper.entityToDTO(updatedProduct);
     }
 
     @Override
@@ -66,9 +59,7 @@ public class ProductServiceImpl implements ProductService {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         Product currentProduct = findProductById(id);
         requireProductAccess(currentUser, currentProduct);
-        ProductResponseDTO oldValues = this.productMapper.entityToDTO(currentProduct);
         this.productRepository.delete(currentProduct);
-        auditService.logDelete("product", "Catalog for products", currentUser, oldValues);
     }
 
     @Override

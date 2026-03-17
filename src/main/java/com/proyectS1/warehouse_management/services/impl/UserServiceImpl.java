@@ -29,7 +29,6 @@ import com.proyectS1.warehouse_management.model.enums.UserStatus;
 import com.proyectS1.warehouse_management.repositories.AppUserRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
 import com.proyectS1.warehouse_management.services.UserService;
-import com.proyectS1.warehouse_management.services.support.AuditService;
 import com.proyectS1.warehouse_management.services.support.ProfilePhotoStorageService;
 import com.proyectS1.warehouse_management.services.support.WarehouseAccessService;
 
@@ -44,7 +43,6 @@ public class UserServiceImpl implements UserService {
     private final WarehouseRepository warehouseRepository;
     private final UserMapper userMapper;
     private final WarehouseAccessService warehouseAccessService;
-    private final AuditService auditService;
     private final ProfilePhotoStorageService profilePhotoStorageService;
 
     @Override
@@ -80,9 +78,7 @@ public class UserServiceImpl implements UserService {
         applyRoleAndWarehouse(user, dto.role(), dto.warehouseId());
         user.setHashPassword(hashPassword(dto.password()));
         AppUser savedUser = appUserRepository.save(user);
-        UserResponseDTO response = userMapper.entityToDTO(savedUser);
-        auditService.logInsert("app_user", "Catalog for application users", actorUser, response);
-        return response;
+        return userMapper.entityToDTO(savedUser);
     }
 
     @Override
@@ -90,7 +86,6 @@ public class UserServiceImpl implements UserService {
         AppUser actorUser = warehouseAccessService.getCurrentUser();
         warehouseAccessService.requireAdmin(actorUser);
         AppUser user = findUserById(userId);
-        UserResponseDTO oldValues = userMapper.entityToDTO(user);
 
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
@@ -98,9 +93,7 @@ public class UserServiceImpl implements UserService {
         applyRoleAndWarehouse(user, dto.role(), dto.warehouseId());
 
         AppUser savedUser = appUserRepository.save(user);
-        UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
-        auditService.logUpdate("app_user", "Catalog for application users", actorUser, oldValues, newValues);
-        return newValues;
+        return userMapper.entityToDTO(savedUser);
     }
 
     @Override
@@ -123,70 +116,51 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO updateUserStatus(Long userId, UserStatusUpdateRequestDTO dto) {
-        AppUser actorUser = warehouseAccessService.getCurrentUser();
         AppUser user = findUserById(userId);
-        UserResponseDTO oldValues = userMapper.entityToDTO(user);
         AppUser savedUser = saveStatus(user, dto.status());
-        UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
-        auditService.logUpdate("app_user", "Catalog for application users", actorUser, oldValues, newValues);
-        return newValues;
+        return userMapper.entityToDTO(savedUser);
     }
 
     @Override
     public UserResponseDTO approveUser(Long userId) {
-        AppUser actorUser = warehouseAccessService.getCurrentUser();
         AppUser user = findUserById(userId);
         if (user.getUserStatus() == UserStatus.ACTIVE) {
             throw new ResponseStatusException(BAD_REQUEST, "User is already active");
         }
-        UserResponseDTO oldValues = userMapper.entityToDTO(user);
         AppUser savedUser = saveStatus(user, UserStatus.ACTIVE);
-        UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
-        auditService.logUpdate("app_user", "Catalog for application users", actorUser, oldValues, newValues);
-        return newValues;
+        return userMapper.entityToDTO(savedUser);
     }
 
     @Override
     public UserResponseDTO blockUser(Long userId) {
-        AppUser actorUser = warehouseAccessService.getCurrentUser();
         AppUser user = findUserById(userId);
         if (user.getUserStatus() == UserStatus.BLOCKED) {
             throw new ResponseStatusException(BAD_REQUEST, "User is already blocked");
         }
-        UserResponseDTO oldValues = userMapper.entityToDTO(user);
         AppUser savedUser = saveStatus(user, UserStatus.BLOCKED);
-        UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
-        auditService.logUpdate("app_user", "Catalog for application users", actorUser, oldValues, newValues);
-        return newValues;
+        return userMapper.entityToDTO(savedUser);
     }
 
     @Override
     public UserResponseDTO unblockUser(Long userId) {
-        AppUser actorUser = warehouseAccessService.getCurrentUser();
         AppUser user = findUserById(userId);
         if (user.getUserStatus() != UserStatus.BLOCKED) {
             throw new ResponseStatusException(BAD_REQUEST, "Only blocked users can be unblocked");
         }
-        UserResponseDTO oldValues = userMapper.entityToDTO(user);
         AppUser savedUser = saveStatus(user, UserStatus.ACTIVE);
-        UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
-        auditService.logUpdate("app_user", "Catalog for application users", actorUser, oldValues, newValues);
-        return newValues;
+        return userMapper.entityToDTO(savedUser);
     }
 
     @Override
     public UserResponseDTO uploadProfilePhoto(MultipartFile file) {
         AppUser user = warehouseAccessService.getCurrentUser();
-        UserResponseDTO oldValues = userMapper.entityToDTO(user);
 
         user.setProfilePhotoFilename(
             profilePhotoStorageService.storeProfilePhoto(user.getId(), file, user.getProfilePhotoFilename())
         );
 
         AppUser savedUser = appUserRepository.save(user);
-        UserResponseDTO newValues = userMapper.entityToDTO(savedUser);
-        auditService.logUpdate("app_user", "Catalog for application users", savedUser, oldValues, newValues);
-        return newValues;
+        return userMapper.entityToDTO(savedUser);
     }
 
     private AppUser findUserById(Long userId) {

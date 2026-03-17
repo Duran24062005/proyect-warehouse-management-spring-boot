@@ -27,7 +27,6 @@ import com.proyectS1.warehouse_management.repositories.MovementRepository;
 import com.proyectS1.warehouse_management.repositories.ProductRepository;
 import com.proyectS1.warehouse_management.repositories.WarehouseRepository;
 import com.proyectS1.warehouse_management.services.MovementService;
-import com.proyectS1.warehouse_management.services.support.AuditService;
 import com.proyectS1.warehouse_management.services.support.WarehouseAccessService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,6 @@ public class MovementServiceImpl implements MovementService {
     private final ProductRepository productRepository;
     private final MovementMapper movementMapper;
     private final WarehouseAccessService warehouseAccessService;
-    private final AuditService auditService;
 
     @Override
     public MovementResponseDTO saveMovement(MovementRequestDTO dto) {
@@ -53,9 +51,7 @@ public class MovementServiceImpl implements MovementService {
 
         Movement movement = movementMapper.dtoToEntity(dto);
         hydrateRelations(movement, dto, currentUser);
-        MovementResponseDTO response = movementMapper.entityToDTO(saveAndFlushMovement(movement));
-        auditService.logInsert("movement", "Catalog for product movements", currentUser, response);
-        return response;
+        return movementMapper.entityToDTO(saveAndFlushMovement(movement));
     }
 
     @Override
@@ -65,13 +61,10 @@ public class MovementServiceImpl implements MovementService {
 
         Movement movement = findMovementById(id);
         requireMovementAccess(currentUser, movement);
-        MovementResponseDTO oldValues = movementMapper.entityToDTO(movement);
         warehouseAccessService.requireAnyWarehouseAccess(currentUser, getParticipatingWarehouseIds(dto));
         movementMapper.updateEntityFromDTO(movement, dto);
         hydrateRelations(movement, dto, currentUser);
-        MovementResponseDTO newValues = movementMapper.entityToDTO(saveAndFlushMovement(movement));
-        auditService.logUpdate("movement", "Catalog for product movements", currentUser, oldValues, newValues);
-        return newValues;
+        return movementMapper.entityToDTO(saveAndFlushMovement(movement));
     }
 
     @Override
@@ -79,9 +72,7 @@ public class MovementServiceImpl implements MovementService {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         Movement movement = findMovementById(id);
         requireMovementAccess(currentUser, movement);
-        MovementResponseDTO oldValues = movementMapper.entityToDTO(movement);
         movementRepository.delete(movement);
-        auditService.logDelete("movement", "Catalog for product movements", currentUser, oldValues);
     }
 
     @Override

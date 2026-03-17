@@ -1,5 +1,7 @@
 package com.proyectS1.warehouse_management.model;
 
+import com.proyectS1.warehouse_management.audit.AuditSnapshot;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +29,9 @@ public abstract class BaseTimeEntity {
 
     @Column(name = "updated_At", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Transient
+    private AuditSnapshot auditSnapshot;
 
     @PrePersist
     protected void onCreate() {
