@@ -94,8 +94,7 @@ public class ReportServiceImpl implements ReportService {
             .findFirst()
             .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Renderer not available for format " + query.format()));
         ReportFilePayload payload = renderer.render(dataset);
-        String timestamp = dataset.generatedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmm"));
-        String filename = "report-" + query.type().name().toLowerCase() + "-" + timestamp + "." + payload.filename();
+        String filename = buildDownloadFilename(dataset, payload.filename());
         return new ReportFilePayload(payload.content(), payload.mediaType(), filename);
     }
 
@@ -423,6 +422,36 @@ public class ReportServiceImpl implements ReportService {
             return "0";
         }
         return value.stripTrailingZeros().toPlainString();
+    }
+
+    private String buildDownloadFilename(ReportDataset dataset, String extension) {
+        String timestamp = dataset.generatedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmm"));
+        List<String> parts = new ArrayList<>();
+        parts.add(slugify(dataset.title()));
+
+        if (!dataset.filters().isEmpty()) {
+            dataset.filters().entrySet().stream()
+                .limit(2)
+                .map(entry -> slugify(entry.getKey() + "-" + entry.getValue()))
+                .filter(value -> !value.isBlank())
+                .forEach(parts::add);
+        }
+
+        parts.add(timestamp);
+        return String.join("_", parts) + "." + extension;
+    }
+
+    private String slugify(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+
+        String normalized = java.text.Normalizer.normalize(value, java.text.Normalizer.Form.NFD)
+            .replaceAll("\\p{M}", "");
+        return normalized
+            .toLowerCase()
+            .replaceAll("[^a-z0-9]+", "-")
+            .replaceAll("^-+|-+$", "");
     }
 
     private String normalizeWindow(String window) {
