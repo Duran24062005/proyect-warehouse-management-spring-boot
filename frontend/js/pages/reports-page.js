@@ -1,5 +1,6 @@
 import { download, request } from "../core/api.js";
 import { requireAuth } from "../core/auth.js";
+import { createMovementAnalyticsChart } from "../core/charts.js";
 import { fillSelect, formatDate, renderTable, setupLayout, showNotice } from "../core/ui.js";
 
 const notice = document.querySelector("#reports-notice");
@@ -13,8 +14,14 @@ const tableBody = document.querySelector("#reports-table-body");
 const description = document.querySelector("#reports-description");
 const managerHelp = document.querySelector("#report-manager-help");
 const formatSelect = document.querySelector("#report-format");
+const analyticsSection = document.querySelector("#reports-analytics-section");
+const analyticsMeta = document.querySelector("#reports-analytics-meta");
+const analyticsSummary = document.querySelector("#reports-analytics-summary");
+const analyticsChart = document.querySelector("#reports-analytics-chart");
+const analyticsLegend = document.querySelector("#reports-analytics-legend");
 
 let currentUser = null;
+let analyticsInstance = null;
 let catalogs = {
   products: [],
   warehouses: [],
@@ -139,11 +146,48 @@ function renderPreviewTable(columns = [], rows = []) {
   );
 }
 
+function renderAnalyticsSummary(summary = []) {
+  analyticsSummary.innerHTML = summary
+    .map(
+      (item) => `
+        <article class="chart-summary-card">
+          <p class="chart-summary-label">${item.label}</p>
+          <p class="chart-summary-value">${item.value}</p>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function hideAnalyticsSection() {
+  analyticsSection.classList.add("hidden");
+  analyticsInstance?.destroy?.();
+  analyticsInstance = null;
+  analyticsSummary.innerHTML = "";
+  analyticsLegend.innerHTML = "";
+}
+
+async function renderMovementAnalytics() {
+  const analytics = await request("/reports/analytics/movements", {
+    auth: true,
+    query: { ...buildQuery("json"), window: "30d" }
+  });
+
+  analyticsSection.classList.remove("hidden");
+  analyticsMeta.textContent = `${analytics.subtitle}. Periodo: ${analytics.rangeLabel}.`;
+  renderAnalyticsSummary(analytics.summary);
+  analyticsInstance?.destroy?.();
+  analyticsInstance = createMovementAnalyticsChart(analyticsChart, analytics, {
+    legendContainer: analyticsLegend
+  });
+}
+
 function resetPreviewState() {
   previewMeta.textContent = "Todavia no has generado una vista previa.";
   renderFilters({});
   renderSummary([]);
   renderPreviewTable([], []);
+  hideAnalyticsSection();
 }
 
 async function loadCatalogs(user) {
@@ -195,6 +239,12 @@ async function previewReport() {
   renderFilters(preview.filters);
   renderSummary(preview.summary);
   renderPreviewTable(preview.columns, preview.rows);
+
+  if (query.type === "movements") {
+    await renderMovementAnalytics();
+  } else {
+    hideAnalyticsSection();
+  }
 }
 
 async function downloadReport() {

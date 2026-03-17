@@ -1,9 +1,29 @@
 import { request } from "../core/api.js";
 import { requireAuth } from "../core/auth.js";
+import { createMovementAnalyticsChart } from "../core/charts.js";
 import { formatDate, renderTable, setupLayout, showNotice } from "../core/ui.js";
 
 const notice = document.querySelector("#dashboard-notice");
 const employeesSection = document.querySelector("#employees-summary-section");
+const analyticsMeta = document.querySelector("#dashboard-analytics-meta");
+const analyticsSummary = document.querySelector("#dashboard-analytics-summary");
+const analyticsChart = document.querySelector("#dashboard-analytics-chart");
+const analyticsLegend = document.querySelector("#dashboard-analytics-legend");
+
+let analyticsInstance = null;
+
+function renderAnalyticsSummary(summary = []) {
+  analyticsSummary.innerHTML = summary
+    .map(
+      (item) => `
+        <article class="chart-summary-card">
+          <p class="chart-summary-label">${item.label}</p>
+          <p class="chart-summary-value">${item.value}</p>
+        </article>
+      `
+    )
+    .join("");
+}
 
 async function init() {
   const user = await requireAuth();
@@ -13,12 +33,13 @@ async function init() {
   showNotice(notice, "");
 
   try {
-    const [products, warehouses, movements, users, employees] = await Promise.all([
+    const [products, warehouses, movements, users, employees, analytics] = await Promise.all([
       request("/products", { auth: true }),
       request("/warehouses", { auth: true }),
       request("/movements", { auth: true }),
       user.role === "ADMIN" ? request("/users", { auth: true }) : Promise.resolve([]),
-      user.role === "USER" ? request("/users/employees/my-warehouses", { auth: true }) : Promise.resolve([])
+      user.role === "USER" ? request("/users/employees/my-warehouses", { auth: true }) : Promise.resolve([]),
+      request("/reports/analytics/movements", { auth: true, query: { window: "30d" } })
     ]);
 
     document.querySelector("#products-count").textContent = products.length;
@@ -61,6 +82,13 @@ async function init() {
       `,
       { colspan: 4, emptyMessage: "Todavia no hay movimientos registrados." }
     );
+
+    analyticsMeta.textContent = `${analytics.subtitle}. Periodo: ${analytics.rangeLabel}.`;
+    renderAnalyticsSummary(analytics.summary);
+    analyticsInstance?.destroy?.();
+    analyticsInstance = createMovementAnalyticsChart(analyticsChart, analytics, {
+      legendContainer: analyticsLegend
+    });
 
     if (user.role === "USER") {
       employeesSection?.classList.remove("hidden");

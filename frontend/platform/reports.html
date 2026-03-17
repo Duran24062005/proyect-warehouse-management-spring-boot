@@ -9,6 +9,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="../styles/app.css">
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body class="page-bg min-h-screen text-ink">
   <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
@@ -143,6 +144,20 @@
               </div>
 
               <div id="reports-summary" class="report-summary-grid mt-6"></div>
+            </article>
+
+            <article id="reports-analytics-section" class="section-card p-6 xl:p-7 hidden">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-semibold">Analisis visual</h3>
+                  <p id="reports-analytics-meta" class="mt-2 text-sm text-slate-600">
+                    Esta grafica se alinea con los mismos filtros del reporte de movimientos.
+                  </p>
+                </div>
+                <div id="reports-analytics-legend" class="chart-legend-shell"></div>
+              </div>
+              <div id="reports-analytics-summary" class="chart-summary-grid mt-5"></div>
+              <div id="reports-analytics-chart" class="analytics-chart-shell mt-5"></div>
             </article>
 
             <article class="section-card p-6 xl:p-7">
