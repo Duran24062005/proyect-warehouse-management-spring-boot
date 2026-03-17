@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.proyectS1.warehouse_management.dtos.response.ReportPreviewResponseDTO;
+import com.proyectS1.warehouse_management.dtos.response.MovementAnalyticsResponseDTO;
 import com.proyectS1.warehouse_management.model.enums.MovementType;
 import com.proyectS1.warehouse_management.model.enums.ReportFormat;
 import com.proyectS1.warehouse_management.model.enums.ReportType;
+import com.proyectS1.warehouse_management.reports.model.MovementAnalyticsQuery;
 import com.proyectS1.warehouse_management.reports.model.ReportFilePayload;
 import com.proyectS1.warehouse_management.reports.model.ReportQuery;
 import com.proyectS1.warehouse_management.services.ReportService;
@@ -76,6 +78,27 @@ public class ReportController {
             .contentType(payload.mediaType())
             .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename(payload.filename()).build().toString())
             .body(payload.content());
+    }
+
+    @GetMapping("/analytics/movements")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Movement analytics generated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid analytics filters"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+        }
+    )
+    @Operation(summary = "Genera analiticas temporales para movimientos")
+    public ResponseEntity<MovementAnalyticsResponseDTO> getMovementAnalytics(
+        @RequestParam(defaultValue = "30d") String window,
+        @RequestParam(required = false) Long productId,
+        @RequestParam(required = false) Long warehouseId,
+        @RequestParam(required = false) MovementType movementType
+    ) {
+        return ResponseEntity.ok(reportService.generateMovementAnalytics(
+            new MovementAnalyticsQuery(window, productId, warehouseId, movementType)
+        ));
     }
 
     private ReportType parseType(String value) {

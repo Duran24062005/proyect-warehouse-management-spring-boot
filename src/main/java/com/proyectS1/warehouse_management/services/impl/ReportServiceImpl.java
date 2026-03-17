@@ -6,9 +6,11 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.AbstractMap;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,15 +20,20 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.proyectS1.warehouse_management.dtos.response.AnalyticsPointDTO;
+import com.proyectS1.warehouse_management.dtos.response.AnalyticsSeriesDTO;
 import com.proyectS1.warehouse_management.dtos.response.MovementResponseDTO;
+import com.proyectS1.warehouse_management.dtos.response.MovementAnalyticsResponseDTO;
 import com.proyectS1.warehouse_management.dtos.response.ProductResponseDTO;
 import com.proyectS1.warehouse_management.dtos.response.ReportColumnDTO;
 import com.proyectS1.warehouse_management.dtos.response.ReportPreviewResponseDTO;
 import com.proyectS1.warehouse_management.dtos.response.ReportSummaryItemDTO;
 import com.proyectS1.warehouse_management.dtos.response.WarehouseResponseDTO;
 import com.proyectS1.warehouse_management.model.AppUser;
+import com.proyectS1.warehouse_management.model.enums.MovementType;
 import com.proyectS1.warehouse_management.model.enums.ReportFormat;
 import com.proyectS1.warehouse_management.model.enums.ReportType;
+import com.proyectS1.warehouse_management.reports.model.MovementAnalyticsQuery;
 import com.proyectS1.warehouse_management.reports.model.ReportColumn;
 import com.proyectS1.warehouse_management.reports.model.ReportDataset;
 import com.proyectS1.warehouse_management.reports.model.ReportFilePayload;
@@ -46,6 +53,7 @@ import lombok.RequiredArgsConstructor;
 public class ReportServiceImpl implements ReportService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter DATE_ONLY_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     private final MovementService movementService;
     private final ProductService productService;
@@ -89,6 +97,91 @@ public class ReportServiceImpl implements ReportService {
         String timestamp = dataset.generatedAt().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmm"));
         String filename = "report-" + query.type().name().toLowerCase() + "-" + timestamp + "." + payload.filename();
         return new ReportFilePayload(payload.content(), payload.mediaType(), filename);
+    }
+
+    @Override
+    public MovementAnalyticsResponseDTO generateMovementAnalytics(MovementAnalyticsQuery query) {
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        if (currentUser.getRole().name().equals("EMPLOYEE")) {
+            throw new ResponseStatusException(FORBIDDEN, "Employees cannot access movement analytics");
+        }
+
+        String window = normalizeWindow(query.window());
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(29);
+
+        List<MovementResponseDTO> movements = movementService.findAll().stream()
+            .filter(item -> item.createdAt() != null)
+            .filter(item -> !item.createdAt().toLocalDate().isBefore(startDate) && !item.createdAt().toLocalDate().isAfter(endDate))
+            .filter(item -> query.productId() == null || query.productId().equals(item.productId()))
+            .filter(item -> query.warehouseId() == null
+                || query.warehouseId().equals(item.originWarehouseId())
+                || query.warehouseId().equals(item.destinationWarehouseId()))
+            .filter(item -> query.movementType() == null || query.movementType() == item.movementType())
+            .toList();
+
+        Map<LocalDate, Integer> totalPerDay = new LinkedHashMap<>();
+        Map<MovementType, Map<LocalDate, Integer>> typeSeries = new EnumMap<>(MovementType.class);
+        for (MovementType type : MovementType.values()) {
+            typeSeries.put(type, new LinkedHashMap<>());
+        }
+
+        LocalDate cursor = startDate;
+        while (!cursor.isAfter(endDate)) {
+            totalPerDay.put(cursor, 0);
+            for (MovementType type : MovementType.values()) {
+                typeSeries.get(type).put(cursor, 0);
+            }
+            cursor = cursor.plusDays(1);
+        }
+
+        for (MovementResponseDTO movement : movements) {
+            LocalDate date = movement.createdAt().toLocalDate();
+            totalPerDay.computeIfPresent(date, (key, value) -> value + movement.quantity());
+            typeSeries.get(movement.movementType()).computeIfPresent(date, (key, value) -> value + movement.quantity());
+        }
+
+        List<AnalyticsPointDTO> totalPoints = toPointList(totalPerDay);
+        List<AnalyticsSeriesDTO> series = new ArrayList<>();
+        series.add(new AnalyticsSeriesDTO("total", "Total diario", "#22c55e", totalPoints));
+        series.add(new AnalyticsSeriesDTO("entry", "Entradas", "#38bdf8", toPointList(typeSeries.get(MovementType.ENTRY))));
+        series.add(new AnalyticsSeriesDTO("exit", "Salidas", "#f97316", toPointList(typeSeries.get(MovementType.EXIT))));
+        series.add(new AnalyticsSeriesDTO("transfer", "Transferencias", "#facc15", toPointList(typeSeries.get(MovementType.TRANSFER))));
+
+        int totalQuantity = movements.stream()
+            .map(MovementResponseDTO::quantity)
+            .filter(java.util.Objects::nonNull)
+            .mapToInt(Integer::intValue)
+            .sum();
+        long activeDays = totalPoints.stream().filter(point -> point.value() > 0).count();
+        AnalyticsPointDTO peakPoint = totalPoints.stream()
+            .max(java.util.Comparator.comparingInt(AnalyticsPointDTO::value))
+            .orElse(new AnalyticsPointDTO(startDate.format(DATE_ONLY_FORMATTER), 0));
+
+        Map<String, String> filters = orderedFilters(
+            filterEntry("Ventana", "Ultimos 30 dias"),
+            filterEntry("Producto", query.productId() == null ? null : String.valueOf(query.productId())),
+            filterEntry("Bodega", query.warehouseId() == null ? null : String.valueOf(query.warehouseId())),
+            filterEntry("Tipo", query.movementType() == null ? null : query.movementType().name())
+        );
+
+        List<ReportSummaryItemDTO> summary = List.of(
+            new ReportSummaryItemDTO("totalQuantity", "Cantidad total", String.valueOf(totalQuantity)),
+            new ReportSummaryItemDTO("activeDays", "Dias con movimiento", String.valueOf(activeDays)),
+            new ReportSummaryItemDTO("peakDay", "Pico diario", peakPoint.time() + " · " + peakPoint.value())
+        );
+
+        return new MovementAnalyticsResponseDTO(
+            "Analisis de movimientos",
+            "Tendencia diaria de los ultimos 30 dias",
+            window,
+            startDate.format(DateTimeFormatter.ofPattern("dd MMM")) + " - " + endDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
+            LocalDateTime.now(),
+            filters,
+            summary,
+            series,
+            totalPoints
+        );
     }
 
     private ReportDataset buildDataset(ReportQuery query) {
@@ -330,5 +423,18 @@ public class ReportServiceImpl implements ReportService {
             return "0";
         }
         return value.stripTrailingZeros().toPlainString();
+    }
+
+    private String normalizeWindow(String window) {
+        if (window == null || window.isBlank() || "30d".equalsIgnoreCase(window)) {
+            return "30d";
+        }
+        throw new ResponseStatusException(BAD_REQUEST, "Unsupported analytics window: " + window);
+    }
+
+    private List<AnalyticsPointDTO> toPointList(Map<LocalDate, Integer> values) {
+        return values.entrySet().stream()
+            .map(entry -> new AnalyticsPointDTO(entry.getKey().format(DATE_ONLY_FORMATTER), entry.getValue()))
+            .toList();
     }
 }
