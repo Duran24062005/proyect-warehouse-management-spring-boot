@@ -78,6 +78,11 @@ Ya esta implementado:
 - Consulta de productos por id.
 - Restriccion por bodega para usuarios no admin segun las bodegas que gestionan.
 
+Ademas, el estado actual del dominio mantiene una decision tecnica intermedia:
+
+- `Product` tiene una relacion directa con una sola `warehouse`.
+- El sistema no persiste stock agregado por producto.
+
 ### Gestion de bodegas
 
 Ya esta implementado:
@@ -108,6 +113,18 @@ Por ejemplo, ya se valida que:
 - una salida tenga bodega origen y no tenga destino
 - una transferencia tenga origen y destino
 - una transferencia no use la misma bodega como origen y destino
+
+El modelo vigente de movimientos tambien incluye:
+
+- `productId`
+- `quantity`
+
+Esto deja una inconsistencia funcional conocida en el backend actual:
+
+- el movimiento se comporta como si moviera cantidades de un catalogo;
+- pero `Product` sigue teniendo una sola bodega asociada como si fuera una unidad o activo individual.
+
+Esta inconsistencia queda documentada como estado actual previo a una refactorizacion posterior del dominio.
 
 ### Auditoria
 

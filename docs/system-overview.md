@@ -102,7 +102,20 @@ Cada producto contiene informacion como:
 - precio
 - bodega asociada
 
-Dentro del alcance actual, el producto funciona como un **catalogo administrativo relacionado con una bodega**, no como una entidad con stock propio persistido.
+Dentro del alcance actual, el modelo implementado mezcla dos conceptos:
+
+- el producto tiene una **bodega asociada unica** en el modelo de datos;
+- los movimientos siguen funcionando como si el producto fuera un **catalogo movible por cantidad**.
+
+En la practica actual, esto significa que:
+
+- el sistema puede pedir `quantity` al registrar movimientos;
+- pero cada `product` tambien queda vinculado a una sola bodega a la vez;
+- por tanto, el dominio todavia no distingue de forma limpia entre:
+  - producto como catalogo con cantidad
+  - producto como activo individual
+
+Este comportamiento se mantiene documentado porque corresponde al modelo vigente antes de la refactorizacion hacia activos individuales.
 
 ---
 
@@ -124,7 +137,14 @@ Cada movimiento almacena informacion como:
 - producto
 - cantidad
 
-Estos movimientos constituyen el eje central del sistema porque permiten trazabilidad operativa entre bodegas.
+Actualmente, la API de movimientos trata al producto como una referencia movible por cantidad, aunque el modelo `product` conserve una sola `warehouse` asociada.
+
+Esto constituye una inconsistencia funcional conocida:
+
+- la cantidad tiene sentido si el producto representa un catalogo o lote;
+- la bodega unica tiene sentido si el producto representa una unidad fisica individual.
+
+Mientras no se haga la migracion de modelo, los movimientos constituyen el eje central del sistema para trazabilidad operativa, pero bajo esa limitacion conceptual.
 
 ---
 
