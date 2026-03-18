@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/users/me/profile-photo").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/audit-changes").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/users/employees/my-warehouses").authenticated()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

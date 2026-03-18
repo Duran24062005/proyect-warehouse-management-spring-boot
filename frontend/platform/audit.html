@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LogiTrack | Auditoria</title>
+  <link rel="shortcut icon" href="../img/appLogo_backgroundless.png" type="image/x-icon">
+  <script src="../js/core/tailwind-theme.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/app.css">
+</head>
+<body class="page-bg min-h-screen text-ink">
+  <main class="app-page px-4 sm:px-6 lg:px-8 xl:px-10">
+    <div class="app-shell">
+      <aside class="app-sidebar section-card p-5 lg:p-6">
+        <div class="flex justify-center">
+          <img
+            src="../img/appLogo_backgroundless.png"
+            alt="Logo de LogiTrack"
+            class="h-24 w-auto lg:h-[12rem]"
+          >
+        </div>
+        <p class="mt-3 text-xs uppercase tracking-[0.35em] text-slate-500">LogiTrack</p>
+        <h1 class="mt-3 font-display text-3xl">Auditoria</h1>
+        <nav class="mt-6 space-y-2 text-sm font-medium">
+          <a class="nav-link" data-nav="system" data-employee-hidden href="./system.html">Resumen</a>
+          <a class="nav-link" data-nav="products" data-employee-hidden href="./products.html">Productos</a>
+          <a class="nav-link" data-nav="warehouses" data-employee-hidden href="./warehouses.html">Bodegas</a>
+          <a class="nav-link" data-nav="movements" data-employee-hidden href="./movements.html">Movimientos</a>
+          <a class="nav-link" data-nav="reports" data-employee-hidden href="./reports.html">Reportes</a>
+          <a class="nav-link" data-nav="audit" data-employee-hidden href="./audit.html">Auditoria</a>
+          <a class="nav-link" data-nav="profile" href="./profile.html">Perfil</a>
+          <a class="nav-link" data-nav="admin" data-admin-only href="./admin.html">Administracion</a>
+        </nav>
+        <div class="sidebar-session">
+          <p class="font-semibold">Sesion</p>
+          <div class="sidebar-session-user">
+            <div class="sidebar-avatar-wrap">
+              <div class="sidebar-avatar-placeholder js-user-initials">LT</div>
+              <img class="sidebar-avatar-image js-user-photo hidden" alt="Foto de perfil">
+            </div>
+            <div class="min-w-0">
+              <p class="js-user-name truncate font-medium"></p>
+              <p class="js-user-role text-slate-500"></p>
+            </div>
+          </div>
+          <button class="btn-secondary mt-4 w-full" data-action="logout" type="button">Cerrar sesion</button>
+        </div>
+      </aside>
+
+      <section class="space-y-6">
+        <header class="section-card p-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Historial operativo</p>
+              <h2 class="section-title mt-3">Auditoria del sistema</h2>
+              <p id="audit-description" class="mt-3 max-w-3xl text-sm text-slate-600">
+                Consulta quien hizo cambios, sobre que entidad y con que payload antes y despues.
+              </p>
+            </div>
+            <div class="audit-status-pill">
+              <span>Acceso</span>
+              <strong id="audit-scope-pill">Cargando...</strong>
+            </div>
+          </div>
+        </header>
+
+        <div id="audit-notice" class="hidden"></div>
+
+        <section class="grid gap-6 2xl:grid-cols-[420px_minmax(0,1fr)]">
+          <article class="section-card p-6 xl:p-7">
+            <div>
+              <h3 class="text-xl font-semibold">Filtros</h3>
+              <p class="mt-2 text-sm text-slate-600">Reduce el historial por operacion, entidad, actor o bodega visible.</p>
+            </div>
+
+            <form id="audit-filter-form" class="mt-6 space-y-5">
+              <div>
+                <label class="mb-2 block text-sm font-medium" for="audit-operation-type">Operacion</label>
+                <select id="audit-operation-type" class="select-shell" name="operationType">
+                  <option value="">Todas</option>
+                  <option value="INSERT">INSERT</option>
+                  <option value="UPDATE">UPDATE</option>
+                  <option value="DELETE">DELETE</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium" for="audit-entity-name">Entidad</label>
+                <select id="audit-entity-name" class="select-shell" name="entityName">
+                  <option value="">Todas</option>
+                  <option value="app_user">Usuarios</option>
+                  <option value="product">Productos</option>
+                  <option value="warehouse">Bodegas</option>
+                  <option value="movement">Movimientos</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium" for="audit-actor-user-id">Actor</label>
+                <select id="audit-actor-user-id" class="select-shell" name="actorUserId">
+                  <option value="">Todos los actores</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium" for="audit-warehouse-id">Bodega</label>
+                <select id="audit-warehouse-id" class="select-shell" name="warehouseId">
+                  <option value="">Todas las bodegas visibles</option>
+                </select>
+              </div>
+
+              <div class="grid gap-3 sm:grid-cols-2">
+                <button class="btn-secondary w-full" type="submit">Aplicar filtro</button>
+                <button id="audit-reset-button" class="btn-primary w-full" type="button">Limpiar</button>
+              </div>
+            </form>
+          </article>
+
+          <section class="space-y-6">
+            <article class="section-card p-6 xl:p-7">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-semibold">Resumen visible</h3>
+                  <p id="audit-meta" class="mt-2 text-sm text-slate-600">Todavia no se ha cargado el historial.</p>
+                </div>
+                <div id="audit-filter-chipset" class="report-chipset"></div>
+              </div>
+              <div id="audit-summary" class="report-summary-grid mt-6"></div>
+            </article>
+
+            <article class="section-card p-6 xl:p-7">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-semibold">Detalle seleccionado</h3>
+                  <p id="audit-detail-meta" class="mt-2 text-sm text-slate-600">
+                    Selecciona un evento para ver sus snapshots completos.
+                  </p>
+                </div>
+                <div id="audit-detail-badges" class="audit-badge-row"></div>
+              </div>
+
+              <div class="audit-detail-grid mt-6">
+                <section class="audit-payload-card">
+                  <div class="flex items-center justify-between gap-3">
+                    <h4 class="text-lg font-semibold">Valores anteriores</h4>
+                    <span class="audit-payload-badge">oldValues</span>
+                  </div>
+                  <div id="audit-old-values" class="audit-payload-body mt-4"></div>
+                </section>
+
+                <section class="audit-payload-card">
+                  <div class="flex items-center justify-between gap-3">
+                    <h4 class="text-lg font-semibold">Valores nuevos</h4>
+                    <span class="audit-payload-badge">newValues</span>
+                  </div>
+                  <div id="audit-new-values" class="audit-payload-body mt-4"></div>
+                </section>
+              </div>
+            </article>
+
+            <article class="section-card p-6 xl:p-7">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-semibold">Eventos</h3>
+                  <p class="text-sm text-slate-600">Cada fila resume el evento y te deja abrir el detalle completo.</p>
+                </div>
+              </div>
+
+              <div class="table-shell audit-table-shell mt-5">
+                <table class="text-sm">
+                  <thead class="bg-mist/70 text-left">
+                    <tr>
+                      <th class="px-4 py-3">Fecha</th>
+                      <th class="px-4 py-3">Actor</th>
+                      <th class="px-4 py-3">Operacion</th>
+                      <th class="px-4 py-3">Entidad</th>
+                      <th class="px-4 py-3">Resumen</th>
+                      <th class="px-4 py-3">Detalle</th>
+                    </tr>
+                  </thead>
+                  <tbody id="audit-body"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="../js/pages/audit-page.js"></script>
+</body>
+</html>
