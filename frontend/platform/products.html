@@ -54,7 +54,7 @@
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 class="section-title">Productos</h2>
-              <p class="mt-3 text-sm text-slate-600">Crea, edita y elimina productos desde un modal para mantener la tabla limpia y enfocada.</p>
+              <p class="mt-3 text-sm text-slate-600">Cada producto representa un activo individual con una sola bodega actual. Usa movimientos para cambiar su ubicacion.</p>
             </div>
             <button id="open-product-modal" class="btn-primary" type="button">Nuevo producto</button>
           </div>
@@ -124,6 +124,9 @@
           <div>
             <label class="mb-2 block text-sm font-medium">Bodega</label>
             <select id="product-warehouse-id" class="select-shell" name="warehouseId"></select>
+            <p id="product-warehouse-help" class="mt-2 text-xs text-slate-500">
+              Define la bodega actual del activo al momento de crearlo.
+            </p>
           </div>
           <button id="submit-product-form" class="btn-primary w-full" type="submit">Guardar producto</button>
         </form>

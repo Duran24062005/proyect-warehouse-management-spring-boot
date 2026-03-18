@@ -47,9 +47,13 @@ public class ProductServiceImpl implements ProductService {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         Product currentProduct = findProductById(id);
         requireProductAccess(currentUser, currentProduct);
-        warehouseAccessService.requireWarehouseAccess(currentUser, dto.warehouseId());
+        if (!java.util.Objects.equals(dto.warehouseId(), currentProduct.getWarehouse() != null ? currentProduct.getWarehouse().getId() : null)) {
+            throw new ResponseStatusException(
+                org.springframework.http.HttpStatus.BAD_REQUEST,
+                "The current warehouse of an asset must be changed from the movements module"
+            );
+        }
         this.productMapper.updateEntityFromDTO(currentProduct, dto);
-        currentProduct.setWarehouse(resolveWarehouse(dto.warehouseId()));
         Product updatedProduct = this.productRepository.save(currentProduct);
         return this.productMapper.entityToDTO(updatedProduct);
     }

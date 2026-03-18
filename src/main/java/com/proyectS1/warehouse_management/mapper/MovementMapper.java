@@ -35,7 +35,6 @@ public class MovementMapper {
             movement.getDestinationWarehouse() != null ? movement.getDestinationWarehouse().getName() : null,
             movement.getProduct() != null ? movement.getProduct().getId() : null,
             movement.getProduct() != null ? movement.getProduct().getName() : null,
-            movement.getQuantity(),
             movement.getCreatedAt()
         );
     }
@@ -47,7 +46,6 @@ public class MovementMapper {
 
         Movement movement = new Movement();
         movement.setMovementType(dto.movementType());
-        movement.setQuantity(dto.quantity());
         return movement;
     }
 
@@ -57,6 +55,5 @@ public class MovementMapper {
         }
 
         movement.setMovementType(dto.movementType());
-        movement.setQuantity(dto.quantity());
     }
 }

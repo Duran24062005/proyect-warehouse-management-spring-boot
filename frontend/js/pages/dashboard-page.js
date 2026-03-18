@@ -25,6 +25,18 @@ function renderAnalyticsSummary(summary = []) {
     .join("");
 }
 
+function formatMovementPath(item) {
+  if (item.movementType === "ENTRY") {
+    return `Externo -> ${item.destinationWarehouseName || "-"}`;
+  }
+
+  if (item.movementType === "EXIT") {
+    return `${item.originWarehouseName || "-"} -> Externo`;
+  }
+
+  return `${item.originWarehouseName || "-"} -> ${item.destinationWarehouseName || "-"}`;
+}
+
 async function init() {
   const user = await requireAuth();
   if (!user) return;
@@ -76,7 +88,7 @@ async function init() {
         <tr>
           <td class="px-4 py-3">${item.movementType}</td>
           <td class="px-4 py-3">${item.productName}</td>
-          <td class="px-4 py-3">${item.quantity}</td>
+          <td class="px-4 py-3">${formatMovementPath(item)}</td>
           <td class="px-4 py-3">${formatDate(item.createdAt)}</td>
         </tr>
       `,

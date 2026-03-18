@@ -108,14 +108,12 @@ CREATE TABLE IF NOT EXISTS movement (
     origin_warehouse_id BIGINT UNSIGNED NULL,
     destination_warehouse_id BIGINT UNSIGNED NULL,
     product_id BIGINT UNSIGNED NOT NULL,
-    quantity INT UNSIGNED NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_At DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY ix_movement_date (created_at),
     KEY ix_movement_registered_by_date (registered_by_user_id, created_at),
     KEY ix_movement_performed_by_date (performed_by_employee_id, created_at),
     KEY ix_movement_product_date (product_id, created_at),
-    CONSTRAINT chk_movement_quantity CHECK (quantity > 0),
     CONSTRAINT chk_movement_warehouses CHECK (
         (movement_type = 'ENTRY' AND origin_warehouse_id IS NULL AND destination_warehouse_id IS NOT NULL)
         OR (movement_type = 'EXIT' AND origin_warehouse_id IS NOT NULL AND destination_warehouse_id IS NULL)
@@ -262,7 +260,7 @@ INSERT INTO audit_change (
         2,
         4,
         NULL,
-        JSON_OBJECT('movement_id', 1, 'product_id', 1, 'type', 'ENTRY', 'quantity', 25),
+        JSON_OBJECT('movement_id', 1, 'product_id', 1, 'type', 'ENTRY'),
         '2026-03-02 10:05:00'
     ),
     (
@@ -283,18 +281,17 @@ INSERT INTO movement (
     origin_warehouse_id,
     destination_warehouse_id,
     product_id,
-    quantity,
     created_at
 ) VALUES
-    (1, 'ENTRY', 2, 5, NULL, 1, 1, 25, '2026-03-02 10:00:00'),
-    (2, 'ENTRY', 2, 5, NULL, 1, 2, 40, '2026-03-02 10:30:00'),
-    (3, 'ENTRY', 3, 5, NULL, 2, 3, 18, '2026-03-03 09:00:00'),
-    (4, 'TRANSFER', 2, 5, 1, 2, 1, 25, '2026-03-04 14:00:00'),
-    (5, 'EXIT', 3, 5, 2, NULL, 3, 4, '2026-03-05 16:00:00'),
-    (6, 'ENTRY', 4, 5, NULL, 1, 5, 15, '2026-03-06 11:00:00'),
-    (7, 'TRANSFER', 4, 5, 1, 3, 5, 15, '2026-03-07 12:00:00'),
-    (8, 'EXIT', 2, 5, 1, NULL, 2, 6, '2026-03-08 15:30:00'),
-    (9, 'ENTRY', 3, 5, NULL, 1, 4, 20, '2026-03-09 09:45:00');
+    (1, 'ENTRY', 2, 5, NULL, 1, 1, '2026-03-02 10:00:00'),
+    (2, 'ENTRY', 2, 5, NULL, 1, 2, '2026-03-02 10:30:00'),
+    (3, 'ENTRY', 3, 5, NULL, 2, 3, '2026-03-03 09:00:00'),
+    (4, 'TRANSFER', 2, 5, 1, 2, 1, '2026-03-04 14:00:00'),
+    (5, 'EXIT', 3, 5, 2, NULL, 3, '2026-03-05 16:00:00'),
+    (6, 'ENTRY', 4, 5, NULL, 1, 5, '2026-03-06 11:00:00'),
+    (7, 'TRANSFER', 4, 5, 1, 3, 5, '2026-03-07 12:00:00'),
+    (8, 'EXIT', 2, 5, 1, NULL, 2, '2026-03-08 15:30:00'),
+    (9, 'ENTRY', 3, 5, NULL, 1, 4, '2026-03-09 09:45:00');
 
 -- Sample queries are available in:
 -- database/logitrack-queries.sql

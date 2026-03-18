@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Proveer una API REST protegida para registrar y consultar movimientos de inventario.
+Proveer una API REST protegida para registrar y consultar movimientos de activos individuales entre bodegas.
 
 ## Alcance
 
@@ -27,6 +27,12 @@ Proveer una API REST protegida para registrar y consultar movimientos de inventa
 - `ENTRY` requiere `destinationWarehouseId` y no `originWarehouseId`.
 - `EXIT` requiere `originWarehouseId` y no `destinationWarehouseId`.
 - `TRANSFER` requiere ambas bodegas y estas deben ser diferentes.
+- cada movimiento afecta un solo activo individual identificado por `productId`.
+- no existe campo `quantity`.
+- `ENTRY` solo aplica si el activo no pertenece actualmente a ninguna bodega.
+- `EXIT` y `TRANSFER` requieren que la bodega origen coincida con la bodega actual del activo.
+- al registrar el movimiento, la bodega actual del activo debe actualizarse.
+- solo el ultimo movimiento de un activo puede editarse o eliminarse.
 - Los ids relacionados como `productId`, `originWarehouseId` y `destinationWarehouseId` deben existir.
 
 ## Criterios de Aceptacion

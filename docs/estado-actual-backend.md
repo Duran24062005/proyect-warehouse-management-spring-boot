@@ -82,6 +82,7 @@ Ademas, el estado actual del dominio mantiene una decision tecnica intermedia:
 
 - `Product` tiene una relacion directa con una sola `warehouse`.
 - El sistema no persiste stock agregado por producto.
+- Cada producto debe entenderse como un activo individual con ubicacion actual.
 
 ### Gestion de bodegas
 
@@ -114,17 +115,17 @@ Por ejemplo, ya se valida que:
 - una transferencia tenga origen y destino
 - una transferencia no use la misma bodega como origen y destino
 
-El modelo vigente de movimientos tambien incluye:
+El modelo vigente de movimientos trabaja sobre activos individuales:
 
-- `productId`
-- `quantity`
+- `productId` identifica el activo afectado
+- ya no existe `quantity`
+- el movimiento puede ser `ENTRY`, `EXIT` o `TRANSFER`
+- el movimiento actualiza la bodega actual del activo
 
-Esto deja una inconsistencia funcional conocida en el backend actual:
+Ademas, para preservar consistencia:
 
-- el movimiento se comporta como si moviera cantidades de un catalogo;
-- pero `Product` sigue teniendo una sola bodega asociada como si fuera una unidad o activo individual.
-
-Esta inconsistencia queda documentada como estado actual previo a una refactorizacion posterior del dominio.
+- solo el ultimo movimiento de un activo puede editarse o eliminarse
+- la ubicacion del activo no debe cambiarse manualmente desde el modulo de productos cuando ya se trabaja via movimientos
 
 ### Auditoria
 
@@ -281,7 +282,7 @@ Para avanzar sin reescribir la arquitectura, el orden mas conveniente seria:
 2. Exponer consultas de auditoria por usuario, operacion y entidad.
 3. Modelar la asignacion explicita de empleados a bodegas para completar el control organizacional.
 4. Agregar notificacion para usuarios creados por administrador.
-5. Reforzar reglas de inventario como validacion de stock suficiente en salidas y transferencias.
+5. Reforzar reglas operativas para activos individuales, como inmovilizacion temporal o motivos de traslado.
 6. Agregar un perfil de pruebas estable y pruebas automatizadas por modulo.
 
 ## 5. Mejoras Seguras que Encajan con la Arquitectura Existente

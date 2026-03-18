@@ -17,7 +17,7 @@ La funcionalidad debe reutilizar el alcance de permisos ya existente:
 El sistema ya ofrece tablas y reportes descargables, pero no cuenta con una vista analitica inmediata para detectar:
 
 - tendencias diarias de movimientos
-- volumen operativo por periodo
+- volumen de eventos por periodo
 - diferencias entre entradas, salidas y transferencias
 
 Esto obliga al usuario a interpretar datos tabulares manualmente y reduce la capacidad del dashboard y de reportes para comunicar comportamiento operativo.
@@ -172,4 +172,3 @@ Se crea un modulo compartido para:
 - revisar dashboard con usuario `USER`
 - validar coincidencia entre filtros del reporte y la grafica
 - revisar comportamiento en estados sin datos
-

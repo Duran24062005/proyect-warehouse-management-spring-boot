@@ -136,8 +136,8 @@ public class ReportServiceImpl implements ReportService {
 
         for (MovementResponseDTO movement : movements) {
             LocalDate date = movement.createdAt().toLocalDate();
-            totalPerDay.computeIfPresent(date, (key, value) -> value + movement.quantity());
-            typeSeries.get(movement.movementType()).computeIfPresent(date, (key, value) -> value + movement.quantity());
+            totalPerDay.computeIfPresent(date, (key, value) -> value + 1);
+            typeSeries.get(movement.movementType()).computeIfPresent(date, (key, value) -> value + 1);
         }
 
         List<AnalyticsPointDTO> totalPoints = toPointList(totalPerDay);
@@ -147,11 +147,6 @@ public class ReportServiceImpl implements ReportService {
         series.add(new AnalyticsSeriesDTO("exit", "Salidas", "#f97316", toPointList(typeSeries.get(MovementType.EXIT))));
         series.add(new AnalyticsSeriesDTO("transfer", "Transferencias", "#facc15", toPointList(typeSeries.get(MovementType.TRANSFER))));
 
-        int totalQuantity = movements.stream()
-            .map(MovementResponseDTO::quantity)
-            .filter(java.util.Objects::nonNull)
-            .mapToInt(Integer::intValue)
-            .sum();
         long activeDays = totalPoints.stream().filter(point -> point.value() > 0).count();
         AnalyticsPointDTO peakPoint = totalPoints.stream()
             .max(java.util.Comparator.comparingInt(AnalyticsPointDTO::value))
@@ -165,7 +160,7 @@ public class ReportServiceImpl implements ReportService {
         );
 
         List<ReportSummaryItemDTO> summary = List.of(
-            new ReportSummaryItemDTO("totalQuantity", "Cantidad total", String.valueOf(totalQuantity)),
+            new ReportSummaryItemDTO("totalEvents", "Movimientos totales", String.valueOf(movements.size())),
             new ReportSummaryItemDTO("activeDays", "Dias con movimiento", String.valueOf(activeDays)),
             new ReportSummaryItemDTO("peakDay", "Pico diario", peakPoint.time() + " · " + peakPoint.value())
         );
@@ -211,7 +206,6 @@ public class ReportServiceImpl implements ReportService {
             new ReportColumn("performedByEmployeeName", "Empleado"),
             new ReportColumn("originWarehouseName", "Bodega origen"),
             new ReportColumn("destinationWarehouseName", "Bodega destino"),
-            new ReportColumn("quantity", "Cantidad"),
             new ReportColumn("createdAt", "Fecha")
         );
 
@@ -222,7 +216,6 @@ public class ReportServiceImpl implements ReportService {
                 Map.entry("performedByEmployeeName", safe(item.performedByEmployeeName())),
                 Map.entry("originWarehouseName", safe(item.originWarehouseName())),
                 Map.entry("destinationWarehouseName", safe(item.destinationWarehouseName())),
-                Map.entry("quantity", String.valueOf(item.quantity())),
                 Map.entry("createdAt", formatDate(item.createdAt()))
             ))
             .toList();
@@ -233,17 +226,11 @@ public class ReportServiceImpl implements ReportService {
             filterEntry("Tipo", query.movementType() == null ? null : query.movementType().name())
         );
 
-        int totalQuantity = movements.stream()
-            .map(MovementResponseDTO::quantity)
-            .filter(java.util.Objects::nonNull)
-            .mapToInt(Integer::intValue)
-            .sum();
         Map<String, Long> perType = movements.stream()
             .collect(Collectors.groupingBy(item -> item.movementType().name(), LinkedHashMap::new, Collectors.counting()));
 
         List<ReportSummaryItem> summary = new ArrayList<>();
         summary.add(new ReportSummaryItem("totalRecords", "Total de registros", String.valueOf(movements.size())));
-        summary.add(new ReportSummaryItem("totalQuantity", "Suma de cantidades", String.valueOf(totalQuantity)));
         perType.forEach((key, value) -> summary.add(new ReportSummaryItem("count" + key, "Movimientos " + key, String.valueOf(value))));
 
         return new ReportDataset(

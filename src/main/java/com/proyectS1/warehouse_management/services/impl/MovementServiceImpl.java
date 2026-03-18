@@ -47,11 +47,16 @@ public class MovementServiceImpl implements MovementService {
     public MovementResponseDTO saveMovement(MovementRequestDTO dto) {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         validateWarehouseRules(dto);
+        Product product = resolveProduct(dto.productId());
         warehouseAccessService.requireAnyWarehouseAccess(currentUser, getParticipatingWarehouseIds(dto));
+        validateProductLocation(product, dto, getWarehouseId(product.getWarehouse()));
 
         Movement movement = movementMapper.dtoToEntity(dto);
-        hydrateRelations(movement, dto, currentUser);
-        return movementMapper.entityToDTO(saveAndFlushMovement(movement));
+        hydrateRelations(movement, dto, currentUser, product);
+        Movement savedMovement = saveAndFlushMovement(movement);
+        product.setWarehouse(resolveCurrentWarehouseAfterMovement(dto));
+        productRepository.save(product);
+        return movementMapper.entityToDTO(savedMovement);
     }
 
     @Override
@@ -61,10 +66,21 @@ public class MovementServiceImpl implements MovementService {
 
         Movement movement = findMovementById(id);
         requireMovementAccess(currentUser, movement);
+        requireLatestMovementMutation(movement);
+        if (!Objects.equals(movement.getProduct().getId(), dto.productId())) {
+            throw new ResponseStatusException(BAD_REQUEST, "The product assigned to a movement cannot be changed");
+        }
+
+        Product product = movement.getProduct();
+        Long previousWarehouseId = getWarehouseIdBeforeMovement(movement);
         warehouseAccessService.requireAnyWarehouseAccess(currentUser, getParticipatingWarehouseIds(dto));
+        validateProductLocation(product, dto, previousWarehouseId);
         movementMapper.updateEntityFromDTO(movement, dto);
-        hydrateRelations(movement, dto, currentUser);
-        return movementMapper.entityToDTO(saveAndFlushMovement(movement));
+        hydrateRelations(movement, dto, currentUser, product);
+        Movement savedMovement = saveAndFlushMovement(movement);
+        product.setWarehouse(resolveCurrentWarehouseAfterMovement(dto));
+        productRepository.save(product);
+        return movementMapper.entityToDTO(savedMovement);
     }
 
     @Override
@@ -72,7 +88,11 @@ public class MovementServiceImpl implements MovementService {
         AppUser currentUser = warehouseAccessService.getCurrentUser();
         Movement movement = findMovementById(id);
         requireMovementAccess(currentUser, movement);
+        requireLatestMovementMutation(movement);
+        Product product = movement.getProduct();
+        product.setWarehouse(resolveWarehouse(getWarehouseIdBeforeMovement(movement)));
         movementRepository.delete(movement);
+        productRepository.save(product);
     }
 
     @Override
@@ -122,12 +142,12 @@ public class MovementServiceImpl implements MovementService {
             .toList();
     }
 
-    private void hydrateRelations(Movement movement, MovementRequestDTO dto, AppUser currentUser) {
+    private void hydrateRelations(Movement movement, MovementRequestDTO dto, AppUser currentUser, Product product) {
         movement.setRegisteredByUser(currentUser);
         movement.setPerformedByEmployee(resolvePerformedByEmployee(dto, currentUser));
         movement.setOriginWarehouse(resolveWarehouse(dto.originWarehouseId()));
         movement.setDestinationWarehouse(resolveWarehouse(dto.destinationWarehouseId()));
-        movement.setProduct(resolveProduct(dto.productId()));
+        movement.setProduct(product);
     }
 
     private void validateWarehouseRules(MovementRequestDTO dto) {
@@ -169,6 +189,35 @@ public class MovementServiceImpl implements MovementService {
     private Product resolveProduct(Long id) {
         return productRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Product not found with id " + id));
+    }
+
+    private void validateProductLocation(Product product, MovementRequestDTO dto, Long currentWarehouseId) {
+        switch (dto.movementType()) {
+            case ENTRY -> {
+                if (currentWarehouseId != null) {
+                    throw new ResponseStatusException(
+                        BAD_REQUEST,
+                        "ENTRY is only valid for assets that are currently outside any warehouse"
+                    );
+                }
+            }
+            case EXIT -> {
+                if (!Objects.equals(currentWarehouseId, dto.originWarehouseId())) {
+                    throw new ResponseStatusException(
+                        BAD_REQUEST,
+                        "EXIT requires the asset to currently belong to the selected origin warehouse"
+                    );
+                }
+            }
+            case TRANSFER -> {
+                if (!Objects.equals(currentWarehouseId, dto.originWarehouseId())) {
+                    throw new ResponseStatusException(
+                        BAD_REQUEST,
+                        "TRANSFER requires the asset to currently belong to the selected origin warehouse"
+                    );
+                }
+            }
+        }
     }
 
     private AppUser resolvePerformedByEmployee(MovementRequestDTO dto, AppUser currentUser) {
@@ -214,6 +263,36 @@ public class MovementServiceImpl implements MovementService {
         return java.util.stream.Stream.of(dto.originWarehouseId(), dto.destinationWarehouseId())
             .filter(Objects::nonNull)
             .toList();
+    }
+
+    private void requireLatestMovementMutation(Movement movement) {
+        Movement latestMovement = movementRepository.findTopByProductIdOrderByCreatedAtDescIdDesc(movement.getProduct().getId())
+            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "No movements found for product " + movement.getProduct().getId()));
+
+        if (!Objects.equals(latestMovement.getId(), movement.getId())) {
+            throw new ResponseStatusException(
+                BAD_REQUEST,
+                "Only the latest movement for an asset can be edited or deleted"
+            );
+        }
+    }
+
+    private Long getWarehouseIdBeforeMovement(Movement movement) {
+        return switch (movement.getMovementType()) {
+            case ENTRY -> null;
+            case EXIT, TRANSFER -> getWarehouseId(movement.getOriginWarehouse());
+        };
+    }
+
+    private Warehouse resolveCurrentWarehouseAfterMovement(MovementRequestDTO dto) {
+        return switch (dto.movementType()) {
+            case ENTRY, TRANSFER -> resolveWarehouse(dto.destinationWarehouseId());
+            case EXIT -> null;
+        };
+    }
+
+    private Long getWarehouseId(Warehouse warehouse) {
+        return warehouse != null ? warehouse.getId() : null;
     }
 
     private void requireMovementAccess(AppUser currentUser, Movement movement) {

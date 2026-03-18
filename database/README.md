@@ -26,9 +26,9 @@
 
 ## Introducción
 
-La base de datos de **LogiTrack** fue diseñada para soportar la operación principal del sistema de gestión de bodegas, productos, movimientos de inventario y auditoría de cambios. Su propósito es centralizar la información operativa de la empresa y asegurar que cada transacción relevante quede registrada con reglas claras de integridad.
+La base de datos de **LogiTrack** fue diseñada para soportar la operación principal del sistema de gestión de bodegas, productos, movimientos de activos individuales y auditoría de cambios. Su propósito es centralizar la información operativa de la empresa y asegurar que cada transacción relevante quede registrada con reglas claras de integridad.
 
-El esquema actual está orientado a un entorno **MySQL 8 con motor InnoDB**, lo que permite trabajar con claves foráneas, restricciones `CHECK`, índices y transacciones. El modelo separa las entidades principales del negocio y evita almacenar valores redundantes como el stock acumulado, ya que este puede derivarse a partir de los movimientos registrados.
+El esquema actual está orientado a un entorno **MySQL 8 con motor InnoDB**, lo que permite trabajar con claves foráneas, restricciones `CHECK`, índices y transacciones. El modelo separa las entidades principales del negocio y trata cada producto como un activo individual con una sola ubicación actual.
 
 Dentro de la carpeta `database/` se incluyen dos archivos principales:
 
@@ -69,9 +69,9 @@ Objetivos específicos:
 - registrar usuarios con roles básicos (`ADMIN` y `USER`);
 - asociar bodegas con un encargado responsable;
 - almacenar productos con su ubicación actual;
-- registrar movimientos de inventario con origen, destino, responsable y cantidad;
+- registrar movimientos de activos con origen, destino y responsable;
 - dejar evidencia de inserciones, actualizaciones y eliminaciones mediante auditoría;
-- facilitar consultas de stock, historial y actividad de usuarios.
+- facilitar consultas de ubicación actual, historial y actividad de usuarios.
 
 ### Tecnología utilizada
 
@@ -108,14 +108,13 @@ Luego se definieron sus relaciones:
 - una entidad auditable puede aparecer en múltiples registros de auditoría;
 - un usuario puede ser actor de múltiples eventos auditados.
 
-La tabla `movement` funciona como una entidad transaccional. No representa solo un catálogo, sino cada evento logístico individual. Por eso contiene referencias al usuario responsable, al producto afectado y a la bodega origen o destino según el tipo de movimiento.
+La tabla `movement` funciona como una entidad transaccional. Modela cada cambio de ubicación de un activo individual y por eso contiene referencias al usuario responsable, al producto afectado y a la bodega origen o destino según el tipo de movimiento.
 
 Además, se incorporaron reglas de negocio directamente en la base:
 
 - una entrada debe tener solo bodega destino;
 - una salida debe tener solo bodega origen;
 - una transferencia debe tener bodega origen y destino diferentes;
-- la cantidad de un movimiento debe ser positiva;
 - el precio del producto y la capacidad de la bodega no pueden ser negativos.
 
 ### Descripción de entidades
@@ -164,7 +163,7 @@ Reglas relevantes:
 
 #### 3. `product`
 
-Guarda la información maestra de cada producto administrado por el sistema.
+Guarda la información maestra de cada activo individual administrado por el sistema.
 
 | Campo | Tipo | Descripción |
 | --- | --- | --- |
@@ -224,7 +223,6 @@ Es la tabla central del sistema logístico. Registra cada entrada, salida o tran
 | `origin_warehouse_id` | `BIGINT UNSIGNED` | Bodega origen. |
 | `destination_warehouse_id` | `BIGINT UNSIGNED` | Bodega destino. |
 | `product_id` | `BIGINT UNSIGNED` | Producto afectado. |
-| `quantity` | `INT UNSIGNED` | Cantidad movida. |
 | `created_at` | `DATETIME` | Fecha de creación del movimiento. |
 | `updated_At` | `DATETIME` | Fecha de actualización. |
 
@@ -233,7 +231,7 @@ Reglas de negocio aplicadas:
 - `ENTRY`: origen `NULL` y destino obligatorio;
 - `EXIT`: origen obligatorio y destino `NULL`;
 - `TRANSFER`: origen y destino obligatorios y distintos;
-- `quantity` debe ser mayor que cero.
+- cada movimiento afecta un solo activo individual.
 
 ### Modelo Entidad Relación
 
@@ -309,7 +307,6 @@ erDiagram
         bigint origin_warehouse_id FK
         bigint destination_warehouse_id FK
         bigint product_id FK
-        int quantity
         datetime created_at
         datetime updated_At
     }
@@ -319,8 +316,8 @@ Lectura general del modelo:
 
 - `app_user` es un actor transversal del sistema;
 - `warehouse` representa la infraestructura física;
-- `product` representa el inventario administrado;
-- `movement` modela los eventos de inventario;
+- `product` representa un activo individual con ubicación actual;
+- `movement` modela los cambios de ubicación de ese activo;
 - `audit_change` conserva la trazabilidad administrativa;
 - `entity` funciona como catálogo de referencia para auditoría.
 
@@ -345,7 +342,7 @@ La base cumple con 2FN porque:
 - no existen dependencias parciales respecto de una clave compuesta;
 - los atributos descriptivos dependen de la identidad completa de cada registro.
 
-Ejemplo: en `product`, los campos `name`, `category`, `price` y `warehouse_id` dependen únicamente de `product.id`. En `movement`, el tipo, responsable, bodegas y cantidad dependen del identificador único del movimiento.
+Ejemplo: en `product`, los campos `name`, `category`, `price` y `warehouse_id` dependen únicamente de `product.id`. En `movement`, el tipo, responsable y bodegas dependen del identificador único del movimiento.
 
 ### Tercera forma normal (3FN)
 
@@ -355,19 +352,18 @@ Ejemplos claros:
 
 - en `warehouse`, la ubicación y la capacidad describen a la bodega, no al encargado;
 - en `product`, el precio y la categoría describen al producto, no a la bodega;
-- en `movement`, la cantidad y el tipo describen al evento logístico, no al usuario o a la bodega por separado.
+- en `movement`, el tipo y las bodegas describen al evento logístico, no al usuario o a la bodega por separado.
 
 Punto importante del diseño:
 
-- el stock no se almacena como una columna fija, sino que se calcula a partir de los movimientos;
-- esto evita redundancia y reduce el riesgo de inconsistencias entre inventario actual e historial;
+- la ubicación actual del activo se conserva en `product.warehouse_id`;
+- el historial de cambios de ubicación se conserva en `movement`;
 - `audit_change` usa campos `JSON` para snapshots de auditoría, lo cual introduce flexibilidad documental, pero no afecta negativamente el núcleo transaccional del modelo porque esos campos no reemplazan relaciones estructurales.
 
 ## Mejoras futuras
 
 Aunque el modelo actual cumple con los requisitos básicos del proyecto, hay varias mejoras razonables para una versión más madura:
 
-- crear una tabla de `stock` o `inventory_balance` si se requiere consulta de existencias en tiempo real con alta frecuencia;
 - separar movimientos en encabezado y detalle si una operación debe afectar varios productos dentro de una sola transacción de negocio;
 - normalizar `category` en una tabla catálogo si el número de categorías crece o si se necesitan reglas por categoría;
 - renombrar `ubication` a `location` o `address` para mejorar consistencia semántica;

@@ -18,7 +18,6 @@ SELECT
     m.id,
     m.movement_type,
     p.name AS product_name,
-    m.quantity,
     COALESCE(wo.name, 'EXTERNAL') AS origin_warehouse,
     COALESCE(wd.name, 'EXTERNAL') AS destination_warehouse,
     CONCAT(ru.first_name, ' ', ru.last_name) AS registered_by_name,
@@ -32,43 +31,23 @@ LEFT JOIN warehouse AS wo ON wo.id = m.origin_warehouse_id
 LEFT JOIN warehouse AS wd ON wd.id = m.destination_warehouse_id
 ORDER BY m.created_at, m.id;
 
--- 3. Current stock by warehouse and product based on movements
+-- 3. Current location of each active asset
 SELECT
-    w.name AS warehouse_name,
     p.name AS product_name,
-    SUM(stock_delta.quantity_delta) AS current_stock
-FROM (
-    SELECT
-        destination_warehouse_id AS warehouse_id,
-        product_id,
-        CAST(quantity AS SIGNED) AS quantity_delta
-    FROM movement
-    WHERE destination_warehouse_id IS NOT NULL
-
-    UNION ALL
-
-    SELECT
-        origin_warehouse_id AS warehouse_id,
-        product_id,
-        CAST(quantity AS SIGNED) * -1 AS quantity_delta
-    FROM movement
-    WHERE origin_warehouse_id IS NOT NULL
-) AS stock_delta
-INNER JOIN warehouse AS w ON w.id = stock_delta.warehouse_id
-INNER JOIN product AS p ON p.id = stock_delta.product_id
-GROUP BY w.id, w.name, p.id, p.name
-HAVING SUM(stock_delta.quantity_delta) > 0
-ORDER BY w.name, p.name;
+    p.category,
+    COALESCE(w.name, 'EXTERNAL') AS current_warehouse
+FROM product AS p
+LEFT JOIN warehouse AS w ON w.id = p.warehouse_id
+ORDER BY current_warehouse, p.name;
 
 -- 4. Movement summary by executing employee
 SELECT
     CONCAT(u.first_name, ' ', u.last_name) AS employee_name,
-    COUNT(m.id) AS total_movements,
-    SUM(m.quantity) AS total_units_moved
+    COUNT(m.id) AS total_movements
 FROM movement AS m
 INNER JOIN app_user AS u ON u.id = m.performed_by_employee_id
 GROUP BY u.id, u.first_name, u.last_name
-ORDER BY total_units_moved DESC, total_movements DESC;
+ORDER BY total_movements DESC;
 
 -- 5. Audit log with actor and entity
 SELECT

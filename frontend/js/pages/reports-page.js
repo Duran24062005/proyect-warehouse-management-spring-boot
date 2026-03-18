@@ -31,7 +31,7 @@ let catalogs = {
 
 const reportCopy = {
   movements: {
-    description: "Cruza producto, empleado, bodegas y cantidades para seguir el hilo operativo de entradas, salidas y transferencias."
+    description: "Cruza activo, empleado y bodegas para seguir el recorrido individual de entradas, salidas y transferencias."
   },
   products: {
     description: "Resume el catalogo visible para el usuario con categoria, precio y bodega asociada."

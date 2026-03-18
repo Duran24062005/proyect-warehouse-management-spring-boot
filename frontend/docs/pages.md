@@ -96,6 +96,7 @@ Responsabilidad:
 - crear, editar y eliminar movimientos
 - filtrar movimientos
 - adaptar campos de origen/destino segun `ENTRY`, `EXIT` o `TRANSFER`
+- registrar el recorrido de activos individuales sin cantidades
 - mostrar el usuario autenticado como responsable del registro
 
 Endpoints usados:

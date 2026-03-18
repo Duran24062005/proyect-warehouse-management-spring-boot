@@ -102,20 +102,14 @@ Cada producto contiene informacion como:
 - precio
 - bodega asociada
 
-Dentro del alcance actual, el modelo implementado mezcla dos conceptos:
+Dentro del alcance actual, cada producto representa un **activo individual**.
 
-- el producto tiene una **bodega asociada unica** en el modelo de datos;
-- los movimientos siguen funcionando como si el producto fuera un **catalogo movible por cantidad**.
+Eso implica que:
 
-En la practica actual, esto significa que:
-
-- el sistema puede pedir `quantity` al registrar movimientos;
-- pero cada `product` tambien queda vinculado a una sola bodega a la vez;
-- por tanto, el dominio todavia no distingue de forma limpia entre:
-  - producto como catalogo con cantidad
-  - producto como activo individual
-
-Este comportamiento se mantiene documentado porque corresponde al modelo vigente antes de la refactorizacion hacia activos individuales.
+- cada producto solo puede estar en una bodega a la vez;
+- `warehouseId` representa la ubicacion actual del activo;
+- la reubicacion operativa debe registrarse mediante movimientos;
+- el modulo de productos no maneja stock agregado ni cantidades por lote.
 
 ---
 
@@ -135,16 +129,15 @@ Cada movimiento almacena informacion como:
 - bodega origen
 - bodega destino
 - producto
-- cantidad
 
-Actualmente, la API de movimientos trata al producto como una referencia movible por cantidad, aunque el modelo `product` conserve una sola `warehouse` asociada.
+Los movimientos constituyen el eje central del sistema porque dejan trazabilidad sobre el recorrido de cada activo individual.
 
-Esto constituye una inconsistencia funcional conocida:
+Regla clave del dominio:
 
-- la cantidad tiene sentido si el producto representa un catalogo o lote;
-- la bodega unica tiene sentido si el producto representa una unidad fisica individual.
-
-Mientras no se haga la migracion de modelo, los movimientos constituyen el eje central del sistema para trazabilidad operativa, pero bajo esa limitacion conceptual.
+- un producto individual puede quedar sin bodega al salir;
+- puede entrar desde fuera a una bodega;
+- o puede transferirse entre dos bodegas;
+- pero nunca puede estar en dos bodegas al mismo tiempo.
 
 ---
 

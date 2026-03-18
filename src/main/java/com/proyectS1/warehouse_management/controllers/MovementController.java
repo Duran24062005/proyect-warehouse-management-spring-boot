@@ -96,10 +96,8 @@ public class MovementController {
                         {
                           "movementType": "ENTRY",
                           "performedByEmployeeId": 5,
-                          "originWarehouseId": 1,
                           "destinationWarehouseId": 2,
-                          "productId": 1,
-                          "quantity": 25
+                          "productId": 1
                         }
                         """
                 )
@@ -134,8 +132,7 @@ public class MovementController {
                           "performedByEmployeeId": 5,
                           "originWarehouseId": 1,
                           "destinationWarehouseId": 2,
-                          "productId": 1,
-                          "quantity": 10
+                          "productId": 1
                         }
                         """
                 )

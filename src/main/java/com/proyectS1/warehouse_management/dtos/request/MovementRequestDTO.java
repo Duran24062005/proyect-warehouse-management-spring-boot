@@ -4,7 +4,6 @@ import com.proyectS1.warehouse_management.model.enums.MovementType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 public record MovementRequestDTO(
     @NotNull
@@ -23,10 +22,6 @@ public record MovementRequestDTO(
     Long destinationWarehouseId,
     @NotNull
     @Schema(description = "Product id", example = "1")
-    Long productId,
-    @NotNull
-    @Positive
-    @Schema(description = "Movement quantity", example = "25")
-    Integer quantity
+    Long productId
 ) {
 }

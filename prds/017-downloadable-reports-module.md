@@ -154,7 +154,6 @@ Resumen por tipo:
 
 - movimientos:
   - total de registros
-  - suma de cantidades
   - conteo por tipo
 - productos:
   - total de productos
@@ -202,4 +201,3 @@ Resumen por tipo:
 - descargar en `PDF`, `IMG`, `TXT` y `CSV`
 - validar legibilidad del archivo
 - validar que el contenido coincide con los filtros aplicados
-

@@ -54,7 +54,7 @@
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 class="section-title">Movimientos de inventario</h2>
-              <p class="mt-3 text-sm text-slate-600">Puedes registrar entradas, salidas y transferencias. El formulario ajusta origen y destino segun el tipo.</p>
+              <p class="mt-3 text-sm text-slate-600">Registra entradas, salidas y transferencias para activos individuales. Cada producto solo puede estar en una bodega a la vez.</p>
             </div>
             <button id="open-movement-modal" class="btn-primary" type="button">Nuevo movimiento</button>
           </div>
@@ -84,7 +84,6 @@
                       <th class="px-4 py-3">Producto</th>
                       <th class="px-4 py-3">Origen</th>
                       <th class="px-4 py-3">Destino</th>
-                      <th class="px-4 py-3">Cantidad</th>
                       <th class="px-4 py-3">Acciones</th>
                     </tr>
                   </thead>
@@ -139,6 +138,9 @@
           <div>
             <label class="mb-2 block text-sm font-medium">Producto</label>
             <select id="movement-product-id" class="select-shell" name="productId" required></select>
+            <p class="mt-2 text-xs text-slate-500">
+              Este selector representa un activo individual. Usa movimientos para cambiar su bodega actual.
+            </p>
           </div>
           <div id="origin-shell">
             <label class="mb-2 block text-sm font-medium">Bodega origen</label>
@@ -147,10 +149,6 @@
           <div id="destination-shell">
             <label class="mb-2 block text-sm font-medium">Bodega destino</label>
             <select id="movement-destination-id" class="select-shell" name="destinationWarehouseId"></select>
-          </div>
-          <div>
-            <label class="mb-2 block text-sm font-medium">Cantidad</label>
-            <input class="input-shell" type="number" name="quantity" min="1" required>
           </div>
           <button id="submit-movement-form" class="btn-primary w-full" type="submit">Guardar movimiento</button>
         </form>

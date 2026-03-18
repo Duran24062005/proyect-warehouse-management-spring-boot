@@ -20,6 +20,7 @@ const formTitle = document.querySelector("#product-form-title");
 const submitButton = document.querySelector("#submit-product-form");
 const tableBody = document.querySelector("#products-body");
 const warehouseSelect = document.querySelector("#product-warehouse-id");
+const warehouseHelp = document.querySelector("#product-warehouse-help");
 
 let products = [];
 let warehouses = [];
@@ -29,6 +30,8 @@ function resetForm() {
   form.productId.value = "";
   formTitle.textContent = "Nuevo producto";
   submitButton.textContent = "Guardar producto";
+  warehouseSelect.disabled = false;
+  warehouseHelp.textContent = "Define la bodega actual del activo al momento de crearlo.";
 }
 
 function editProduct(id) {
@@ -42,6 +45,8 @@ function editProduct(id) {
   form.warehouseId.value = product.warehouseId || "";
   formTitle.textContent = "Editar producto";
   submitButton.textContent = "Guardar cambios";
+  warehouseSelect.disabled = true;
+  warehouseHelp.textContent = "La bodega actual de un activo individual se cambia desde el modulo de movimientos.";
   openModal(modal);
 }
 

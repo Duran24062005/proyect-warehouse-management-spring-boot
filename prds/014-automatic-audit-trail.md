@@ -116,7 +116,6 @@ Regla especial:
 - `originWarehouseId`
 - `destinationWarehouseId`
 - `productId`
-- `quantity`
 
 ## Reglas del actor
 

@@ -31,8 +31,6 @@ public record MovementResponseDTO(
     Long productId,
     @Schema(description = "Product name")
     String productName,
-    @Schema(description = "Quantity")
-    Integer quantity,
     @Schema(description = "Creation date")
     LocalDateTime createdAt
 ) {

@@ -207,10 +207,10 @@ Ejemplo `TRANSFER`:
 ```json
 {
   "movementType": "TRANSFER",
+  "performedByEmployeeId": 5,
   "originWarehouseId": 1,
   "destinationWarehouseId": 2,
-  "productId": 1,
-  "quantity": 25
+  "productId": 1
 }
 ```
 

@@ -33,9 +33,12 @@ function syncEmployeeState() {
   submitButton.classList.toggle("opacity-60", !hasEmployees);
   submitButton.classList.toggle("cursor-not-allowed", !hasEmployees);
 
-  performedByHelp.textContent = hasEmployees
-    ? "Selecciona el empleado que ejecuto fisicamente este movimiento."
-    : "No hay empleados disponibles para registrar este movimiento. Primero asigna empleados a una bodega.";
+  if (!hasEmployees) {
+    performedByHelp.textContent = "No hay empleados disponibles para registrar este movimiento. Primero asigna empleados a una bodega.";
+    return;
+  }
+
+  syncMovementFields();
 }
 
 function syncMovementFields() {
@@ -55,6 +58,15 @@ function syncMovementFields() {
   if (type === "EXIT") {
     destinationSelect.value = "";
   }
+
+  const helpByType = {
+    ENTRY: "Usa ENTRY cuando el activo entra desde fuera y quedara asignado a una bodega destino.",
+    EXIT: "Usa EXIT cuando el activo sale de su bodega actual y quedara sin ubicacion interna.",
+    TRANSFER: "Usa TRANSFER cuando el activo pasa de una bodega origen a una bodega destino."
+  };
+  performedByHelp.textContent = employees.length
+    ? helpByType[type]
+    : "No hay empleados disponibles para registrar este movimiento. Primero asigna empleados a una bodega.";
 }
 
 function resetForm() {
@@ -76,7 +88,6 @@ function editMovement(id) {
   form.productId.value = movement.productId;
   form.originWarehouseId.value = movement.originWarehouseId || "";
   form.destinationWarehouseId.value = movement.destinationWarehouseId || "";
-  form.quantity.value = movement.quantity;
   formTitle.textContent = "Editar movimiento";
   submitButton.textContent = "Guardar cambios";
   syncMovementFields();
@@ -152,7 +163,6 @@ async function loadMovements(filters = {}) {
         <td class="px-4 py-3">${item.productName}</td>
         <td class="px-4 py-3">${item.originWarehouseName || "-"}</td>
         <td class="px-4 py-3">${item.destinationWarehouseName || "-"}</td>
-        <td class="px-4 py-3">${item.quantity}</td>
         <td class="px-4 py-3">
           <div class="flex flex-wrap gap-2">
             <button class="btn-secondary" data-edit-id="${item.id}" type="button">Editar</button>
@@ -161,7 +171,7 @@ async function loadMovements(filters = {}) {
         </td>
       </tr>
     `,
-    { colspan: 7, emptyMessage: "No hay movimientos para mostrar." }
+    { colspan: 6, emptyMessage: "No hay movimientos para mostrar." }
   );
 }
 
@@ -242,8 +252,7 @@ form.addEventListener("submit", async (event) => {
     performedByEmployeeId: Number(form.performedByEmployeeId.value),
     originWarehouseId: form.originWarehouseId.value ? Number(form.originWarehouseId.value) : null,
     destinationWarehouseId: form.destinationWarehouseId.value ? Number(form.destinationWarehouseId.value) : null,
-    productId: Number(form.productId.value),
-    quantity: Number(form.quantity.value)
+    productId: Number(form.productId.value)
   };
 
   const movementId = form.movementId.value;

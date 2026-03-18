@@ -11,6 +11,7 @@ import com.proyectS1.warehouse_management.model.Movement;
 @Repository
 public interface MovementRepository extends JpaRepository<Movement, Long> {
     List<Movement> findByProductId(Long productId);
+    java.util.Optional<Movement> findTopByProductIdOrderByCreatedAtDescIdDesc(Long productId);
     List<Movement> findByOriginWarehouseIdOrDestinationWarehouseId(Long originWarehouseId, Long destinationWarehouseId);
     List<Movement> findByOriginWarehouseIdInOrDestinationWarehouseIdIn(
         Collection<Long> originWarehouseIds,

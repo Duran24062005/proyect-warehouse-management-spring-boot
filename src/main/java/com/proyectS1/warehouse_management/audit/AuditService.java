@@ -102,7 +102,6 @@ public class AuditService {
         payload.put("originWarehouseId", movement.getOriginWarehouse() != null ? movement.getOriginWarehouse().getId() : null);
         payload.put("destinationWarehouseId", movement.getDestinationWarehouse() != null ? movement.getDestinationWarehouse().getId() : null);
         payload.put("productId", movement.getProduct() != null ? movement.getProduct().getId() : null);
-        payload.put("quantity", movement.getQuantity());
         return payload;
     }
 
