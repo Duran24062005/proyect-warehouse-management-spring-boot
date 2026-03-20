@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyectS1.warehouse_management.dtos.request.MovementRequestDTO;
+import com.proyectS1.warehouse_management.dtos.response.BasicReportResponseDTO;
+import com.proyectS1.warehouse_management.dtos.response.MovementReportResponseDTO;
 import com.proyectS1.warehouse_management.dtos.response.MovementResponseDTO;
+import com.proyectS1.warehouse_management.model.enums.MovementType;
 import com.proyectS1.warehouse_management.services.MovementService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -156,4 +159,20 @@ public class MovementController {
         movementService.deleteMovement(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/recents")
+    public ResponseEntity<List<MovementResponseDTO>> getRecentMovements() {
+        return ResponseEntity.ok(movementService.getRecentMovements());
+    }
+
+    @GetMapping("/reports")
+    public ResponseEntity<MovementReportResponseDTO> getMovementReports() {
+        return ResponseEntity.ok(movementService.getReport());
+    }  
+    
+    @GetMapping("/basic/report")
+    public ResponseEntity<BasicReportResponseDTO> getMethodName(@RequestParam MovementType type) {
+        return ResponseEntity.ok(movementService.getBasicReportByType(type));
+    }
+    
 }

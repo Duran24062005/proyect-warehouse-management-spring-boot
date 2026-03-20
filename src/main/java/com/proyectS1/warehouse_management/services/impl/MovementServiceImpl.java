@@ -14,6 +14,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.proyectS1.warehouse_management.dtos.request.MovementRequestDTO;
+import com.proyectS1.warehouse_management.dtos.response.BasicReportResponseDTO;
+import com.proyectS1.warehouse_management.dtos.response.MovementReportResponseDTO;
 import com.proyectS1.warehouse_management.dtos.response.MovementResponseDTO;
 import com.proyectS1.warehouse_management.mapper.MovementMapper;
 import com.proyectS1.warehouse_management.model.AppUser;
@@ -312,5 +314,56 @@ public class MovementServiceImpl implements MovementService {
 
         return (originWarehouseId != null && managedWarehouseIds.contains(originWarehouseId))
             || (destinationWarehouseId != null && managedWarehouseIds.contains(destinationWarehouseId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MovementResponseDTO> getRecentMovements() {
+        AppUser currentUser = warehouseAccessService.getCurrentUser();
+        List<Movement> movements;
+
+        if (warehouseAccessService.isAdmin(currentUser)) {
+            movements = movementRepository.findTop10ByOrderByCreatedAtDescIdDesc();
+        } else {
+            Set<Long> managedWarehouseIds = warehouseAccessService.getManagedWarehouseIds(currentUser);
+            movements = managedWarehouseIds.isEmpty()
+                ? List.of()
+                : movementRepository.findTop10ByOriginWarehouseIdInOrDestinationWarehouseIdInOrderByCreatedAtDescIdDesc(
+                    managedWarehouseIds,
+                    managedWarehouseIds
+                );
+        }
+
+        return movements.stream().map(movementMapper::entityToDTO).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MovementReportResponseDTO getReport() {
+        List<MovementResponseDTO> movements = findAll();
+
+        long totalEntries = movements.stream()
+            .filter(movement -> movement.movementType() == MovementType.ENTRY)
+            .count();
+        long totalExits = movements.stream()
+            .filter(movement -> movement.movementType() == MovementType.EXIT)
+            .count();
+        long totalTransfers = movements.stream()
+            .filter(movement -> movement.movementType() == MovementType.TRANSFER)
+            .count();
+
+        return new MovementReportResponseDTO(
+            movements.size(),
+            Math.toIntExact(totalEntries),
+            Math.toIntExact(totalExits),
+            Math.toIntExact(totalTransfers)
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BasicReportResponseDTO getBasicReportByType(MovementType type) {
+        long total = movementRepository.countByMovementType(type);
+        return new BasicReportResponseDTO(Math.toIntExact(total));
     }
 }

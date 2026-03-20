@@ -190,16 +190,53 @@ La app quedara disponible en:
 
 ## Documentacion del Repositorio
 
-- [docs/architecture.md](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/docs/architecture.md)
-- [docs/api-overview.md](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/docs/api-overview.md)
-- [docs/api_docs.md](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/docs/api_docs.md)
+- [docs/architecture.md](/docs/architecture.md)
+- [docs/api-overview.md](/docs/api-overview.md)
+- [docs/api_docs.md](/docs/api_docs.md)
 - [docs/products-api.md](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/docs/products-api.md)
-- [docs/auth-users-api.md](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/docs/auth-users-api.md)
-- [docs/frontend-overview.md](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/docs/frontend-overview.md)
-- [docs/notifications-context.md](/home/alexi-dg/Desktop/GitHub_Repositories/SpringBoot/warehouse-management/docs/notifications-context.md)
+- [docs/auth-users-api.md](/docs/auth-users-api.md)
+- [docs/frontend-overview.md](/docs/frontend-overview.md)
+- [docs/notifications-context.md](/docs/notifications-context.md)
 
 ## Limitaciones Actuales
 
 - No existe aun un modulo funcional de auditoria automatica conectado a `audit_change`.
 - No hay pruebas end-to-end del frontend.
 - El stock bajo se calcula desde movimientos, no desde una tabla dedicada de inventario consolidado.
+
+<br>
+<br>
+<br>
+
+
+# Examen - Ultimos movimientos
+
+La empresa **LogiTrack S.A.** desea que el sistema permita a los supervisores revisar rápidamente los últimos movimientos registrados en las bodegas.
+
+Tu tarea consiste en implementar **una consulta REST y un pequeño reporte resumido** que faciliten la visualización de esta información.
+
+## Instrucciones
+
+1. **Endpoint de movimientos recientes:**
+  - En MovimientoController, crea un endpoint:
+  @GetMapping("/movimientos/recientes")
+  public ResponseEntity<List<MovimientoDTO>> listarRecientes()
+  Este endpoint debe retornar los últimos 10 movimientos registrados, ordenados por fecha descendente.
+
+2. **Endpoint de reporte básico:**
+  - En ReporteController, crea un endpoint /reportes/movimientos que retorne un JSON con:
+    - Cantidad total de movimientos registrados.
+    - Número de movimientos por tipo (ENTRADA, SALIDA, TRANSFERENCIA).
+
+3. **Probar los endpoints en Postman mostrando:**
+- Petición GET a /movimientos/recientes con resultado JSON.
+- Petición GET a /reportes/movimientos con el resumen.
+
+
+## Resultado esperado
+
+Entregables:
+
+  - Código fuente actualizado con los endpoints requeridos.
+  - Capturas de Postman mostrando las respuestas de ambos endpoints.
+  - Captura del Swagger donde aparezcan documentados.
